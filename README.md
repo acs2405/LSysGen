@@ -28,7 +28,7 @@ cmake ..
 make
 ```
 
-(Optional) If you wish to re-build the lexer and parser files from the grammars (\*.g4), run (in the project root directory):
+(Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
 ```
 java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
@@ -48,13 +48,19 @@ To execute the compiled program to generate l-systems, go to build/ and run:
 ./lsysgen FILE [N_ITERATIONS]
 ```
 
-Where FILE is a file \*.lsd that describes an L-system. The next part of this file will show you how to edit a \*.lsd file.
+Where `FILE` is a file `*.lsd` (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `FILE` will be used instead. Examples:
+
+```
+echo "set axiom='a';a->b;b->ab;" | ./lsysgen - 12
+echo "set axiom='a';set iterations=12;a->b;b->ab;" | ./lsysgen -
+./lsysgen b2.lsd 20
+```
 
 <!--There are some useful options that you can see with the help:
 
 $ python3 lsys\.py \-h-->
 
-By default, the program will interpret the L-System and it will draw it in a new window\.
+By default, the program will interpret the L-System and will draw it in a new window.
 
 ## Syntax and semantics
 
@@ -114,7 +120,7 @@ A probabilistic l-system can include a weight for each rule (when the weight is 
 ```
 
 In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied, because the special weight `!` means that it must be always chosen.
-As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with ! weight are available for some character, the first will be always applied.
+As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with `!` weight are available for some character, the first will be always applied.
 
 For parametric l-systems, you can just add parameters to any character in the left or right. The char to be replaced can define its parameters' names and even define a condition (optional). The right side can specify arguments for its characters, referencing (or not) the left side parameters. For example:
 

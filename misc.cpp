@@ -366,8 +366,8 @@ Rule<T>* chooseRule(std::list<Rule<T>*>* rules) {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-    srand(millis);
     double rnd = (double)rand() / RAND_MAX;
+    srand(rand() + millis);
     double choice = total * rnd;
     double current = 0.0;
     for (Rule<T>* r : *rules) {

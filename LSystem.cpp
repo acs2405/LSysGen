@@ -1,6 +1,9 @@
 
 #include "LSystem.h"
 
+#include <cstdlib>
+#include <chrono>
+
 namespace lsysgen {
 
 template<typename T>
@@ -17,6 +20,10 @@ LSystem<T>::~LSystem() {}
 template<typename T>
 void LSystem<T>::prepare() {
     if (this->current < 0) {
+        std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+        auto duration = now.time_since_epoch();
+        auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        srand(millis);
         if (this->axiom == nullptr)
             this->axiom = new ParseTreeNode<InstanceNodeContent, T>();
         if (this->ignore == nullptr)
