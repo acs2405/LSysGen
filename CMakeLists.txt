@@ -255,31 +255,32 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/antlr4-runtime/dfa
   ${PROJECT_SOURCE_DIR}/antlr4-runtime/tree
   ${PROJECT_SOURCE_DIR}/antlr4-runtime/support
+  ${PROJECT_SOURCE_DIR}/src/
   ${PROJECT_SOURCE_DIR}/
   ${PROJECT_SOURCE_DIR}/libs/
   )
 
 set(lsysgen_SRC 
-  ${PROJECT_SOURCE_DIR}/misc.cpp
-  ${PROJECT_SOURCE_DIR}/operations.cpp
-  ${PROJECT_SOURCE_DIR}/ParseTreeNode.cpp
-  ${PROJECT_SOURCE_DIR}/NodeContent.cpp
-  ${PROJECT_SOURCE_DIR}/Rule.cpp
-  ${PROJECT_SOURCE_DIR}/Table.cpp
-  ${PROJECT_SOURCE_DIR}/LSystem.cpp
-  ${PROJECT_SOURCE_DIR}/ErrorHandler.cpp
-  ${PROJECT_SOURCE_DIR}/LSysDVisitor.cpp
-  ${PROJECT_SOURCE_DIR}/LSysDExpressionEvaluator.cpp
-  ${PROJECT_SOURCE_DIR}/lsysgen.cpp
-  ${PROJECT_SOURCE_DIR}/Drawer2D.cpp
+  ${PROJECT_SOURCE_DIR}/src/misc.cpp
+  ${PROJECT_SOURCE_DIR}/src/operations.cpp
+  ${PROJECT_SOURCE_DIR}/src/ParseTreeNode.cpp
+  ${PROJECT_SOURCE_DIR}/src/NodeContent.cpp
+  ${PROJECT_SOURCE_DIR}/src/Rule.cpp
+  ${PROJECT_SOURCE_DIR}/src/Table.cpp
+  ${PROJECT_SOURCE_DIR}/src/LSystem.cpp
+  ${PROJECT_SOURCE_DIR}/src/ErrorHandler.cpp
+  ${PROJECT_SOURCE_DIR}/src/LSysDVisitor.cpp
+  ${PROJECT_SOURCE_DIR}/src/LSysDExpressionEvaluator.cpp
+  ${PROJECT_SOURCE_DIR}/src/lsysgen.cpp
+  ${PROJECT_SOURCE_DIR}/src/Drawer2D.cpp
   ${lsysgen_GENERATED_SRC}
   )
 
-set(lsysgen_RESOURCES 
-  ${PROJECT_SOURCE_DIR}/b2.lsd
-  ${PROJECT_SOURCE_DIR}/penrose.lsd
-  ${PROJECT_SOURCE_DIR}/star.lsd
-  )
+# set(lsysgen_RESOURCES 
+#   ${PROJECT_SOURCE_DIR}/b2.lsd
+#   ${PROJECT_SOURCE_DIR}/penrose.lsd
+#   ${PROJECT_SOURCE_DIR}/star.lsd
+#   )
 
 link_directories(
   # ${PROJECT_SOURCE_DIR}/test2
