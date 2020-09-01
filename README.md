@@ -31,13 +31,13 @@ make
 (Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
 ```
-java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
+java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 
 where `<ANTLR4-JAR>` is a jar file that contains the ANTLR 4 parser generator. Or, if you have ANTLR 4 installed and accessible:
 
 ```
-antlr4 -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
+antlr4 -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 
 ### Execution
@@ -272,14 +272,17 @@ Example `*.lsd` files are provided in `examples/`. You just have to execute the 
 - `F` draws a forward line.
 - `G` draws a backward line.
 - `f` moves forward without drawing.
+
 `F`, `G` and `f` can have one parameter that specifies the length of the line/move. Default is `5`.
 
 - `+` rotates counterclockwise.
 - `-` rotates clockwise.
+
 `+` and `-` can accept one parameter that specifies the rotation angle (in degrees). Default angle is defined by the user.
 
 - `[` pushes a state.
 - `]` pops a state.
+
 The state is a position, heading and color configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
 
 - `w` for white.
@@ -287,6 +290,7 @@ The state is a position, heading and color configuration. When closing a bracket
 - `r` for red.
 - `g` for green.
 - `b` for blue.
+
 These fixed color characters stablish the pen and fill color until the end of the current branch or until it is changed again.
 
 - `c("#RRGGBB")` or `c(r, g, b)` changes the pen and fill color to the specified by the parameter(s) until the end of the current branch or until it is changed again.
@@ -295,6 +299,7 @@ These fixed color characters stablish the pen and fill color until the end of th
 
 - `P` to start delimiting a figure to fill.
 - `p` to end delimiting the figure.
+
 It is not possible to fill two figures if one contains another in the string. This is, a `P` must be followed by a `p` before another `P`.
 
 The rest of the characters will be ignored when displaying.

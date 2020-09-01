@@ -5,33 +5,6 @@
 #include <sstream>
 
 
-/*
- * 
- * java -jar antlr-4.8-complete.jar -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
- * 
- * 
- * - cd <antlr4-dir>/runtime/Cpp
- * - mkdir build && mkdir run && cd build
- * - cmake ..
- * - make
- * - DESTDIR=<antlr4-dir>/runtime/Cpp/run make install
- * 
- * 
- * - mkdir build; cd build
- * - cmake ..
- * - make
- * - ./lsysgen b2.lsd
- * 
- */
-
-
-// class TreeShapeListener : public LSysDParserBaseListener {
-// public:
-//     void enterMain(LSysDParser::MainContext *ctx) override {
-//     // Do something when entering the key rule.
-//     }
-// };
-
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 3) {
