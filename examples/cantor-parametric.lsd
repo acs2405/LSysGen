@@ -1,5 +1,5 @@
 
-lsystem CantorSet
+lsystem ParametricCantorSet
 
 set axiom = 'S';
 set iterations = 5;
@@ -8,13 +8,13 @@ set initial_heading = 90;
 
 rules {
 
-	S -> [bSaS]AAA
-	a -> aaa
-	A -> AAA
+	S -> [bSa(1)S]A(3)
+	A(l) -> A(3*l)
+	a(l) -> a(3*l)
 
 	S => F
-	A => F
-	a => f
+	A(l) => F(l)
+	a(l) => f(l)
 	b => +f-
 
 }
