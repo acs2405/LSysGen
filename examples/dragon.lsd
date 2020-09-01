@@ -1,0 +1,19 @@
+
+lsystem DragonCurve
+
+set axiom = "FX"
+set iterations = 10
+set initial_heading = 0
+set rotation = 90
+
+rules {
+
+	X -> X+YF+
+	Y -> -FX-Y
+
+# 	(!) F => F
+# 	(!) + => +
+# 	(!) - => -
+# 	    _ =>
+
+}

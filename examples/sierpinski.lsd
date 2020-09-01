@@ -1,0 +1,14 @@
+
+lsystem SierpinskiTriangle
+
+set axiom = "F-G-G"
+set iterations = 6
+set initial_heading = 0
+set rotation = 120
+
+rules {
+	F -> F-G+F+G-F
+	G -> GG
+
+	G => F
+}

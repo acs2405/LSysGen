@@ -116,6 +116,7 @@ tag
 
 weight
   : LPAREN INT RPAREN
+  | LPAREN XM RPAREN
   | XM
   ;
 
