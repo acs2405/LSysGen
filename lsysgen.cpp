@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
 
 lsysgen::LSystem<char>* parseLSystem(std::string file) {
     if (file == "-") {
-        return parseLSystem(file, std::cin);
+        return parseLSystem("<stdin>", std::cin);
     } else {
         std::fstream fstream;
         fstream.open(file);

@@ -10,7 +10,7 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 ### Compilation
 
-To compile the program you will need to put the ANTLR 4 (I am using 4.8) libraries in libs/. You can build them from source, in their C++ runtime repo, running:
+To compile the program you will need to put the ANTLR 4 (I am using 4.8) libraries in `libs/`. You can build them from source, in their C++ runtime repo, running:
 
 ```
 cd <antlr4-dir>/runtime/Cpp
@@ -34,7 +34,7 @@ make
 java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
 ```
 
-where <ANTLR4-JAR> is a jar file that contains the ANTLR 4 parser generator. Or, if you have ANTLR 4 installed and accessible:
+where `<ANTLR4-JAR>` is a jar file that contains the ANTLR 4 parser generator. Or, if you have ANTLR 4 installed and accessible:
 
 ```
 antlr4 -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
@@ -42,7 +42,7 @@ antlr4 -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor
 
 ### Execution
 
-To execute the compiled program to generate l-systems, go to build/ and run:
+To execute the compiled program to generate l-systems, go to `build/` and run:
 
 ```
 ./lsysgen FILE [N_ITERATIONS]
@@ -91,27 +91,27 @@ A DOL system (the most basic one) has rules of type:
 char -> replacement
 ```
 
-where the char occurrences are replaced by replacement.
-A DIL system (context-sensitive) would have rules of type:
+where the `char` occurrences are replaced by `replacement`.
+A DIL system (context-sensitive) would have rules with a left context:
 
 ```
 left_context < char -> replacement
 ```
 
-or:
+a right context:
 
 ```
 char > right_context -> replacement
 ```
 
-or both:
+both:
 
 ```
 left_context < char > right_context -> replacement
 ```
 
-or none like DOL's rules.
-A probabilistic l-system can include a weight for each rule (when the weight is not defined, a rule has a default weight of 1). The syntax is just adding the parenthesized value at the beginning of the rule. For example:
+or none (like DOL's rules).
+A probabilistic l-system may have more than one rule available for the same character. Also, a weight can be specified for each rule (when the weight is not defined, a rule has a default weight of `1`). That weight will determine the probability of the rule to be chosen over other available rules. The syntax of a weighted rule just adds the parenthesized value at the beginning of the rule. For example:
 
 ```
 (9) a -> a
@@ -120,7 +120,7 @@ A probabilistic l-system can include a weight for each rule (when the weight is 
 ```
 
 In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied, because the special weight `!` means that it must be always chosen.
-As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with `!` weight are available for some character, the first will be always applied.
+As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with `!` weight are available for some character, the first one will be always applied.
 
 For parametric l-systems, you can just add parameters to any character in the left or right. The char to be replaced can define its parameters' names and even define a condition (optional). The right side can specify arguments for its characters, referencing (or not) the left side parameters. For example:
 
@@ -157,7 +157,7 @@ When asking for a branch in the left or right context, it is matched if and only
 
 matches with the `c` in `[abddd]c[adrst]`, `[ab]c[ad]`, `[ab][c[[ad]s]]`, but not `[ba]c[ad]` or `[dab]c[ssad]`.
 
-A rule can have in the left hand side the special character '\_' that represents any character. For example:
+A rule can have in the left hand side the special character `_` that represents any character. For example:
 
 ```
     a -> bd
@@ -193,7 +193,7 @@ Table names cannot be numbers. The code that defines a table is:
 table <name> { <rules> }
 ```
 
-Inside table blocks you can define rules or reference tags of already defined rules. For example:
+Inside `table` blocks you can define rules or reference tags of already defined rules. For example:
 
 ```
 set table_func(i) = 't' + str(i % 2)
@@ -242,7 +242,7 @@ production rules {
 u => [+F]     # Valid
 ```
     
-The syntax of the coding rules is the same than production rules'. They also work similarly. Though they don't belong to tables, they are global.
+The syntax of the coding rules is the same than production rules', but using double arrow (`=>`). They also work similarly. Note that coding rules don't belong to tables, but they are global.
 
 ### Comments
 
@@ -265,9 +265,7 @@ set initial_heading = 90    # (optional, defaults 90) This property sets the ini
 set rotation = 30           # (optional, defaults 30) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
 ```
 
-This was the last line to be read. The file may contain more text after this last line but it will be ignored. That's why the example file has so many lines: it has the description of some examples, separated by blank lines, but only the first one will be read.
-
-There are example files called `*.lsd` you just have to execute the program with the name of the file as its parameter.
+Example `*.lsd` files are provided in `examples/`. You just have to execute the program with the name of the file as its parameter.
 
 ## 2D Display interpretation
 
@@ -309,4 +307,5 @@ The rest of the characters will be ignored when displaying.
 - 2D representation
 - 3D representation
 - Music representation?
+- Optimize expressions (getting rid of strings and transforming trivial expressions into values)
 

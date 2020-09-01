@@ -227,7 +227,7 @@ antlrcpp::Any LSysDVisitor::visitTableBlock(LSysDParser::TableBlockContext *ctx)
     Table<char>* table = new Table<char>(tid);
     this->currentTable = table;
     if (this->tables->find(tid) != this->tables->end())
-        this->error("Table with name '" + tid + "' is already defined", ctx->ID());
+        this->error("table with name '" + tid + "' is already defined", ctx->ID());
     (*this->tables)[tid] = table;
     this->tablesList->push_back(table);
     this->visitRules(ctx->rules());
@@ -295,9 +295,9 @@ antlrcpp::Any LSysDVisitor::visitProductionRule(LSysDParser::ProductionRuleConte
                 this->currentTable->addRule(rule);
                 // return rule;
             } else
-                this->error("Production rule reference expected, but a coding rule reference was found", ctx->tag());
+                this->error("production rule reference expected, but a coding rule reference was found", ctx->tag());
         } else
-            this->error("The tag '" + tag + "' does not point to any existing rule", ctx->tag());
+            this->error("the tag '" + tag + "' does not point to any existing rule", ctx->tag());
     }
     return nullptr;
 }
@@ -312,7 +312,7 @@ antlrcpp::Any LSysDVisitor::visitRuleDef(LSysDParser::RuleDefContext *ctx) {
 
 antlrcpp::Any LSysDVisitor::visitProductionRuleDef(LSysDParser::ProductionRuleDefContext *ctx) {
     if (this->currentTable == this->codingRules)
-        this->error("Trying to define a production rule inside a coding rules block", ctx->ARROW());
+        this->error("trying to define a production rule inside a coding rules block", ctx->ARROW());
     else {
         ProductionRule<char>* rule = this->defineRule<ProductionRule<char>>(
             ctx->tagPrefix(), 
@@ -332,9 +332,9 @@ antlrcpp::Any LSysDVisitor::visitProductionRuleDef(LSysDParser::ProductionRuleDe
 
 antlrcpp::Any LSysDVisitor::visitCodingRuleDef(LSysDParser::CodingRuleDefContext *ctx) {
     if (this->currentTable == this->defaultTable)
-        this->error("Trying to define a coding rule inside a production block", ctx->DARROW());
+        this->error("trying to define a coding rule inside a production block", ctx->DARROW());
     else if (this->currentTable && this->currentTable != this->codingRules)
-        this->error("Trying to define a coding rule inside a table block", ctx->DARROW());
+        this->error("trying to define a coding rule inside a table block", ctx->DARROW());
     else {
         CodingRule<char>* rule = this->defineRule<CodingRule<char>>(
             ctx->tagPrefix(), 
@@ -404,7 +404,7 @@ R* LSysDVisitor::defineRule(LSysDParser::TagPrefixContext* tagCtx,
 antlrcpp::Any LSysDVisitor::visitTagPrefix(LSysDParser::TagPrefixContext *ctx) {
     std::string tag = this->visitTag(ctx->tag());
     if (this->taggedRules->find(tag) != this->taggedRules->end())
-        this->error("Tag '" + tag + "' already defined", ctx->tag());
+        this->error("tag '" + tag + "' already defined", ctx->tag());
     return tag;
 }
 
@@ -419,7 +419,7 @@ antlrcpp::Any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
             weight = static_cast<weight_t>(stoi(ctx->INT()->getText()));
         else {
             weight = Rule<char>::WEIGHT_UNSET;
-            this->error("Rule weight must be a decimal number", ctx->INT());
+            this->error("rule weight must be a decimal number", ctx->INT());
         }
     } else
         weight = Rule<char>::WEIGHT_ALWAYS;
@@ -432,8 +432,8 @@ antlrcpp::Any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
     this->visitLChar(ctx->lChar());
     this->parentNode = nullptr;
     if (parent->size() != 1)
-        this->error("Character in the left side of the arrow (excluding contexts) \
-            must be of length 1", ctx->lChar()->validLeftChar());
+        this->error("the left side of the arrow (excluding contexts) must be of length 1", 
+                ctx->lChar()->validLeftChar());
     return parent->leftmostChild();
 }
 

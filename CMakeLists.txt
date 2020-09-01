@@ -357,13 +357,13 @@ endif()
 #   "${PROJECT_SOURCE_DIR}/b2.lsd"
 #   $<TARGET_FILE_DIR:lsysgen>)
 
-# copy the input file next to the generated executable
-foreach( resource_file ${lsysgen_RESOURCES} )
-      add_custom_command(TARGET lsysgen POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${resource_file}
-        $<TARGET_FILE_DIR:lsysgen>)
-endforeach( resource_file ${lsysgen_RESOURCES} )
+# # copy the input file next to the generated executable
+# foreach( resource_file ${lsysgen_RESOURCES} )
+#       add_custom_command(TARGET lsysgen POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#         ${resource_file}
+#         $<TARGET_FILE_DIR:lsysgen>)
+# endforeach( resource_file ${lsysgen_RESOURCES} )
 
 # necessary because the default working directory of Visual Studio
 # is not the same as the one in which the binary is created
@@ -371,11 +371,12 @@ endforeach( resource_file ${lsysgen_RESOURCES} )
 # one for when you launch the executale in Visual Studio (CTRL+F5)
 # one for when you launch it normally
 
-if (WIN32)
-foreach( resource_file ${lsysgen_RESOURCES} )
-      add_custom_command(TARGET lsysgen POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        "${PROJECT_SOURCE_DIR}/b2.lsd"
-        $<TARGET_FILE_DIR:lsysgen>/../)
-endforeach( resource_file ${lsysgen_RESOURCES} )
-endif()
+# # copy the input file next to the generated executable
+# if (WIN32)
+# foreach( resource_file ${lsysgen_RESOURCES} )
+#       add_custom_command(TARGET lsysgen POST_BUILD
+#         COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#         "${PROJECT_SOURCE_DIR}/b2.lsd"
+#         $<TARGET_FILE_DIR:lsysgen>/../)
+# endforeach( resource_file ${lsysgen_RESOURCES} )
+# endif()
