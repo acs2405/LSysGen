@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename>
 class Rule;
@@ -18,7 +18,7 @@ class codingRule;
 #include <string>
 #include <iostream>
 
-namespace lsys {
+namespace lsysgen {
 
 typedef double weight_t;
 

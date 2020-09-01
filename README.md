@@ -66,7 +66,7 @@ Production rules have the syntax:
 [tag:] [(weight)] [left_context<] char [>right_context] -> replacement
 ```
 
-Production rules can be inside `table` blocks, `rules` blocks, inside `production rules` blocks or outside any block:
+Production rules can be inside `table` blocks, `rules` blocks, `production rules` blocks or outside any block:
 
 ```
 rules {
@@ -105,7 +105,7 @@ left_context < char > right_context -> replacement
 ```
 
 or none like DOL's rules.
-A probabilistic l-system can include a weight for each rule (it is not necessary, every rule has a default weight of 1). The syntax is just adding the parenthesized value at the beginning of the rule. For example:
+A probabilistic l-system can include a weight for each rule (when the weight is not defined, a rule has a default weight of 1). The syntax is just adding the parenthesized value at the beginning of the rule. For example:
 
 ```
 (9) a -> a
@@ -113,8 +113,8 @@ A probabilistic l-system can include a weight for each rule (it is not necessary
 (!) a < a -> ba
 ```
 
-In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied, because the special weight ! means that it must be always chosen.
-As you can see, any pair of ambiguous rules can bring non determinism to our l system, even without explicit set of weights. Also, when two rules with ! weight are available for some character, the first will be always applied.
+In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied, because the special weight `!` means that it must be always chosen.
+As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with ! weight are available for some character, the first will be always applied.
 
 For parametric l-systems, you can just add parameters to any character in the left or right. The char to be replaced can define its parameters' names and even define a condition (optional). The right side can specify arguments for its characters, referencing (or not) the left side parameters. For example:
 
@@ -159,23 +159,23 @@ A rule can have in the left hand side the special character '\_' that represents
 (!) a < _ > a -> a
 ```
 
-This means that any character surrounded by `a`s will always be replaced by an `a`.
+means that any character surrounded by `a`s will always be replaced by an `a`. This one:
 
 ```
 b_c < a -> o
 ```
 
-This matches with the `a` of `baca`, `b+ca`, `bbca`, etc.
+matches the `a` of `baca`, `b+ca`, `bbca`, etc.
 
 ### Tables
 
-If you plan to use tables, you first write the line:
+If you plan to use tables, you need to write the line:
 
 ```
 set table_func(i) = <expr>
 ```
 
-where `<expr>` is the expression of the function that decides which table will be used for the i-th iteration. For example:
+where `<expr>` is the expression of the function that decides which table will be used for the `i`-th iteration. For example:
 
 ```
 set table_func(i) =  if i % 5 != 1 then "t1" else "t2"
@@ -216,7 +216,7 @@ R => [-F]
 
 With this rule, the string `FFRFFR` would feed the next iteration but for the graphic representation it would be transformed into `FF[-F]FF[-F]`.
 
-Coding rules can be included in `rules` block, in `coding rules` block or outside any block:
+Coding rules can be included inside `rules` block, `coding rules` block or outside any block:
 
 ```
 a => FFF      # Valid

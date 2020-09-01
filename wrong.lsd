@@ -1,0 +1,24 @@
+
+set axiom = "a"
+set table_func(i) = "t1"
+
+a => FFF        # Valid
+a -> aFa        # Valid
+rules {
+    F -> avd    # Valid
+    v =>        # Valid
+}
+coding rules {
+    #r -> rr     # Invalid
+    r => k      # Valid
+}
+production rules {
+    #k => F-F    # Invalid
+    k<_ -> F-F  # Valid
+}
+table t1 {
+	a -> b      # Valid
+	#b => c      # Invalid
+	#e           # Invalid
+}
+u => [+F]       # Valid

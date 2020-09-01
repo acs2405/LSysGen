@@ -270,7 +270,7 @@ set(lsysgen_SRC
   ${PROJECT_SOURCE_DIR}/ErrorHandler.cpp
   ${PROJECT_SOURCE_DIR}/LSysDVisitor.cpp
   ${PROJECT_SOURCE_DIR}/LSysDExpressionEvaluator.cpp
-  ${PROJECT_SOURCE_DIR}/lsys.cpp
+  ${PROJECT_SOURCE_DIR}/lsysgen.cpp
   ${PROJECT_SOURCE_DIR}/Drawer2D.cpp
   ${lsysgen_GENERATED_SRC}
   )

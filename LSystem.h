@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 class LSystem;
@@ -20,10 +20,12 @@ class LSystem;
 #include <map>
 #include <list>
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 class LSystem {
+    int current;
+
 public:
     Environment* env;
     // LSysDExpressionEvaluator* evaluator;
@@ -42,9 +44,6 @@ public:
 	double initialHeading;
 	double rotation;
 
-    // std::map<std::string, Value>* props;
-
-    int current;
     std::list<ParseTreeNode<InstanceNodeContent, T>*>* progression;
     std::list<ParseTreeNode<InstanceNodeContent, T>*>* encodedProgression;
 

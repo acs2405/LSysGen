@@ -4,7 +4,7 @@
 #include <utility>
 
 
-namespace lsys {
+namespace lsysgen {
 
 std::string _elementToStr(char c) {return std::string(1, c);}
 std::string _elementToStr(std::string s) {return s;}

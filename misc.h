@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 class Parameter;
 class Function;
@@ -30,7 +30,7 @@ class Environment;
 #include <sstream>
 
 
-namespace lsys {
+namespace lsysgen {
 
 // typedef antlrcpp::Any Any;
 
@@ -45,13 +45,14 @@ bool operator==(Parameter const& p1, Parameter const& p2);
 
 
 class Function {
-	std::list<Parameter*>* params;
+	std::list<Parameter*>* _params;
 	LSysDParser::ExpressionContext* expr;
 	antlr4::tree::ParseTree* ctx;
 
 public:
 	Function(std::list<Parameter*>* params, LSysDParser::ExpressionContext* expr, antlr4::tree::ParseTree* ctx);
 	std::string toString();
+	const std::list<Parameter*>* params() const;
 	Value call(std::list<Value>* args);
 };
 

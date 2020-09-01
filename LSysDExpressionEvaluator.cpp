@@ -9,8 +9,8 @@ LSysDExpressionEvaluator::~LSysDExpressionEvaluator() {}
 //     return ctx->getText();
 // }
 
-void LSysDExpressionEvaluator::error(string msg, antlr4::tree::ParseTree* token, int len, int pos) {
-    err(msg, "<expression>", token, len, pos);
+void LSysDExpressionEvaluator::error(std::string msg, antlr4::tree::ParseTree* token, int len, int pos) {
+    err(msg, "<inline>", token, len, pos);
 }
 
 
@@ -101,7 +101,7 @@ antlrcpp::Any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinar
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) {
-    list<Value>* args = this->visitArguments(ctx->arguments());
+    std::list<Value>* args = this->visitArguments(ctx->arguments());
     Value vf = this->visit(ctx->expression());
     if (vf.isFunction()) {
         return vf.asFunction()->call(args);
@@ -182,7 +182,7 @@ antlrcpp::Any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprC
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitArguments(LSysDParser::ArgumentsContext *ctx) {
-    list<Value>* args = new list<Value>();
+    std::list<Value>* args = new std::list<Value>();
     for (LSysDParser::ArgumentContext* argctx : ctx->argument())
         args->push_back(this->visitArgument(argctx));
     return args;
@@ -246,11 +246,11 @@ antlrcpp::Any LSysDExpressionEvaluator::visitArgument(LSysDParser::ArgumentConte
 
 antlrcpp::Any LSysDExpressionEvaluator::visitIntConstant(LSysDParser::IntConstantContext *ctx) {
     int i;
-    if (ctx->INT()->getText().find('x') == string::npos) {
-        i = stoi(ctx->INT()->getText());
+    if (ctx->INT()->getText().find('x') == std::string::npos) {
+        i = std::stoi(ctx->INT()->getText());
     } else {
-        string s = ctx->INT()->getText();
-        i = stoi(s.substr(2), nullptr, 16);
+        std::string s = ctx->INT()->getText();
+        i = std::stoi(s.substr(2), nullptr, 16);
     }
     return Value(i);
 }

@@ -2,7 +2,7 @@
 #include "Rule.h"
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 const weight_t Rule<T>::WEIGHT_ALWAYS = -1.0;
@@ -96,7 +96,7 @@ std::string CodingRule<T>::toString() {
 
 template<typename T>
 std::ostream& operator<<(std::ostream& os, const Rule<T>& r) {
-	return os << r.toString() << endl;
+	return os << r.toString() << std::endl;
 }
 
 

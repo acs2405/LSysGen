@@ -24,8 +24,8 @@ ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::s
     LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, this->env);
     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
 
-    if (this->errors()->size() > 0) {
-        this->dumpErrors();
+    if (visitor.errors()->size() > 0) {
+        visitor.dumpErrors();
         return nullptr;
     }
 
@@ -33,13 +33,13 @@ ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::s
 }
 
 LSysDVisitor::LSysDVisitor(std::string filename, std::vector<std::string>* sourceLines, Environment* env):
-        filename(filename), sourceLines(sourceLines) {
+        filename(filename), sourceLines(sourceLines), parentTrace(nullptr) {
     this->env = env ? new Environment(env) : new Environment();
     this->currentTable = nullptr;
     this->parentNode = nullptr;
-    this->taggedRules = new map<string, Rule<char>*>();
-    this->tables = new map<string, Table<char>*>();
-    this->tablesList = new list<Table<char>*>();
+    this->taggedRules = new std::map<std::string, Rule<char>*>();
+    this->tables = new std::map<std::string, Table<char>*>();
+    this->tablesList = new std::list<Table<char>*>();
     this->codingRules = new Table<char>("<default>");
 }
 
@@ -49,17 +49,17 @@ LSysDVisitor::~LSysDVisitor() {
     // delete this->evaluator;
 }
 
-void LSysDVisitor::error(string const& msg, StackTrace* st) {
+void LSysDVisitor::error(std::string const& msg, StackTrace* st) {
     Error* e = new Error(msg, st);
     this->eh.addError(e);
 }
 
-void LSysDVisitor::error(string const& msg, antlr4::ParserRuleContext* ctx) {
-    this->error(msg, this->trace(ctx));
+void LSysDVisitor::error(std::string const& msg, antlr4::ParserRuleContext* ctx) {
+    this->error(msg, this->trace(ctx, this->parentTrace));
 }
 
-void LSysDVisitor::error(string const& msg, antlr4::tree::TerminalNode* terminal) {
-    this->error(msg, this->trace(terminal->getSymbol()));
+void LSysDVisitor::error(std::string const& msg, antlr4::tree::TerminalNode* terminal) {
+    this->error(msg, this->trace(terminal->getSymbol(), terminal->getSymbol(), this->parentTrace));
 }
 
 // void LSysDVisitor::error(string const& msg, antlr4::Token* tokInit, antlr4::Token* tokEnd) {
@@ -104,10 +104,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
 
     LSystem<char>* lsys;
 
-    if (this->errors()->size() > 0) {
-        this->dumpErrors();
-        lsys = nullptr;
-    } else {
+    if (this->errors()->size() == 0) {
         lsys = new LSystem<char>();
 
         if (ctx->name())
@@ -118,36 +115,59 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         lsys->codingRules = this->codingRules;
         lsys->taggedRules = this->taggedRules;
         if (this->env->has("table_func")) {
-            lsys->tableFunc = this->env->get("table_func").asFunction();
+            Value v = this->env->get("table_func");
+            if (v.isFunction() && v.asFunction()->params()->size() == 1)
+                lsys->tableFunc = v.asFunction();
+            else
+                this->error("table_func must be a function with one parameter");
         }
         if (this->env->has("axiom")) {
-            // std::cout << (this->env->get("axiom").is<std::string>()) << std::endl;
-            // std::cout << (this->env->get("axiom").as<std::string>()) << std::endl;
-            std::string axiom = this->env->get("axiom").asString();
-            lsys->axiom = this->parseInstanceNode(axiom);
+            Value v = this->env->get("axiom");
+            if (v.isString()) {
+                std::string axiom = v.asString();
+                lsys->axiom = this->parseInstanceNode(axiom);
+            } else
+                this->error("axiom must be a string");
         }
         if (this->env->has("iterations")) {
-            lsys->iterations = this->env->get("iterations").asInt();
+            Value v = this->env->get("iterations");
+            if (v.isInt())
+                lsys->iterations = v.asInt();
+            else
+                this->error("iterations must be a integer number");
         }
         if (this->env->has("ignore")) {
-            std::string ignore = this->env->get("ignore").asString();
-            lsys->ignore = new list<char>(ignore.begin(), ignore.end());
+            Value v = this->env->get("ignore");
+            if (v.isString()) {
+                std::string ignore = v.asString();
+                lsys->ignore = new std::list<char>(ignore.begin(), ignore.end());
+            } else
+                this->error("ignore must be a string");
         }
         if (this->env->has("initial_heading")) {
             Value v = this->env->get("initial_heading");
             if (v.isFloat())
-                lsys->initialHeading = this->env->get("initial_heading").asFloat();
+                lsys->initialHeading = v.asFloat();
             else if (v.isInt())
-                lsys->initialHeading = this->env->get("initial_heading").asInt();
+                lsys->initialHeading = v.asInt();
+            else
+                this->error("initial_heading must be a number");
         }
         if (this->env->has("rotation")) {
             Value v = this->env->get("rotation");
             if (v.isFloat())
-                lsys->initialHeading = this->env->get("rotation").asFloat();
+                lsys->initialHeading = v.asFloat();
             else if (v.isInt())
-                lsys->initialHeading = this->env->get("rotation").asInt();
+                lsys->initialHeading = v.asInt();
+            else
+                this->error("rotation must be a number");
         }
         lsys->env = this->env;
+    }
+
+    if (this->errors()->size() > 0) {
+        this->dumpErrors();
+        lsys = nullptr;
     }
 
     return lsys;
@@ -162,12 +182,12 @@ antlrcpp::Any LSysDVisitor::visitDefinitions(LSysDParser::DefinitionsContext *ct
 }
 
 antlrcpp::Any LSysDVisitor::visitDefinition(LSysDParser::DefinitionContext *ctx) {
-    if (ctx->ruleDef()) {
-        this->currentTable = this->defaultTable;
-        this->visitRuleDef(ctx->ruleDef());
-        this->currentTable = nullptr;
-        return antlrcpp::Any();
-    }
+    // if (ctx->ruleDef()) {
+    //     this->currentTable = this->defaultTable;
+    //     this->visitRuleDef(ctx->ruleDef());
+    //     this->currentTable = nullptr;
+    //     return nullptr;
+    // }
     return visitChildren(ctx);
 }
 
@@ -184,17 +204,17 @@ antlrcpp::Any LSysDVisitor::visitPropDef(LSysDParser::PropDefContext *ctx) {
     // std::cout << (val2.is<std::string*>()) << std::endl;
     // std::cout << (this->env->get(pname).is<std::string*>()) << std::endl;
     // std::cout << *(val2.as<std::string*>()) << std::endl;
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
-    string fname = ctx->ID()->getText();
+    std::string fname = ctx->ID()->getText();
     if (this->env->has(fname))
         this->error("'" + fname + "' field already defined", ctx->ID());
     // LSysDParser::ExpressionContext* expr = ctx->expression();
-    list<Parameter*>* params = this->visitParams(ctx->params());
+    std::list<Parameter*>* params = this->visitParams(ctx->params());
     this->env->set(fname, new Function(params, ctx->expression(), ctx));
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 // antlrcpp::Any LSysDVisitor::visitConstDef(LSysDParser::ConstDefContext *ctx) {
@@ -202,7 +222,8 @@ antlrcpp::Any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
 // }
 
 antlrcpp::Any LSysDVisitor::visitTableBlock(LSysDParser::TableBlockContext *ctx) {
-    string tid = ctx->ID()->getText();
+    this->parentTrace = this->trace(ctx->KWTABLE()->getSymbol(), ctx->ID()->getSymbol(), this->parentTrace);
+    std::string tid = ctx->ID()->getText();
     Table<char>* table = new Table<char>(tid);
     this->currentTable = table;
     if (this->tables->find(tid) != this->tables->end())
@@ -212,28 +233,35 @@ antlrcpp::Any LSysDVisitor::visitTableBlock(LSysDParser::TableBlockContext *ctx)
     this->visitRules(ctx->rules());
     // table->rules = rules;
     this->currentTable = nullptr;
-    return antlrcpp::Any();
+    this->parentTrace = nullptr;
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitRulesBlock(LSysDParser::RulesBlockContext *ctx) {
-    this->currentTable = this->defaultTable;
+    this->parentTrace = this->trace(ctx->KWRULES()->getSymbol(), ctx->KWRULES()->getSymbol(), this->parentTrace);
+    // this->currentTable = this->defaultTable;
     this->visitRuleDefs(ctx->ruleDefs());
-    this->currentTable = nullptr;
-    return antlrcpp::Any();
+    // this->currentTable = nullptr;
+    this->parentTrace = nullptr;
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitProductionRulesBlock(LSysDParser::ProductionRulesBlockContext *ctx) {
+    this->parentTrace = this->trace(ctx->KWPRODUCTION()->getSymbol(), ctx->KWRULES()->getSymbol(), this->parentTrace);
     this->currentTable = this->defaultTable;
-    this->visitProductionRuleDefs(ctx->productionRuleDefs());
+    this->visitRuleDefs(ctx->ruleDefs());
     this->currentTable = nullptr;
-    return antlrcpp::Any();
+    this->parentTrace = nullptr;
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitCodingRulesBlock(LSysDParser::CodingRulesBlockContext *ctx) {
+    this->parentTrace = this->trace(ctx->KWCODING()->getSymbol(), ctx->KWRULES()->getSymbol(), this->parentTrace);
     this->currentTable = this->codingRules;
-    this->visitCodingRuleDefs(ctx->codingRuleDefs());
+    this->visitRuleDefs(ctx->ruleDefs());
     this->currentTable = nullptr;
-    return antlrcpp::Any();
+    this->parentTrace = nullptr;
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitRules(LSysDParser::RulesContext *ctx) {
@@ -271,7 +299,7 @@ antlrcpp::Any LSysDVisitor::visitProductionRule(LSysDParser::ProductionRuleConte
         } else
             this->error("The tag '" + tag + "' does not point to any existing rule", ctx->tag());
     }
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitCodingRule(LSysDParser::CodingRuleContext *ctx) {
@@ -283,30 +311,42 @@ antlrcpp::Any LSysDVisitor::visitRuleDef(LSysDParser::RuleDefContext *ctx) {
 }
 
 antlrcpp::Any LSysDVisitor::visitProductionRuleDef(LSysDParser::ProductionRuleDefContext *ctx) {
-    ProductionRule<char>* rule = this->defineRule<ProductionRule<char>>(
-        ctx->tagPrefix(), 
-        ctx->weight(), 
-        ctx->lcontext(), 
-        ctx->lside(), 
-        ctx->rcontext(), 
-        ctx->rside()
-    );
-    if (this->currentTable)
-        this->currentTable->addRule(reinterpret_cast<Rule<char>*>(rule));
-    return antlrcpp::Any();
+    if (this->currentTable == this->codingRules)
+        this->error("Trying to define a production rule inside a coding rules block", ctx->ARROW());
+    else {
+        ProductionRule<char>* rule = this->defineRule<ProductionRule<char>>(
+            ctx->tagPrefix(), 
+            ctx->weight(), 
+            ctx->lcontext(), 
+            ctx->lside(), 
+            ctx->rcontext(), 
+            ctx->rside()
+        );
+        Table<char>* t = this->currentTable;
+        if (t == nullptr)
+            t = this->defaultTable;
+        t->addRule(reinterpret_cast<Rule<char>*>(rule));
+    }
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitCodingRuleDef(LSysDParser::CodingRuleDefContext *ctx) {
-    CodingRule<char>* rule = this->defineRule<CodingRule<char>>(
-        ctx->tagPrefix(), 
-        ctx->weight(), 
-        ctx->lcontext(), 
-        ctx->lside(), 
-        ctx->rcontext(), 
-        ctx->rside()
-    );
-    this->codingRules->addRule(reinterpret_cast<Rule<char>*>(rule));
-    return antlrcpp::Any();
+    if (this->currentTable == this->defaultTable)
+        this->error("Trying to define a coding rule inside a production block", ctx->DARROW());
+    else if (this->currentTable && this->currentTable != this->codingRules)
+        this->error("Trying to define a coding rule inside a table block", ctx->DARROW());
+    else {
+        CodingRule<char>* rule = this->defineRule<CodingRule<char>>(
+            ctx->tagPrefix(), 
+            ctx->weight(), 
+            ctx->lcontext(), 
+            ctx->lside(), 
+            ctx->rcontext(), 
+            ctx->rside()
+        );
+        this->codingRules->addRule(reinterpret_cast<Rule<char>*>(rule));
+    }
+    return nullptr;
 }
 
 
@@ -365,17 +405,17 @@ antlrcpp::Any LSysDVisitor::visitTagPrefix(LSysDParser::TagPrefixContext *ctx) {
     std::string tag = this->visitTag(ctx->tag());
     if (this->taggedRules->find(tag) != this->taggedRules->end())
         this->error("Tag '" + tag + "' already defined", ctx->tag());
-    return antlrcpp::Any(tag);
+    return tag;
 }
 
 antlrcpp::Any LSysDVisitor::visitTag(LSysDParser::TagContext *ctx) {
-    return antlrcpp::Any(ctx->ID()->getText());
+    return ctx->ID()->getText();
 }
 
 antlrcpp::Any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
     weight_t weight;
     if (ctx->INT()) {
-        if (ctx->INT()->getText().find('x') == string::npos)
+        if (ctx->INT()->getText().find('x') == std::string::npos)
             weight = static_cast<weight_t>(stoi(ctx->INT()->getText()));
         else {
             weight = Rule<char>::WEIGHT_UNSET;
@@ -383,7 +423,7 @@ antlrcpp::Any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
         }
     } else
         weight = Rule<char>::WEIGHT_ALWAYS;
-    return antlrcpp::Any(weight);
+    return weight;
 }
 
 antlrcpp::Any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
@@ -394,7 +434,7 @@ antlrcpp::Any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
     if (parent->size() != 1)
         this->error("Character in the left side of the arrow (excluding contexts) \
             must be of length 1", ctx->lChar()->validLeftChar());
-    return antlrcpp::Any(parent->leftmostChild());
+    return parent->leftmostChild();
 }
 
 antlrcpp::Any LSysDVisitor::visitLcontext(LSysDParser::LcontextContext *ctx) {
@@ -403,7 +443,7 @@ antlrcpp::Any LSysDVisitor::visitLcontext(LSysDParser::LcontextContext *ctx) {
     for (LSysDParser::LItemContext* lictx : ctx->lItem())
         this->visitLItem(lictx);
     this->parentNode = nullptr;
-    return antlrcpp::Any(parent);
+    return parent;
 }
 
 antlrcpp::Any LSysDVisitor::visitRcontext(LSysDParser::RcontextContext *ctx) {
@@ -412,7 +452,7 @@ antlrcpp::Any LSysDVisitor::visitRcontext(LSysDParser::RcontextContext *ctx) {
     for (LSysDParser::LItemContext* lictx : ctx->lItem())
         this->visitLItem(lictx);
     this->parentNode = nullptr;
-    return antlrcpp::Any(parent);
+    return parent;
 }
 
 antlrcpp::Any LSysDVisitor::visitRside(LSysDParser::RsideContext *ctx) {
@@ -421,7 +461,7 @@ antlrcpp::Any LSysDVisitor::visitRside(LSysDParser::RsideContext *ctx) {
     for (LSysDParser::RItemContext* rictx : ctx->rItem())
         this->visitRItem(rictx);
     this->parentNode = nullptr;
-    return antlrcpp::Any(parent);
+    return parent;
 }
 
 antlrcpp::Any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
@@ -430,14 +470,14 @@ antlrcpp::Any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
     for (LSysDParser::RItemContext* rictx : ctx->rItem())
         this->visitRItem(rictx);
     this->parentNode = nullptr;
-    return antlrcpp::Any(parent);
+    return parent;
 }
 
 antlrcpp::Any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
     this->visitValidLeftChar(ctx->validLeftChar());
     if (ctx->paramsWithCond()) {
         auto paramsCond = this->visitParamsWithCond(ctx->paramsWithCond())
-            .as<pair<list<Parameter*>*, LSysDParser::ExpressionContext*>>();
+            .as<std::pair<std::list<Parameter*>*, LSysDParser::ExpressionContext*>>();
         ParseTreeNode<LeftSideNodeContent, char>* rgt = 
                 reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
                     this->parentNode->rightmostChild());
@@ -445,14 +485,14 @@ antlrcpp::Any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
         if (paramsCond.second != nullptr)
             rgt->content()->cond = paramsCond.second;
     }
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitLItem(LSysDParser::LItemContext *ctx) {
     if (ctx->validLeftChar()) {
         this->visitValidLeftChar(ctx->validLeftChar());
         if (ctx->paramsWithCond()) {
-            pair<list<Parameter*>*, LSysDParser::ExpressionContext*> paramsCond = 
+            std::pair<std::list<Parameter*>*, LSysDParser::ExpressionContext*> paramsCond = 
                     this->visitParamsWithCond(ctx->paramsWithCond());
             ParseTreeNode<LeftSideNodeContent, char>* rgt = 
                     reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
@@ -469,14 +509,14 @@ antlrcpp::Any LSysDVisitor::visitLItem(LSysDParser::LItemContext *ctx) {
             this->visitLItem(lictx);
         this->parentNode = node->parent()->asGeneric();
     }
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
     if (ctx->validRightChar()) {
         this->visitValidRightChar(ctx->validRightChar());
         if (ctx->args()) {
-            list<LSysDParser::ExpressionContext*>* args = this->visitArgs(ctx->args());
+            std::list<LSysDParser::ExpressionContext*>* args = this->visitArgs(ctx->args());
             ParseTreeNode<NodeContent, char>* rgt = this->parentNode->rightmostChild();
             if (!this->parentNode->isInstance()) {
                 reinterpret_cast<RightSideNodeContent<char>*>(rgt->content())->args = args;
@@ -500,7 +540,7 @@ antlrcpp::Any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
             this->visitRItem(rictx);
         this->parentNode = node->parent();
     }
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) {
@@ -509,7 +549,7 @@ antlrcpp::Any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext
         ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>(c);
         this->parentNode->addChild(node->asGeneric());
     }
-    return antlrcpp::Any();
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) {
@@ -534,7 +574,7 @@ antlrcpp::Any LSysDVisitor::visitValidChar(LSysDParser::ValidCharContext *ctx) {
 }
 
 antlrcpp::Any LSysDVisitor::visitParamsWithCond(LSysDParser::ParamsWithCondContext *ctx) {
-    list<Parameter*>* params = this->visitParams(ctx->params());
+    std::list<Parameter*>* params = this->visitParams(ctx->params());
     LSysDParser::ExpressionContext* cond;
     if (ctx->cond())
         cond = this->visitCond(ctx->cond());
@@ -544,7 +584,7 @@ antlrcpp::Any LSysDVisitor::visitParamsWithCond(LSysDParser::ParamsWithCondConte
 }
 
 antlrcpp::Any LSysDVisitor::visitParams(LSysDParser::ParamsContext *ctx) {
-    list<Parameter*>* params = new list<Parameter*>();
+    std::list<Parameter*>* params = new std::list<Parameter*>();
     for (LSysDParser::ParamContext* paramctx : ctx->param())
         params->push_back(this->visitParam(paramctx));
     return params;
@@ -559,7 +599,7 @@ antlrcpp::Any LSysDVisitor::visitCond(LSysDParser::CondContext *ctx) {
 }
 
 antlrcpp::Any LSysDVisitor::visitArgs(LSysDParser::ArgsContext *ctx) {
-    list<LSysDParser::ExpressionContext*>* args = new list<LSysDParser::ExpressionContext*>();
+    std::list<LSysDParser::ExpressionContext*>* args = new std::list<LSysDParser::ExpressionContext*>();
     for (LSysDParser::ArgContext* argctx : ctx->arg())
         args->push_back(this->visitArg(argctx));
     return args;

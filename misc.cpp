@@ -5,7 +5,7 @@
 #include <chrono>
 
 
-namespace lsys {
+namespace lsysgen {
 
 Parameter::Parameter(std::string const& name): name(name) {}
 
@@ -16,12 +16,14 @@ bool operator==(Parameter const& p1, Parameter const& p2) {return p1.name == p2.
 Function::Function(std::list<Parameter*>* params, 
             LSysDParser::ExpressionContext* expr, 
             antlr4::tree::ParseTree* ctx):
-        params(params), expr(expr), ctx(ctx) {}
+        _params(params), expr(expr), ctx(ctx) {}
+
+const std::list<Parameter*>* Function::params() const {return this->_params;}
 
 std::string Function::toString() {
     std::string s = "(";
-    for (auto it = this->params->begin(); it != this->params->end(); ++it) {
-        if (it != this->params->begin())
+    for (auto it = this->_params->begin(); it != this->_params->end(); ++it) {
+        if (it != this->_params->begin())
             s += ", ";
         s += (*it)->name;
     }
@@ -31,13 +33,13 @@ std::string Function::toString() {
 
 Value Function::call(std::list<Value>* args) {
     Environment *paramMapping = new Environment();
-    if ((args == nullptr && this->params != nullptr && this->params->size() > 0) || 
-        (args != nullptr && this->params != nullptr && this->params->size() != args->size()))
+    if ((args == nullptr && this->_params != nullptr && this->_params->size() > 0) || 
+        (args != nullptr && this->_params != nullptr && this->_params->size() != args->size()))
         return Value::error();
     std::list<Parameter*>::iterator param;
     std::list<Value>::iterator arg;
-    for (param = this->params->begin(), arg = args->begin();
-            param != this->params->end();
+    for (param = this->_params->begin(), arg = args->begin();
+            param != this->_params->end();
             ++param, ++arg)
         paramMapping->set((*param)->name, *arg);
     return eval(this->expr, paramMapping); 

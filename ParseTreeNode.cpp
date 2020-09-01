@@ -2,7 +2,7 @@
 #include "ParseTreeNode.h"
 
 
-namespace lsys {
+namespace lsysgen {
 
 bool _isVoid(char const& c) {return !c;}
 bool _isVoid(std::string const& s) {return !s.size();}

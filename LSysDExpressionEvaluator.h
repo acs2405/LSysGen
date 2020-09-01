@@ -10,13 +10,12 @@
 #include <string>
 #include <iostream>
 
-using namespace std;
-using namespace lsys;
+using namespace lsysgen;
 
 class LSysDExpressionEvaluator: public LSysDParserBaseVisitor {
     Environment* env;
 
-    void error(string msg, antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);
+    void error(std::string msg, antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);
 public:
     LSysDExpressionEvaluator();
 

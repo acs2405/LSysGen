@@ -2,6 +2,8 @@
 #include "Drawer2D.h"
 
 
+namespace lsysgen {
+
 Drawer2D::Drawer2D(LSystem<char>* lsystem): lsystem(lsystem) {}
 
 void display() {
@@ -30,4 +32,6 @@ void Drawer2D::prepare(int argc, char** argv) {
 
 void Drawer2D::draw() {
    glutMainLoop();           // Enter the event-processing loop
+}
+
 }

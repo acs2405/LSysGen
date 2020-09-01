@@ -58,11 +58,11 @@ rulesBlock
   ;
 
 productionRulesBlock
-  : KWPRODUCTION nl? KWRULES nl? LBRACE productionRuleDefs RBRACE
+  : KWPRODUCTION nl? KWRULES nl? LBRACE ruleDefs RBRACE
   ;
 
 codingRulesBlock
-  : KWCODING nl? KWRULES nl? LBRACE codingRuleDefs RBRACE
+  : KWCODING nl? KWRULES nl? LBRACE ruleDefs RBRACE
   ;
 
 rules

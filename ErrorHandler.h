@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 class ErrorHandler;
 class Error;
@@ -21,7 +21,7 @@ class StackTrace;
 #include <regex>
 
 
-namespace lsys {
+namespace lsysgen {
 
 class ErrorHandler {
 	std::list<Error*>* _errors;

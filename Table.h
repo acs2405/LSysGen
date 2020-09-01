@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename>
 class Table;
@@ -17,11 +17,11 @@ class Table;
 #include <list>
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 class Table {
-	std::map<T, std::list<Rule<T>*>*>* rules;
+	std::map<T, std::list<Rule<T>*>*>* _rules;
 
 public:
 	const std::string name;
@@ -29,6 +29,8 @@ public:
 	Table(std::string const& name);
 
 	~Table();
+
+	int size() const;
 
 	void addRule(Rule<T>* r);
 

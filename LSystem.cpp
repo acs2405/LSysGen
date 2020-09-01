@@ -1,7 +1,7 @@
 
 #include "LSystem.h"
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 LSystem<T>::LSystem(): env(nullptr), name(""), tables(nullptr), defaultTable(nullptr), 
@@ -9,7 +9,6 @@ LSystem<T>::LSystem(): env(nullptr), name(""), tables(nullptr), defaultTable(nul
         iterations(0), initialHeading(0.0), rotation(0.0), current(-1) {
     this->progression = new std::list<ParseTreeNode<InstanceNodeContent, T>*>();
     this->encodedProgression = new std::list<ParseTreeNode<InstanceNodeContent, T>*>();
-    this->ignore = new std::list<T>();
 }
 
 template<typename T>
@@ -18,6 +17,10 @@ LSystem<T>::~LSystem() {}
 template<typename T>
 void LSystem<T>::prepare() {
     if (this->current < 0) {
+        if (this->axiom == nullptr)
+            this->axiom = new ParseTreeNode<InstanceNodeContent, T>();
+        if (this->ignore == nullptr)
+            this->ignore = new std::list<T>();
         this->current = 0;
         // this->axiom = this->parser.parseWord(this->axiom, this->environment());
         this->progression->push_back(this->axiom);  // seed

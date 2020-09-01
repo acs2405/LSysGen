@@ -1,5 +1,5 @@
 
-#include "lsys.h"
+#include "lsysgen.h"
 
 #include <streambuf>
 #include <sstream>
@@ -41,13 +41,13 @@ int main(int argc, char** argv) {
 
     // g2D_prepare(argc, argv);
 
-    lsys::LSystem<char>* lsystem = parseLSystem(argv[1]);
+    lsysgen::LSystem<char>* lsystem = parseLSystem(argv[1]);
 
     if (lsystem == nullptr)
         exit(1);
 
     if (argc == 3) {
-        int n = stoi(argv[2]);
+        int n = std::stoi(argv[2]);
         lsystem->iterations = n;
     }
 
@@ -55,19 +55,19 @@ int main(int argc, char** argv) {
     lsystem->iterate();
 
     // int i = 0;
-    // for (lsys::ParseTreeNode<lsys::InstanceNodeContent, char>* iteration : *lsystem->encodedProgression) {
+    // for (lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* iteration : *lsystem->encodedProgression) {
     //     std::cout << i++ << ": " << iteration->toString() << std::endl;
     // }
     std::cout << lsystem->encodedProgression->back()->toString() << std::endl;
 
-    Drawer2D drawer(lsystem);
-    drawer.prepare(argc, argv);
-    drawer.draw();
+    // lsysgen::Drawer2D drawer(lsystem);
+    // drawer.prepare(argc, argv);
+    // drawer.draw();
 
     return 0;
 }
 
-lsys::LSystem<char>* parseLSystem(std::string file) {
+lsysgen::LSystem<char>* parseLSystem(std::string file) {
     if (file == "-") {
         return parseLSystem(file, std::cin);
     } else {
@@ -82,7 +82,7 @@ lsys::LSystem<char>* parseLSystem(std::string file) {
     // std::cout << file << std::endl;
 }
 
-lsys::LSystem<char>* parseLSystem(std::string file, std::istream& stream) {
+lsysgen::LSystem<char>* parseLSystem(std::string file, std::istream& stream) {
 
     std::string fileContents((std::istreambuf_iterator<char>(stream)),
                  std::istreambuf_iterator<char>());
@@ -114,7 +114,7 @@ lsys::LSystem<char>* parseLSystem(std::string file, std::istream& stream) {
     // tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
     
     LSysDVisitor* visitor = new LSysDVisitor(file, lines);
-    lsys::LSystem<char>* lsystem = visitor->visit(tree);
+    lsysgen::LSystem<char>* lsystem = visitor->visit(tree);
 
     // std::list<Error*> *errs = visitor->getErrors();
     // std::cerr << errs->size() << " errors" << std::endl;

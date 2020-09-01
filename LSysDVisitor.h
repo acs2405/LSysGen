@@ -15,31 +15,29 @@
 #include <list>
 #include <vector>
 
-using namespace std;
-using namespace lsys;
+using namespace lsysgen;
 
 class LSysDVisitor: public LSysDParserBaseVisitor {
     Environment* env;
-    // map<string, Function*>* funcs;
-    // map<string, Value>* props;
-    map<string, Rule<char>*>* taggedRules;
+    std::map<std::string, Rule<char>*>* taggedRules;
     Table<char>* codingRules;
     Table<char>* defaultTable;
-    map<string, Table<char>*>* tables;
-    list<Table<char>*>* tablesList;
+    std::map<std::string, Table<char>*>* tables;
+    std::list<Table<char>*>* tablesList;
 
     Table<char>* currentTable;
     ParseTreeNode<NodeContent, char>* parentNode;
 
     std::vector<std::string>* sourceLines;
     std::string filename;
+    StackTrace* parentTrace;
     ErrorHandler eh;
 
     // Environment* getEnvironment();
     // Value eval(LSysDParser::ExpressionContext* ctx);
-    void error(string const& msg, StackTrace* st=nullptr);
-    void error(string const& msg, antlr4::ParserRuleContext* ctx);
-    void error(string const& msg, antlr4::tree::TerminalNode* terminal);
+    void error(std::string const& msg, StackTrace* st=nullptr);
+    void error(std::string const& msg, antlr4::ParserRuleContext* ctx);
+    void error(std::string const& msg, antlr4::tree::TerminalNode* terminal);
     StackTrace* trace(antlr4::Token* tokInit, antlr4::Token* tokEnd=nullptr, StackTrace* parent=nullptr);
     StackTrace* trace(antlr4::ParserRuleContext* token, StackTrace* parent=nullptr);
 
@@ -54,7 +52,7 @@ public:
 
     ~LSysDVisitor();
 
-    ParseTreeNode<InstanceNodeContent, char>* parseInstanceNode(string s);
+    ParseTreeNode<InstanceNodeContent, char>* parseInstanceNode(std::string s);
 
     const std::list<Error*>* errors() const;
 

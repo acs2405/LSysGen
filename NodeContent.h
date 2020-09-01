@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 class NodeContent;
@@ -29,7 +29,7 @@ class InstanceNodeContent;
 #include <list>
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<typename T>
 class NodeContent {

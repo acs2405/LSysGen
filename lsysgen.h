@@ -15,6 +15,6 @@
 
 int main(int argc, char** argv);
 
-lsys::LSystem<char>* parseLSystem(std::string file);
+lsysgen::LSystem<char>* parseLSystem(std::string file);
 
-lsys::LSystem<char>* parseLSystem(std::string file, std::istream& stream);
+lsysgen::LSystem<char>* parseLSystem(std::string file, std::istream& stream);

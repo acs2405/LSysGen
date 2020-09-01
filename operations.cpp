@@ -4,7 +4,7 @@
 
 #include <cmath>
 
-namespace lsys {
+namespace lsysgen {
 
 Value op_error(std::string op, Value const& op1, Value const& op2) {
 	if (!op1.isError() && !op2.isError())

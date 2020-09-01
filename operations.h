@@ -8,7 +8,7 @@
 #include <iostream>
 
 
-namespace lsys {
+namespace lsysgen {
 
 Value op_add(Value const& op1, Value const& op2);
 Value op_sub(Value const& op1, Value const& op2);

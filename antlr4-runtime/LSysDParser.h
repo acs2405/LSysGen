@@ -275,7 +275,7 @@ public:
     antlr4::tree::TerminalNode *KWPRODUCTION();
     antlr4::tree::TerminalNode *KWRULES();
     antlr4::tree::TerminalNode *LBRACE();
-    ProductionRuleDefsContext *productionRuleDefs();
+    RuleDefsContext *ruleDefs();
     antlr4::tree::TerminalNode *RBRACE();
     std::vector<NlContext *> nl();
     NlContext* nl(size_t i);
@@ -293,7 +293,7 @@ public:
     antlr4::tree::TerminalNode *KWCODING();
     antlr4::tree::TerminalNode *KWRULES();
     antlr4::tree::TerminalNode *LBRACE();
-    CodingRuleDefsContext *codingRuleDefs();
+    RuleDefsContext *ruleDefs();
     antlr4::tree::TerminalNode *RBRACE();
     std::vector<NlContext *> nl();
     NlContext* nl(size_t i);

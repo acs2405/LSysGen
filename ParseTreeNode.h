@@ -2,7 +2,7 @@
 #pragma once
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<template<typename> typename C, typename T>
 class ParseTreeNode;
@@ -15,7 +15,7 @@ class ParseTreeNode;
 #include <iostream>
 
 
-namespace lsys {
+namespace lsysgen {
 
 template<template<typename> typename C, typename T>
 class ParseTreeNode {

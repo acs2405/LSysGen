@@ -2,7 +2,7 @@
 #include "ErrorHandler.h"
 
 
-namespace lsys {
+namespace lsysgen {
 
 ErrorHandler::ErrorHandler() {
     this->_errors = new std::list<Error*>();
