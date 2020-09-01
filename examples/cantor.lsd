@@ -1,0 +1,19 @@
+
+lsystem CantorSet
+
+set axiom = 'A';
+set iterations = 5;
+set rotation = 90;
+set initial_heading = 90;
+
+rules {
+
+	A->[+AaA]FFF
+	a->[+aaa]fff
+	F->FFF
+	f->fff
+
+	A=>F
+	a=>f
+
+}

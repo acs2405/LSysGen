@@ -12,7 +12,7 @@ main
   ;
 
 sep
-  : SEMI+ | NEW_LINE+
+  : (SEMI | NEW_LINE)+
   ;
 
 nl
