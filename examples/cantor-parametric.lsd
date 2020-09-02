@@ -1,20 +1,21 @@
 
 lsystem ParametricCantorSet
 
-set axiom = 'S';
+set axiom = 'S(1)';
 set iterations = 5;
 set rotation = 90;
-set initial_heading = 90;
+set initial_heading = 0;
 
 rules {
 
-	S -> [bSa(1)S]A(3)
+	S(n) -> [b(n+1)S(n+1)a(1)S(n+1)]A(3)
 	A(l) -> A(3*l)
 	a(l) -> a(3*l)
+	b(n) -> b(n+1)
 
 	S => F
 	A(l) => F(l)
 	a(l) => f(l)
-	b => +f-
+	b(n) => +f(3**n/128)-
 
 }

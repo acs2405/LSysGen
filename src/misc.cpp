@@ -258,7 +258,7 @@ ParseTreeNode<InstanceNodeContent, T>* evaluateRightNode(const ParseTreeNode<Rig
     ParseTreeNode<InstanceNodeContent, T>* instanceNode = new ParseTreeNode<InstanceNodeContent, T>(node->element(), node->type());
     if (node->isLeaf()) {
         if (node->content()->args != nullptr) {
-            std::list<Value>* values = new std::list<Value>();
+            std::vector<Value>* values = new std::vector<Value>();
             for (LSysDParser::ExpressionContext* arg : *node->content()->args)
                 values->push_back(eval(arg, paramMapping));
             instanceNode->content()->values = values;
@@ -324,20 +324,20 @@ ParseTreeNode<InstanceNodeContent, T>* derive(ParseTreeNode<InstanceNodeContent,
 }
 template ParseTreeNode<InstanceNodeContent, char>* derive(ParseTreeNode<InstanceNodeContent, char>* node, Table<char>* table, std::list<char>* ignore, Environment* env);
 
-Environment* mapArgs(std::list<Value>* args, std::list<Parameter*>* params, Environment* paramMapping) {
-    // std::cout << "HERE with params " << params << " and args " << args << std::endl;
+Environment* mapArgs(std::vector<Value>* values, std::list<Parameter*>* params, Environment* paramMapping) {
+    // std::cout << "HERE with params " << params << " and args " << values << std::endl;
     if (params != nullptr) {
         // for param in params:
         //     if param in paramMapping:
         //         print("%s parameter is repeated" % param)
-        if (args == nullptr || params->size() != args->size())
+        if (values == nullptr || params->size() != values->size())
             return nullptr;
         std::list<Parameter*>::iterator param;
-        std::list<Value>::iterator arg;
-        for (param = params->begin(), arg = args->begin();
-                param != params->end() && arg != args->end();
-                ++param, ++arg) {
-            paramMapping->set((*param)->name, *arg);
+        std::vector<Value>::iterator value;
+        for (param = params->begin(), value = values->begin();
+                param != params->end() && value != values->end();
+                ++param, ++value) {
+            paramMapping->set((*param)->name, *value);
         }
     }
     return paramMapping;

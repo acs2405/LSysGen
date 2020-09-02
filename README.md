@@ -285,14 +285,6 @@ Example `*.lsd` files are provided in `examples/`. You just have to execute the 
 
 The state is a position, heading and color configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
 
-- `w` for white.
-- `k` for black.
-- `r` for red.
-- `g` for green.
-- `b` for blue.
-
-These fixed color characters stablish the pen and fill color until the end of the current branch or until it is changed again.
-
 - `c("#RRGGBB")` or `c(r, g, b)` changes the pen and fill color to the specified by the parameter(s) until the end of the current branch or until it is changed again.
 - `n` works as `c` but only with pen color.
 - `l` works as `c` but only with fill color.

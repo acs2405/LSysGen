@@ -25,8 +25,8 @@ class InstanceNodeContent;
 
 #include <string>
 #include <iostream>
-// #include <map>
 #include <list>
+#include <vector>
 
 
 namespace lsysgen {
@@ -101,7 +101,7 @@ public:
 template<typename T>
 class InstanceNodeContent : public NodeContent<T> {
 public:
-	std::list<Value>* values;
+	std::vector<Value>* values;
 
 	InstanceNodeContent();
 	InstanceNodeContent(T const& element);

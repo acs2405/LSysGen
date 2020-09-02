@@ -1,10 +1,10 @@
 
 lsystem SierpinskiTriangle
 
-set axiom = "F-G-G"
+set axiom = "l(255, 0, 0)PF-G-Gp"
 set iterations = 6
 set initial_heading = 0
-set rotation = 120
+set rotation = -120
 
 rules {
 	F -> F-G+F+G-F

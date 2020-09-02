@@ -33,9 +33,9 @@ int main(int argc, char** argv) {
     // }
     std::cout << lsystem->encodedProgression->back()->toString() << std::endl;
 
-    // lsysgen::Drawer2D drawer(lsystem);
-    // drawer.prepare(argc, argv);
-    // drawer.draw();
+    lsysgen::Drawer2D drawer(lsystem);
+    drawer.prepare(argc, argv);
+    drawer.draw();
 
     return 0;
 }

@@ -25,6 +25,7 @@ class Environment;
 #include <iostream>
 #include <map>
 #include <list>
+#include <vector>
 #include <regex>
 #include <utility>
 #include <sstream>
@@ -165,6 +166,8 @@ ParseTreeNode<InstanceNodeContent, T>* evaluateRightNode(const ParseTreeNode<Rig
 
 template<typename T>
 ParseTreeNode<InstanceNodeContent, T>* derive(ParseTreeNode<InstanceNodeContent, T>* node, Table<T>* table, std::list<T>* ignore=nullptr, Environment* env=nullptr);
+
+Environment* mapArgs(std::vector<Value>* values, std::list<Parameter*>* params, Environment* paramMapping);
 
 bool checkCondition(LSysDParser::ExpressionContext* cond, Environment* paramMapping);
 

@@ -4,7 +4,7 @@ lsystem CantorSet
 set axiom = 'S';
 set iterations = 5;
 set rotation = 90;
-set initial_heading = 90;
+set initial_heading = 0;
 
 rules {
 

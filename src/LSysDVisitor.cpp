@@ -156,9 +156,9 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         if (this->env->has("rotation")) {
             Value v = this->env->get("rotation");
             if (v.isFloat())
-                lsys->initialHeading = v.asFloat();
+                lsys->rotation = v.asFloat();
             else if (v.isInt())
-                lsys->initialHeading = v.asInt();
+                lsys->rotation = v.asInt();
             else
                 this->error("rotation must be a number");
         }
@@ -521,7 +521,7 @@ antlrcpp::Any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
             if (!this->parentNode->isInstance()) {
                 reinterpret_cast<RightSideNodeContent<char>*>(rgt->content())->args = args;
             } else {
-                std::list<Value>* values = new std::list<Value>();
+                std::vector<Value>* values = new std::vector<Value>();
                 for (LSysDParser::ExpressionContext* exprctx : *args)
                     values->push_back(eval(exprctx, this->env));
                 delete args;
