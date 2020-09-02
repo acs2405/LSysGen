@@ -1,12 +1,18 @@
 
 #include "Drawer2D.h"
 
+// #include "FreeImage.h"
+
 #include <math.h>
 #include <vector>
+// #include <gl2ps.h>
 
 
 namespace lsysgen {
 
+#ifndef M_PI
+#define M_PI std::atan(1)*4
+#endif
 // constexpr double pi() { return std::atan(1)*4; }
 
 class Drawer2DDisplayer {
@@ -14,6 +20,10 @@ public:
     static Drawer2D* drawer;
 
     static void display() {drawer->display();}
+    static void reshape(GLsizei width, GLsizei height) {drawer->reshape(width, height);}
+    static void click(int button, int state, int x, int y) {drawer->click(button, state, x, y);}
+    static void keyPressed(unsigned char key, int x, int y) {drawer->keyPressed(key, x, y);}
+    static void specialKeyPressed(int key, int x, int y) {drawer->specialKeyPressed(key, x, y);}
 };
 Drawer2D* Drawer2DDisplayer::drawer = nullptr;
 
@@ -76,6 +86,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                         r = ((v[0].asInt() & 0xFF0000)>>16) / 255.0;
                         g = ((v[0].asInt() & 0x00FF00)>> 8) / 255.0;
                         b = ((v[0].asInt() & 0x0000FF)    ) / 255.0;
+                        a = 1.0;
                     } else if (values->size() == 3) {
                         v[0] = values->at(0);
                         v[1] = values->at(1);
@@ -91,6 +102,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                         } else {
                             // TODO error
                         }
+                        a = 1.0;
                     } else {
                         // TODO error
                     }
@@ -183,9 +195,73 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
     delete stack;
 }
 
+// void Drawer2D::saveVectorImage() {
+//     FILE *fp = fopen("MyFile", "wb");
+//     GLint buffsize = 0, state = GL2PS_OVERFLOW;
+//     GLint viewport[4];
+
+//     glGetIntegerv(GL_VIEWPORT, viewport);
+
+//     while( state == GL2PS_OVERFLOW ){
+//         buffsize += 1024*1024;
+//         gl2psBeginPage ( "MyTitle", "MySoftware", viewport,
+//                        GL2PS_EPS, GL2PS_BSP_SORT, GL2PS_SILENT |
+//                        GL2PS_SIMPLE_LINE_OFFSET | GL2PS_NO_BLENDING |
+//                        GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
+//                        GL_RGBA, 0, NULL, 0, 0, 0, buffsize,
+//                        fp, "MyFile" );
+//         ParseTreeNode<InstanceNodeContent, char>* node = lsystem->encodedProgression->back();
+//         State2D state2d {0, 0, lsystem->initialHeading, 0, 0, 0};
+//         this->drawBranch(node, state2d);
+//         state = gl2psEndPage();
+//     }
+
+//     fclose(fp);
+// }
+
+// void saveImage() {
+//     int width = 500, height = 500;
+//     // Make the BYTE array, factor of 3 because it's RBG.
+//     BYTE* pixels = new BYTE[3 * width * height];
+
+//     glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+//     // Convert to FreeImage format & save to file
+//     FIBITMAP* image = FreeImage_ConvertFromRawBits(pixels, width, height, 3 * width, 24, 0x0000FF, 0xFF0000, 0x00FF00, false);
+//     FreeImage_Save(FIF_BMP, image, "test.bmp", 0);
+
+//     // Free resources
+//     FreeImage_Unload(image);
+//     delete [] pixels;
+// }
+
+void Drawer2D::click(int button, int state, int x, int y) {
+    if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        this->lsystem->iterate(1);
+    } else if(button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN) {
+        this->lsystem->iterate(-1);
+    }
+    bounds = {0, 0, 0, 0};
+    // this->draw();
+}
+void Drawer2D::keyPressed(unsigned char key, int x, int y) {
+    if (key == 'q') {
+        exit(0);
+    }
+}
+void Drawer2D::specialKeyPressed(int key, int x, int y) {
+    if(key == GLUT_KEY_RIGHT) {
+        this->lsystem->iterate(1);
+    } else if(key == GLUT_KEY_LEFT) {
+        this->lsystem->iterate(-1);
+    }
+    bounds = {0, 0, 0, 0};
+    // this->draw();
+}
+
 /* Handler for window re-size event. Called back when the window first appears and
    whenever the window is re-sized with its new width and height */
-void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
+void Drawer2D::reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integer
     // Compute aspect ratio of the new window
     if (height == 0) height = 1;                // To prevent divide by 0
 
@@ -225,12 +301,11 @@ void reshape(GLsizei width, GLsizei height) {  // GLsizei for non-negative integ
 
 void Drawer2D::display() {
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // Set background color to black and opaque
-    glClear(GL_COLOR_BUFFER_BIT);         // Clear the color buffer (background)
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the color buffer (background)
 
-    ParseTreeNode<InstanceNodeContent, char>* node = lsystem->encodedProgression->back();
+    ParseTreeNode<InstanceNodeContent, char>* node = lsystem->current();
     State2D state {0, 0, lsystem->initialHeading, 0, 0, 0};
     this->drawBranch(node, state);
-    state = {0, 0, lsystem->initialHeading, 0, 0, 0};
  
     // // Draw a Red 1x1 Square centered at origin
     // glBegin(GL_QUADS);              // Each set of 4 vertices form a quad
@@ -240,11 +315,12 @@ void Drawer2D::display() {
     //     glVertex2f(bounds.x1, bounds.y1);
     //     glVertex2f(bounds.x0, bounds.y1);
     // glEnd();
+    // state = {0, 0, lsystem->initialHeading, 0, 0, 0};
     // this->drawBranch(node, state);
  
     glFlush();  // Render now
 
-    reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+    this->reshape(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 
     // if (bounds == (bounds)0)
     //     this->display();
@@ -253,11 +329,14 @@ void Drawer2D::display() {
 void Drawer2D::prepare(int argc, char** argv) {
     Drawer2DDisplayer::drawer = this;
     glutInit(&argc, argv);                 // Initialize GLUT
-    glutCreateWindow("OpenGL Setup Test"); // Create a window with the given title
+    glutCreateWindow(this->lsystem->name.c_str()); // Create a window with the given title
     glutInitWindowSize(320, 320);   // Set the window's initial width & height
     glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
     glutIdleFunc(Drawer2DDisplayer::display); // Register display callback handler for window re-paint
-    glutReshapeFunc(reshape);       // Register callback handler for window re-size event
+    glutReshapeFunc(Drawer2DDisplayer::reshape);
+    glutMouseFunc(Drawer2DDisplayer::click);
+    glutKeyboardFunc(Drawer2DDisplayer::keyPressed);
+    glutSpecialFunc(Drawer2DDisplayer::specialKeyPressed);
 }
 
 void Drawer2D::draw() {

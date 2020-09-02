@@ -57,6 +57,11 @@ public:
 	void prepare(int argc, char** argv);
 	void display();
 	void draw();
+
+	void reshape(GLsizei width, GLsizei height);
+	void click(int button, int state, int x, int y);
+	void specialKeyPressed(int key, int x, int y);
+	void keyPressed(unsigned char key, int x, int y);
 };
 
 }

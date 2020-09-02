@@ -1,0 +1,14 @@
+
+lsystem Test1
+
+set axiom = "[A]+(180)B"
+set rotation = 11
+set iterations = 15
+set a = 360.0/16
+
+rules {
+	A -> ABF
+	A < B -> BA+
+	B > A -> Df
+	A < D -> [A]
+}

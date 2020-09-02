@@ -19,12 +19,13 @@ class LSystem;
 #include <iostream>
 #include <map>
 #include <list>
+#include <vector>
 
 namespace lsysgen {
 
 template<typename T>
 class LSystem {
-    int current;
+    int _current;
 
 public:
     Environment* env;
@@ -44,8 +45,8 @@ public:
 	double initialHeading;
 	double rotation;
 
-    std::list<ParseTreeNode<InstanceNodeContent, T>*>* progression;
-    std::list<ParseTreeNode<InstanceNodeContent, T>*>* encodedProgression;
+    std::vector<ParseTreeNode<InstanceNodeContent, T>*>* progression;
+    std::vector<ParseTreeNode<InstanceNodeContent, T>*>* encodedProgression;
 
 public:
 	LSystem();
@@ -53,7 +54,9 @@ public:
 	~LSystem();
 
 	void prepare();
-	void iterate(int iterations=-1);
+	void iterate();
+	void iterate(int iterations);
+	ParseTreeNode<InstanceNodeContent, T>* current();
 	Table<T>* getTable(int i);
 };
 

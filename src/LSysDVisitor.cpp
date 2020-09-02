@@ -109,6 +109,8 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
 
         if (ctx->name())
             lsys->name = this->visitName(ctx->name()).as<std::string>();
+        else
+            lsys->name = this->filename;
         lsys->tables = this->tables;
         // lsys->tablesList = this->tablesList;
         lsys->defaultTable = this->defaultTable;

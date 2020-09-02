@@ -211,22 +211,20 @@ bool checkSideContext(ParseTreeNode<LeftSideNodeContent, T>* contextNode, ParseT
     ParseTreeNode<LeftSideNodeContent, T>* ctxNode;
     ParseTreeNode<InstanceNodeContent, T>* insNode;
     for (ctxNode = contextNode, insNode = instanceNode; 
-         ctxNode != nullptr; 
-         ctxNode = rightSide ? contextNode->right() : contextNode->left(),
-         insNode = rightSide ? instanceNode->right() : instanceNode->nextLeft()) {
-    // for ctxNode in ctx_iter:
-        // insNode = next(str_iter, None);
+             ctxNode != nullptr; 
+             ctxNode = rightSide ? contextNode->right() : contextNode->left(),
+             insNode = rightSide ? instanceNode->right() : instanceNode->nextLeft()) {
         if (insNode == nullptr)
             return false;
-        // print("In for: ", ctxNode, insNode)
         if (ctxNode->isLeaf()) {
-            while (insNode->isBranch() || std::find(ignore->begin(), ignore->end(), insNode->content()->element()) != ignore->end()) {
+            ignore->end();
+            while (insNode->isBranch() || std::find(ignore->begin(), ignore->end(), insNode->element()) != ignore->end()) {
                 // insNode = next(str_iter, None)
                 insNode = rightSide ? insNode->right() : insNode->nextLeft();
                 if (insNode == nullptr)
                     return false;
             }
-            if (ctxNode->content()->element() != insNode->content()->element())
+            if (ctxNode->element() != insNode->element())
                 return false;
         } else if (ctxNode->isBranch()) {
             if (!insNode->isBranch())
@@ -235,7 +233,7 @@ bool checkSideContext(ParseTreeNode<LeftSideNodeContent, T>* contextNode, ParseT
                 return false;
         }
     }
-    // print("YEEEESSSS", rightSide)
+    // std::cerr << "Here 3!" << std::endl;
     if (mapArgs(instanceNode->content()->values, contextNode->content()->params, paramMapping) == nullptr)
         return false;
     if (contextNode->content()->cond && !checkCondition(contextNode->content()->cond, paramMapping))
@@ -290,6 +288,7 @@ ParseTreeNode<InstanceNodeContent, T>* derive(ParseTreeNode<InstanceNodeContent,
         }
         return node->isRoot() ? replacement : replacement->encapsulate();
     }
+    // std::cerr << "Here 2!" << std::endl;
     const std::list<Rule<T>*>* candidateRules = table->rulesFor(node->content()->element());
     std::list<Rule<T>*>* applicableRules = new std::list<Rule<T>*>();
     Environment* paramMapping = new Environment(env);
@@ -314,6 +313,7 @@ ParseTreeNode<InstanceNodeContent, T>* derive(ParseTreeNode<InstanceNodeContent,
         }
         applicableRules->push_back(r);
     }
+    // std::cerr << "Here 3!" << std::endl;
     if (applicableRules->size() > 0) {
         Rule<T>* chosenRule = chooseRule(applicableRules);
         // std::cout << "RULE APPLIED: " << chosenRule->toString() << std::endl;

@@ -1,7 +1,7 @@
 
 lsystem SierpinskiTriangle
 
-set axiom = "l(255, 0, 0)PF-G-Gp"
+set axiom = "F-G-G"
 set iterations = 6
 set initial_heading = 0
 set rotation = -120

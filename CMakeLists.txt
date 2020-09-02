@@ -192,6 +192,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
   find_package(GLUT REQUIRED)
 # endif()
 
+# add_subdirectory(antlr-runtime)
+
 # Add CIMG Flags to Compilation Flags
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CIMG_CFLAGS}")
 
@@ -321,12 +323,15 @@ target_link_libraries(lsysgen ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 
 if(WIN32)
   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.lib")
+  # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.lib")
 endif()
 
 if(APPLE)
   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dylib")
+  # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.dylib")
 elseif(UNIX)
   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.so")
+  # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.so")
 endif()
 
 target_link_libraries(lsysgen ${SYSTEM_LIBS})

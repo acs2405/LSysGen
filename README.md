@@ -31,13 +31,13 @@ make
 (Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
 ```
-java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
+java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr-gen/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 
 where `<ANTLR4-JAR>` is a jar file that contains the ANTLR 4 parser generator. Or, if you have ANTLR 4 installed and accessible:
 
 ```
-antlr4 -Dlanguage=Cpp -o antlr4-runtime/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
+antlr4 -Dlanguage=Cpp -o antlr-gen/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 
 ### Execution
@@ -269,30 +269,32 @@ Example `*.lsd` files are provided in `examples/`. You just have to execute the 
 
 ## 2D Display interpretation
 
+The program draws vector graphics after the resulting string, interpreting some special characters:
+
 - `F` draws a forward line.
 - `G` draws a backward line.
 - `f` moves forward without drawing.
 
-`F`, `G` and `f` can have one parameter that specifies the length of the line/move. Default is `5`.
+`F`, `G` and `f` can have one parameter that specifies the length of the line/move. Default is `1`.
 
 - `+` rotates counterclockwise.
 - `-` rotates clockwise.
 
-`+` and `-` can accept one parameter that specifies the rotation angle (in degrees). Default angle is defined by the user.
+`+` and `-` can accept one parameter that specifies the rotation angle (in degrees). Default angle is defined by the user in the property `rotation`.
 
 - `[` pushes a state.
 - `]` pops a state.
 
 The state is a position, heading and color configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
 
-- `c("#RRGGBB")` or `c(r, g, b)` changes the pen and fill color to the specified by the parameter(s) until the end of the current branch or until it is changed again.
+- `c(0xRRGGBB)` or `c(r, g, b)` changes the pen and fill color to the specified by the parameter(s) until the end of the current branch or until it is changed again. For example, `c(0xff0000)` sets color to red, `c(80, 80, 80)` sets color to dark grey and `c(1.0, 0.0, 1.0)` sets color to pink. Default fill and pen color is black.
 - `n` works as `c` but only with pen color.
 - `l` works as `c` but only with fill color.
 
 - `P` to start delimiting a figure to fill.
 - `p` to end delimiting the figure.
 
-It is not possible to fill two figures if one contains another in the string. This is, a `P` must be followed by a `p` before another `P`.
+It is not possible to fill two figures if one contains another in the string. This is, a `P` must be followed by a `p` before another `P`. Every `P` must be end eventually in a `p`, and there must not be a `p` without a `P` before. They work in the same branch, not in children nor in parent.
 
 The rest of the characters will be ignored when displaying.
 
@@ -301,8 +303,9 @@ The rest of the characters will be ignored when displaying.
 - Manage pointers (destructors and deletes)
 - Capture all LSD semantic errors and expression evaluation errors
 - Catch bugs
-- 2D representation
-- 3D representation
+- Interactive window
+- Export to image
+- 3D representation and model export?
 - Music representation?
 - Optimize expressions (getting rid of strings and transforming trivial expressions into values)
 
