@@ -30,6 +30,7 @@ void LSystem<T>::prepare() {
             this->ignore = new std::list<T>();
         this->_current = 0;
         // this->axiom = this->parser.parseWord(this->axiom, this->environment());
+        this->env->set("i", 0);
         this->progression->push_back(this->axiom);  // seed
         // this->encodedProgression->push_back(this->progression->back());
         this->encodedProgression->push_back(derive(this->axiom, this->codingRules, this->ignore, this->env));
@@ -48,7 +49,9 @@ template<typename T>
 void LSystem<T>::iterate(int iterations) {
     for (int i = this->progression->size(); i < this->_current + iterations + 1; ++i) {
         Table<T>* table = this->getTable(i);
+        this->env->set("i", i);
         // std::cout << "ROUND " << i << std::endl;
+    // std::cout << this->env->get("i").asInt() << std::endl;
         this->progression->push_back(derive(this->progression->back(), table, this->ignore, this->env));
         // this->encodedProgression->push_back(this->progression->back());
         this->encodedProgression->push_back(derive(this->progression->back(), this->codingRules, this->ignore, this->env));
@@ -56,6 +59,7 @@ void LSystem<T>::iterate(int iterations) {
     this->_current += iterations;
     if (this->_current < 0)
         this->_current = 0;
+    this->env->set("i", Value(this->_current));
 }
 
 template<typename T>

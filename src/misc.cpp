@@ -150,7 +150,7 @@ Environment::~Environment() {
 }
 
 void Environment::set(std::string const& var, Value const& val) {
-    this->mapping->insert(std::make_pair(var, val));
+    (*this->mapping)[var] =  val;
 }
 Value Environment::get(std::string const& var) {
     return (*this->mapping->find(var)).second;

@@ -21,7 +21,9 @@ ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::s
     // TreeShapeListener listener;
     // tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
 
-    LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, this->env);
+    Environment* childEnv = new Environment(this->env);
+    childEnv->set("i", 0);
+    LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
 
     if (visitor.errors()->size() > 0) {

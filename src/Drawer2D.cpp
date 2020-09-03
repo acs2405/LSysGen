@@ -27,6 +27,12 @@ public:
 };
 Drawer2D* Drawer2DDisplayer::drawer = nullptr;
 
+Color::Color(float r, float g, float b, float a): r(r), g(g), b(b), a(a) {}
+Color::Color(): r(0.0), g(0.0), b(0.0), a(1.0) {}
+
+State2D::State2D(): x(0), y(0), dir(0.0), 
+        penColor(Color()), fillColor(Color()) {}
+
 Drawer2D::Drawer2D(LSystem<char>* lsystem): lsystem(lsystem) {}
 
 struct {float x0; float y0; float x1; float y1;} bounds {0, 0, 0, 0};
@@ -40,8 +46,6 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
     double move;
     bool draw = false, lastDraw = false;
     bool fill = false;
-    float pen_r=0.0, pen_g=0.0, pen_b=0.0, pen_a=1.0;
-    float fill_r=0.0, fill_g=0.0, fill_b=0.0, fill_a=1.0;
     std::list<Point2D>* fillList = new std::list<Point2D>();
     for (node = parent->leftmostChild();
             node != nullptr;
@@ -79,8 +83,8 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
             } else if (node->element() == 'c' || node->element() == 'n' ||
                     node->element() == 'l') {
                 values = node->content()->values;
-                float r = 1.0, g = 1.0, b = 1.0, a = 1.0;
                 if (values != nullptr) {
+                    float r = 1.0, g = 1.0, b = 1.0, a = 1.0;
                     if(values->size() == 1) {
                         v[0] = values->front();
                         r = ((v[0].asInt() & 0xFF0000)>>16) / 255.0;
@@ -107,24 +111,25 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                         // TODO error
                     }
                     if (node->element() == 'c' || node->element() == 'n') {
-                        pen_r = r;
-                        pen_g = g;
-                        pen_b = b;
-                        pen_a = a;
+                        state.penColor.r = r;
+                        state.penColor.g = g;
+                        state.penColor.b = b;
+                        state.penColor.a = a;
                     }
                     if (node->element() == 'c' || node->element() == 'l') {
-                        fill_r = r;
-                        fill_g = g;
-                        fill_b = b;
-                        fill_a = a;
+                        state.fillColor.r = r;
+                        state.fillColor.g = g;
+                        state.fillColor.b = b;
+                        state.fillColor.a = a;
                     }
                     // std::cout << r << ", " << g << ", " << b << std::endl;
                     if (draw) {
                         glEnd();
                         glBegin(GL_LINE_STRIP);
                     }
-                    // glColor4f(fill_r, fill_g, fill_b, fill_a);
-                    glColor4f(pen_r, pen_g, pen_b, pen_a);
+                    // glColor4f(state.fillColor.r, state.fillColor.g, state.fillColor.b, state.fillColor.a);
+                    glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
+                    // std::cout << state.penColor.r << ", " << state.penColor.g << ", " << state.penColor.b << std::endl;
                 }
             } else if (node->element() == 'P') {
                 if (fill) {
@@ -142,7 +147,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                         glEnd();
                     }
                     glBegin(GL_POLYGON);
-                    glColor4f(fill_r, fill_g, fill_b, fill_a);
+                    glColor4f(state.fillColor.r, state.fillColor.g, state.fillColor.b, state.fillColor.a);
                     // Fill a polygon with the saved points
                     for (Point2D p : *fillList)
                         glVertex2f(p.x, p.y);
@@ -150,7 +155,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                     glEnd();
                     if (draw) {
                         glBegin(GL_LINE_STRIP);
-                        glColor4f(pen_r, pen_g, pen_b, pen_a);
+                        glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
                     }
                     fill = false;
                 } else {
@@ -160,7 +165,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
             if (lastDraw == false && draw == true) {
                 // glEnd();
                 glBegin(GL_LINE_STRIP);
-                glColor4f(pen_r, pen_g, pen_b, pen_a);
+                glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
                 glVertex2f(state.x, state.y);
             } else if (lastDraw == true && draw == false) {
                 glEnd();
@@ -304,7 +309,8 @@ void Drawer2D::display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);         // Clear the color buffer (background)
 
     ParseTreeNode<InstanceNodeContent, char>* node = lsystem->current();
-    State2D state {0, 0, lsystem->initialHeading, 0, 0, 0};
+    State2D state;
+    state.dir = lsystem->initialHeading;
     this->drawBranch(node, state);
  
     // // Draw a Red 1x1 Square centered at origin

@@ -1,0 +1,12 @@
+
+lsystem FractalPlant
+
+set axiom = "X"
+set iterations = 5
+set rotation = 25
+set initial_heading = 90
+
+X -> F+[[X]-X]-F[-FX]+X
+F -> FF
+
+X => F

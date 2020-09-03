@@ -4,7 +4,7 @@
 
 namespace lsysgen {
 
-class color;
+class Color;
 
 class Point2D;
 
@@ -23,11 +23,14 @@ class Drawer2D;
 
 namespace lsysgen {
 
-struct color_t {
-	char r;
-	char g;
-	char b;
-	char a;
+struct Color {
+	float r;
+	float g;
+	float b;
+	float a;
+
+	Color(float r, float g, float b, float a=1.0);
+	Color();
 };
 
 class Point2D {
@@ -41,9 +44,11 @@ public:
 	float x;
 	float y;
 	double dir;
-	color_t color;
-	color_t bgcolor;
-	bool filling;
+	Color penColor;
+	Color fillColor;
+	// bool filling;
+
+	State2D();
 };
 
 class Drawer2D {
