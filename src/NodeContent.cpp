@@ -19,7 +19,7 @@ NodeContent<T>::NodeContent(T const& element):
 template<typename T>
 NodeContent<T>::NodeContent(NodeContent<T>* content):
         _element(content->_element) {}
-template NodeContent<char>::NodeContent(NodeContent<char>* content);
+// template NodeContent<char>::NodeContent(NodeContent<char>* content);
 
 template<typename T>
 NodeContent<T>::~NodeContent() {}

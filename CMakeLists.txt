@@ -185,6 +185,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #   SET( SYSTEM_LIBS ${SYSTEM_LIBS} ${BLAS_LIBRARIES} )
 # endif()
 
+find_package(Boost REQUIRED)
+
 # if(OpenGL_FOUND)
   cmake_policy(SET CMP0072 NEW)
 
@@ -205,7 +207,8 @@ if (NOT WIN32)
 endif()
 
 if (APPLE)
-  set(CMAKE_CXX_FLAGS "-Wdeprecated -std=c++11" )
+  set(CMAKE_CXX_FLAGS "-Wdeprecated -std=c++17" )
+  include_directories(/usr/local/Cellar/boost/1.73.0/include)
 endif()
 
 if (MSVC)
@@ -346,14 +349,15 @@ endif()
 if(WIN32)
 add_custom_command(TARGET lsysgen POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dll"
+  "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dll"
   $<TARGET_FILE_DIR:lsysgen>)
 endif()
 
 if(APPLE)
 add_custom_command(TARGET lsysgen POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dylib"
+  # "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dylib"
+  "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dylib"
   $<TARGET_FILE_DIR:lsysgen>)
 endif()
 

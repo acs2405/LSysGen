@@ -10,17 +10,18 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 ### Compilation
 
-To compile the program you will need to put the ANTLR 4 (I am using 4.8) libraries in `libs/`. You can build them from source, in their C++ runtime repo, running:
+To compile the program you will need to put the ANTLR 4 (I am using 4.8) libraries (`*.a`, `*.so` for Linux, `*.a` and `*.dylib` for macOS and `*.dll` for Windows) in `libs/`. You can build them from source, in their C++ runtime repo, and copy the generated libraries (in `dist/`) to `libs/`. To build from source, run:
 
 ```
-cd <antlr4-dir>/runtime/Cpp
-mkdir build && mkdir run && cd build
+cd <antlr4-runtime-source-dir>
+mkdir build && cd build
 cmake ..
 make
-DESTDIR=<antlr4-dir>/runtime/Cpp/run make install
+mkdir <lsysgen-dir>/libs
+cp dist/* <lsysgen-dir>/libs
 ```
 
-Then, run:
+Then, in LSysGen folder, run:
 
 ```
 mkdir build; cd build

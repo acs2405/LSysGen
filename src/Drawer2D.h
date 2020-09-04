@@ -16,7 +16,17 @@ class Drawer2D;
 
 #include "LSystem.h"
 
+#if defined(__linux) || defined(__linux__) || defined(linux)
+#define LINUX
 #include <GL/glut.h>
+#elif defined(__APPLE__)
+#define MACOS
+#include <GLUT/glut.h>
+#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32) || defined(_WIN64)
+#define WINDOWS
+#include <GL/glut.h>
+#endif
+
 #include <string>
 #include <iostream>
 
