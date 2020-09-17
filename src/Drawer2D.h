@@ -14,7 +14,7 @@ class Drawer2D;
 
 }
 
-#include "LSystem.h"
+#include "lsysgen.h"
 
 #if defined(__linux) || defined(__linux__) || defined(linux)
 #define LINUX

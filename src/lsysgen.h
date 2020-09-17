@@ -7,14 +7,14 @@
 #include "LSysDParser.h"
 #include "LSysDVisitor.h"
 #include "LSystem.h"
-#include "Drawer2D.h"
+// #include "Drawer2D.h"
 
 #include <string>
 #include <iostream>
 
 
-int main(int argc, char** argv);
 
-lsysgen::LSystem<char>* parseLSystem(std::string file);
+lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file);
 
-lsysgen::LSystem<char>* parseLSystem(std::string file, std::istream& stream);
+lsysgen::LSystem<char>* parseLSystemFromStream(std::istream& stream, std::string const& file="<default>");
+

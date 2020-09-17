@@ -185,14 +185,25 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 #   SET( SYSTEM_LIBS ${SYSTEM_LIBS} ${BLAS_LIBRARIES} )
 # endif()
 
+
 find_package(Boost REQUIRED)
 
-# if(OpenGL_FOUND)
-  cmake_policy(SET CMP0072 NEW)
+cmake_policy(SET CMP0072 NEW)
+find_package(OpenGL)
+find_package(GLUT)
+if(OpenGL_FOUND AND GLUT_FOUND)
+  # cmake_policy(SET CMP0072 NEW)
 
-  find_package(OpenGL REQUIRED)
-  find_package(GLUT REQUIRED)
-# endif()
+  # find_package(OpenGL REQUIRED)
+  # find_package(GLUT REQUIRED)
+
+  # add_compile_definitions(LSYSGEN_WINDOW)
+  set(LSYSGEN_GRAPHICS True)
+else()
+  # add_compile_definitions(LSYSGEN_JUST_PRINT)
+  # add_compile_definitions(LSYSGEN_INTERACTIVE)
+  set(LSYSGEN_GRAPHICS False)
+endif()
 
 # add_subdirectory(antlr-runtime)
 
@@ -265,7 +276,7 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/libs/
   )
 
-set(lsysgen_SRC 
+set(lsysgen_SRC_COMMON 
   ${PROJECT_SOURCE_DIR}/src/misc.cpp
   ${PROJECT_SOURCE_DIR}/src/operations.cpp
   ${PROJECT_SOURCE_DIR}/src/ParseTreeNode.cpp
@@ -277,9 +288,18 @@ set(lsysgen_SRC
   ${PROJECT_SOURCE_DIR}/src/LSysDVisitor.cpp
   ${PROJECT_SOURCE_DIR}/src/LSysDExpressionEvaluator.cpp
   ${PROJECT_SOURCE_DIR}/src/lsysgen.cpp
-  ${PROJECT_SOURCE_DIR}/src/Drawer2D.cpp
   ${lsysgen_GENERATED_SRC}
   )
+
+set(lsysgen_2D_SRC
+  ${PROJECT_SOURCE_DIR}/src/Drawer2D.cpp
+  )
+
+set(lsysgen_JP_SRC
+  ${PROJECT_SOURCE_DIR}/src/Printer.cpp
+  )
+
+set(lsysgen_SRC ${lsysgen_SRC_COMMON} ${lsysgen_2D_SRC} ${lsysgen_JP_SRC})
 
 # set(lsysgen_RESOURCES 
 #   ${PROJECT_SOURCE_DIR}/b2.lsd
@@ -299,6 +319,18 @@ link_directories(
 
 # target_link_libraries( lsysgen ${PROJECT_NAME} )
 
+
+add_library(lsysgen SHARED ${lsysgen_SRC_COMMON})
+
+if (LSYSGEN_GRAPHICS)
+  add_executable(lsys2d ${lsysgen_2D_SRC})
+  target_link_libraries( lsys2d lsysgen )
+endif()
+
+add_executable(lsys ${lsysgen_JP_SRC})
+target_link_libraries( lsys lsysgen )
+
+
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   set (flags_1 "-Wno-overloaded-virtual")
 else()
@@ -313,10 +345,6 @@ foreach( src_file ${lsysgen_SRC} )
           )
 endforeach( src_file ${lsysgen_SRC} )
 
-add_executable(lsysgen
-  ${lsysgen_SRC}
-)
-
 if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")  
   # see https://github.com/antlr/antlr4/issues/1874
   target_compile_options(lsysgen PUBLIC "$<$<CONFIG:DEBUG>:/MT>")
@@ -325,7 +353,7 @@ endif()
 target_link_libraries(lsysgen ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 
 if(WIN32)
-  target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.lib")
+  target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dll")
   # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.lib")
 endif()
 
