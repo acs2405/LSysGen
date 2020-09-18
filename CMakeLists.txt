@@ -6,6 +6,8 @@ project("LSysGen")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 # # CMake commands copied by the CMake file for CImg
 
 # # To use PKG_CHECK_MODULES to find some optional packages
@@ -322,9 +324,13 @@ link_directories(
 
 add_library(lsysgen SHARED ${lsysgen_SRC_COMMON})
 
+# set_property(TARGET lsysgen PROPERTY POSITION_INDEPENDENT_CODE ON)
+
 if (LSYSGEN_GRAPHICS)
   add_executable(lsys2d ${lsysgen_2D_SRC})
-  target_link_libraries( lsys2d lsysgen )
+  target_link_libraries(lsys2d lsysgen)
+
+  target_link_libraries(lsys2d ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 endif()
 
 add_executable(lsys ${lsysgen_JP_SRC})
@@ -350,8 +356,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
   target_compile_options(lsysgen PUBLIC "$<$<CONFIG:DEBUG>:/MT>")
 endif()
 
-target_link_libraries(lsysgen ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
-
 if(WIN32)
   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dll")
   # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.lib")
@@ -367,27 +371,27 @@ endif()
 
 target_link_libraries(lsysgen ${SYSTEM_LIBS})
 
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-add_custom_command(TARGET lsysgen POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.so"
-  $<TARGET_FILE_DIR:lsysgen>)
-endif()
+# if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+# add_custom_command(TARGET lsysgen POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#   "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.so"
+#   $<TARGET_FILE_DIR:lsysgen>)
+# endif()
 
-if(WIN32)
-add_custom_command(TARGET lsysgen POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dll"
-  $<TARGET_FILE_DIR:lsysgen>)
-endif()
+# if(WIN32)
+# add_custom_command(TARGET lsysgen POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#   "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dll"
+#   $<TARGET_FILE_DIR:lsysgen>)
+# endif()
 
-if(APPLE)
-add_custom_command(TARGET lsysgen POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  # "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dylib"
-  "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dylib"
-  $<TARGET_FILE_DIR:lsysgen>)
-endif()
+# if(APPLE)
+# add_custom_command(TARGET lsysgen POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+#   # "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dylib"
+#   "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dylib"
+#   $<TARGET_FILE_DIR:lsysgen>)
+# endif()
 
 # # copy the input file next to the generated executable
 # add_custom_command(TARGET lsysgen POST_BUILD

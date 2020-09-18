@@ -6,6 +6,27 @@
 
 
 
+const char* generateLSystem(const char* file, int iterations) {
+    lsysgen::LSystem<char>* lsystem = parseLSystemFromFile(file);
+
+    if (lsystem == nullptr)
+        return "";
+
+    if (iterations >= 0) {
+        lsystem->iterations = iterations;
+    }
+
+    lsystem->prepare();
+    lsystem->iterate();
+
+    std::string sret = lsystem->encodedProgression->back()->toString();
+    const char* ret1 = sret.c_str();
+    char *ret = new char[sret.size()+1];
+    strcpy(ret, ret1);
+
+    return ret;
+}
+
 lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file) {
     if (file == "-") {
         return parseLSystemFromStream(std::cin, "<stdin>");

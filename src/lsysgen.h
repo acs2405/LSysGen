@@ -14,6 +14,8 @@
 
 
 
+extern "C" const char* generateLSystem(const char* file, int iterations=-1);
+
 lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file);
 
 lsysgen::LSystem<char>* parseLSystemFromStream(std::istream& stream, std::string const& file="<default>");

@@ -10,7 +10,15 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 ### Compilation
 
-To compile the program you will need to put the ANTLR 4 (I am using 4.8) libraries (`*.a`, `*.so` for Linux, `*.a` and `*.dylib` for macOS and `*.dll` for Windows) in `libs/`. You can build them from source, in their C++ runtime repo, and copy the generated libraries (in `dist/`) to `libs/`. To build from source, run:
+#### Ubuntu/Debian
+
+This program uses Boost libraries. To install boost:
+
+```
+sudo apt install libboost1.67-dev
+```
+
+To compile the program you will need to put the ANTLR 4 (I am using 4.8) `.so` libraries <!--(`*.a`, `*.so` for Linux, `*.a` and `*.dylib` for macOS and `*.dll` for Windows) -->in `libs/`. You can build them from source, in their [C++ runtime repo](https://github.com/antlr/antlr4/tree/master/runtime/Cpp) (you can download the version 4.8 [here](https://www.antlr.org/download/antlr4-cpp-runtime-4.8-source.zip)), and copy the generated libraries (in `dist/`) to `libs/`. To build from source, run:
 
 ```
 cd <antlr4-runtime-source-dir>
@@ -18,16 +26,18 @@ mkdir build && cd build
 cmake ..
 make
 mkdir <lsysgen-dir>/libs
-cp dist/* <lsysgen-dir>/libs
+cp ../dist/* <lsysgen-dir>/libs
 ```
 
 Then, in LSysGen folder, run:
 
 ```
-mkdir build; cd build
+mkdir build && cd build
 cmake ..
 make
 ```
+
+If everything goes well, you will have the executable `lsys` that prints the generated string in the standard output, and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
 
 (Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
@@ -43,25 +53,37 @@ antlr4 -Dlanguage=Cpp -o antlr-gen/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-li
 
 ### Execution
 
-To execute the compiled program to generate l-systems, go to `build/` and run:
+There are two executables in this project: `lsys` and `lsys2d`. They work with the same inputs, but `lsys` prints the result and `lsys2d` shows a 2D representation of the result in a new window.
+
+There is an extra Python executable, `lsys.py`, that fetches the generated shared library and works just like the `lsys` executable, but serves as a Python wrapper example of the library.
+
+To execute any of the above mentioned programs, go to `build/` and run either of:
 
 ```
-./lsysgen FILE [N_ITERATIONS]
+./lsys FILE [N_ITERATIONS]
+./lsys2d FILE [N_ITERATIONS]
 ```
 
-Where `FILE` is a file `*.lsd` (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `FILE` will be used instead. Examples:
+Or run the python script, depending on which is your python interpreter (first and second lines are equivalent):
 
 ```
-echo "set axiom='a';a->b;b->ab;" | ./lsysgen - 12
-echo "set axiom='a';set iterations=12;a->b;b->ab;" | ./lsysgen -
-./lsysgen b2.lsd 20
+./lsys.py FILE [N_ITERATIONS]
+python lsys.py FILE [N_ITERATIONS]
+```
+
+`FILE` is a file `*.lsd` (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `FILE` will be used instead. Examples:
+
+```
+echo "set axiom='a';a->b;b->ab;" | ./lsys - 12
+echo "set axiom='a';set iterations=12;a->b;b->ab;" | ./lsys -
+./lsys b2.lsd 20
 ```
 
 <!--There are some useful options that you can see with the help:
 
-$ python3 lsys\.py \-h-->
+$ python3 lsys\.py \-h
 
-By default, the program will interpret the L-System and will draw it in a new window.
+By default, the program will interpret the L-System and will draw it in a new window.-->
 
 ## Syntax and semantics
 
