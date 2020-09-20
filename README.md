@@ -12,9 +12,9 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 Sierpinski triangle (sierpinski.lsd, 6 iterations)
 
-![B2](./images/b2-20-1.svg)
+![Some parametric random plant](./images/b2-20-1.svg)
 
-B2 (b2.lsd, 20 iterations)
+Some parametric random plant (b2.lsd, 20 iterations)
 
 ![Penrose tiling](./images/penrose-4.svg)
 
