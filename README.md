@@ -139,6 +139,7 @@ lsystem SierpinskiTriangle {
     set iterations = 6
     set initial_heading = 0
     set rotation = -120
+    set background = "#ffbb00"
 
     rules {
         F -> F-G+F+G-F
@@ -177,7 +178,7 @@ Every line followed by the character `#` is a comment and will be ignored by the
 set notAComment = 3 #aComment
 ```
 
-### The axiom
+### Axiom
 
 The axiom of an L system is the initial string and must be always defined once for each L system. This string is changed by the rules in the first iteration. The result of that is changed again by the rules in the second iteration... and so on.
 
@@ -395,6 +396,7 @@ And these are the properties used by the 2D interpreter:
 set initial_heading = 90    # (optional, defaults 0) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
 set rotation = 30           # (optional, defaults 12) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
 set line_width = 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set background = "#FFBB00"  # (optional, defaults "transparent") This property sets the background color of the SVG
 ```
 
 You can also define any other property you want, and use them in the expressions of parametric rules.

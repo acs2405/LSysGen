@@ -173,6 +173,7 @@ Rule<T>* chooseRule(std::list<Rule<T>*>* rules);
 
 std::string strEscape(std::string const& s);
 std::string strUnescape(std::string const& s);
+std::string sanitizeXML(std::string const& s);
 
 void err(std::string const& msg, std::string const& source="", antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);
 void warning(std::string const& msg, std::string const& source="", antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);

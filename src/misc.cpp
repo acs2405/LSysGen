@@ -393,7 +393,7 @@ void warning(std::string const& msg, std::string const& source, antlr4::tree::Pa
 
 std::string strEscape(std::string const& s) {
     std::string str = s;
-    str = std::regex_replace(str, std::regex("\\"), "\\\\");
+    str = std::regex_replace(str, std::regex("\\\\"), "\\\\");
     str = std::regex_replace(str, std::regex("\""), "\\\"");
     str = std::regex_replace(str, std::regex("\r"), "\\r");
     str = std::regex_replace(str, std::regex("\n"), "\\n");
@@ -403,11 +403,21 @@ std::string strEscape(std::string const& s) {
 
 std::string strUnescape(std::string const& s) {
     std::string str = s;
-    str = std::regex_replace(str, std::regex("\\\\"), "\\");
-    str = std::regex_replace(str, std::regex("\\\""), "\"");
-    str = std::regex_replace(str, std::regex("\\r"), "\r");
-    str = std::regex_replace(str, std::regex("\\n"), "\n");
-    str = std::regex_replace(str, std::regex("\\t"), "\t");
+    str = std::regex_replace(str, std::regex("\\\\\\\\"), "\\");
+    str = std::regex_replace(str, std::regex("\\\\\""), "\"");
+    str = std::regex_replace(str, std::regex("\\\\r"), "\r");
+    str = std::regex_replace(str, std::regex("\\\\n"), "\n");
+    str = std::regex_replace(str, std::regex("\\\\t"), "\t");
+    return str;
+}
+
+std::string sanitizeXML(std::string const& s) {
+    std::string str = s;
+    str = std::regex_replace(str, std::regex("&"), "&amp;");
+    str = std::regex_replace(str, std::regex("<"), "&lt;");
+    str = std::regex_replace(str, std::regex(">"), "&gt;");
+    str = std::regex_replace(str, std::regex("\""), "&quot;");
+    str = std::regex_replace(str, std::regex("'"), "&apos;");
     return str;
 }
     

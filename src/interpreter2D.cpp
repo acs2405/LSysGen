@@ -54,7 +54,8 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, LSystem<c
     std::string svg = "<svg width=\"" + std::to_string(desiredWidth);
     svg += "\" height=\"" + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
-    // svg += "<rect width=\"100%\" height=\"100%\" fill=\"white\" />\n";
+    if (lsystem && lsystem->background.size() > 0)
+        svg += "<rect width=\"100%\" height=\"100%\" fill=\"" + lsystem->background + "\" />\n";
     svg += "<g transform=\"";
     // svg += "translate(" + std::to_string(margin); // when margin was absolute
     // svg += "," + std::to_string(margin) + ") ";

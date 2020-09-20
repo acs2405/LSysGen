@@ -46,6 +46,7 @@ public:
 	double rotation;
 	// double lineLength;
 	double lineWidth;
+	std::string background;
 
     std::vector<ParseTreeNode<InstanceNodeContent, T>*>* progression;
     std::vector<ParseTreeNode<InstanceNodeContent, T>*>* encodedProgression;

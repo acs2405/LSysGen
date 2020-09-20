@@ -6,6 +6,7 @@ lsystem SierpinskiTriangle {
 	set iterations = 6
 	set initial_heading = 0
 	set rotation = -120
+	set background = "#ffbb00"
 
 	rules {
 		F -> F-G+F+G-F

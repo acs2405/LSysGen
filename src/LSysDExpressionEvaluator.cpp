@@ -262,7 +262,7 @@ antlrcpp::Any LSysDExpressionEvaluator::visitFloatConstant(LSysDParser::FloatCon
 
 antlrcpp::Any LSysDExpressionEvaluator::visitStringConstant(LSysDParser::StringConstantContext *ctx) {
     std::string s = ctx->STRING()->getText();
-    return Value(s.substr(1, s.size()-2));
+    return Value(strUnescape(s.substr(1, s.size()-2)));
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitTrueValue(LSysDParser::TrueValueContext *ctx) {

@@ -140,14 +140,14 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             if (v.isFunction() && v.asFunction()->params()->size() == 1)
                 lsys->tableFunc = v.asFunction();
             else
-                this->error("table_func must be a function with one parameter");
+                this->error("table_func property must be a function with one parameter");
         }
         if (this->env->has("iterations")) {
             Value v = this->env->get("iterations");
             if (v.isInt())
                 lsys->iterations = v.asInt();
             else
-                this->error("iterations must be a integer number");
+                this->error("iterations property must be a integer number");
         }
         if (this->env->has("ignore")) {
             Value v = this->env->get("ignore");
@@ -155,7 +155,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
                 std::string ignore = v.asString();
                 lsys->ignore = new std::list<char>(ignore.begin(), ignore.end());
             } else
-                this->error("ignore must be a string");
+                this->error("ignore property must be a string");
         }
         if (this->env->has("initial_heading")) {
             Value v = this->env->get("initial_heading");
@@ -164,7 +164,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             else if (v.isInt())
                 lsys->initialHeading = v.asInt();
             else
-                this->error("initial_heading must be a number");
+                this->error("initial_heading property must be a number");
         }
         if (this->env->has("rotation")) {
             Value v = this->env->get("rotation");
@@ -173,7 +173,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             else if (v.isInt())
                 lsys->rotation = v.asInt();
             else
-                this->error("rotation must be a number");
+                this->error("rotation property must be a number");
         }
         if (this->env->has("line_width")) {
             Value v = this->env->get("line_width");
@@ -182,7 +182,14 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             else if (v.isInt())
                 lsys->lineWidth = v.asInt();
             else
-                this->error("line_width must be a number");
+                this->error("line_width property must be a number");
+        }
+        if (this->env->has("background")) {
+            Value v = this->env->get("background");
+            if (v.isString()) {
+                lsys->background = sanitizeXML(v.asString());
+            } else
+                this->error("background property must be a string");
         }
         lsys->env = this->env;
     }
