@@ -8,25 +8,20 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 ## Example images (generated with the program)
 
-![Image](./images/sierpinski-6.svg)
+![Sierpinski](./images/sierpinski-6.svg)
+Sierpinski triangle (sierpinski.lsd, 6 iterations)
 
-{{< caption >}}Sierpinski triangle (sierpinski.lsd, 6 iterations){{< /caption >}}
+![B2](./images/b2-20-1.svg)
+B2 (b2.lsd, 20 iterations)
 
-![Image](./images/b2-20-1.svg)
+![Penrose tiling](./images/penrose-4.svg)
+Penrose tiling (penrose.lsd, 4 iterations)
 
-{{< caption >}}B2 (b2.lsd, 20 iterations){{< /caption >}}
+![Cantor](./images/cantor-parametric-8.svg)
+Cantor (cantor-parametric.lsd, 8 iterations)
 
-![Image](./images/penrose-4.svg)
-
-{{< caption >}}Penrose tiling (penrose.lsd, 4 iterations){{< /caption >}}
-
-![Image](./images/cantor-parametric-8.svg)
-
-{{< caption >}}Cantor (cantor-parametric.lsd, 8 iterations){{< /caption >}}
-
-![Image](./images/dragon-10.svg)
-
-{{< caption >}}Dragon curve (dragon.lsd, 10 iterations){{< /caption >}}
+![Dragon curve](./images/dragon-10.svg)
+Dragon curve (dragon.lsd, 10 iterations)
 
 ## The program
 
