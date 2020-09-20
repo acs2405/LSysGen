@@ -313,6 +313,7 @@ set iterations = 8          # This line sets the number of iterations that the s
 set ignore = ""             # (optional) This property sets the characters that must be ignored as context (see contexts in rules)
 set initial_heading = 90    # (optional, defaults 90) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
 set rotation = 30           # (optional, defaults 30) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width = 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width os 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
 ```
 
 Example `*.lsd` files are provided in `examples/`. You just have to execute the program with the name of the file as its parameter.
