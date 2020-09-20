@@ -65,13 +65,13 @@ If everything goes well, you will get the shared library `lsysgen.so` (that cont
 (Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
 ```
-java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr-gen/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
+java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 
 where `<ANTLR4-JAR>` is a jar file that contains the ANTLR 4 parser generator. Or, if you have ANTLR 4 installed and accessible:
 
 ```
-antlr4 -Dlanguage=Cpp -o antlr-gen/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
+antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 
 ### Execution
