@@ -60,7 +60,7 @@ cmake ..
 make
 ```
 
-If everything goes well, you will get the shared library `lsysgen.so` the executable `lsys` that prints the generated string in the standard output, `lsys2svg` that prints and SVG image of the L system and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
+If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output, `lsys2svg` that prints and SVG image of the L system and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
 
 (Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
