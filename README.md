@@ -1,8 +1,8 @@
 # Extended L System Generator
 
-This project implements an interpreter in C++ of L-Systems descriptor files (`*.lsd`) writen in a custom specific purpose language LSysDescriptor or LSD (see `Syntax and semantics`).
+This project implements an interpreter in C++ of L-Systems descriptor files (`*.lsd`) writen in a custom specific purpose language LSysDescriptor, LSysD or just LSD (see `Syntax and semantics`).
 
-The project is able to generate L-Systems after its axiom and rules and print the result. Very soon, it will be able to show 2D and 3D representations of the resulting string (see `2D Display interpretation`).
+The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image of it (see `2D Display interpretation`).
 
 An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).
 
