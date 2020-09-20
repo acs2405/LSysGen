@@ -19,26 +19,26 @@ public:
     MOD = 29, POW = 30, BITAND = 31, BITOR = 32, BITXOR = 33, BITNOT = 34, 
     AND = 35, OR = 36, NOT = 37, KWAS = 38, KWELSE = 39, KWEVENTSPEC = 40, 
     KWFALSE = 41, KWFOR = 42, KWFROM = 43, KWIF = 44, KWIMPORT = 45, KWIN = 46, 
-    KWNONE = 47, KWTRUE = 48, KWAND = 49, KWCODING = 50, KWLAMBDA = 51, 
-    KWLSYS = 52, KWNOT = 53, KWOR = 54, KWPRODUCTION = 55, KWRULES = 56, 
-    KWSET = 57, KWTABLE = 58, KWTHEN = 59, QM = 60, XM = 61, DARROW = 62, 
-    FDIV = 63, DOLLARID = 64, RULECHAR = 65, WS = 66, COMMENTBLQ = 67, COMMENTLIN = 68, 
-    LINE_JOINING = 69, NEW_LINE = 70, ERRORCHAR = 71
+    KWNONE = 47, KWTRUE = 48, KWAND = 49, KWAXIOM = 50, KWCODING = 51, KWLAMBDA = 52, 
+    KWLSYS = 53, KWNOT = 54, KWOR = 55, KWPRODUCTION = 56, KWRULES = 57, 
+    KWSET = 58, KWTABLE = 59, KWTHEN = 60, QM = 61, XM = 62, DARROW = 63, 
+    FDIV = 64, DOLLARID = 65, RULECHAR = 66, WS = 67, COMMENTBLQ = 68, COMMENTLIN = 69, 
+    LINE_JOINING = 70, NEW_LINE = 71, ERRORCHAR = 72
   };
 
   enum {
     RuleMain = 0, RuleSep = 1, RuleNl = 2, RuleName = 3, RuleDefinitions = 4, 
-    RuleDefinition = 5, RulePropDef = 6, RuleFuncDef = 7, RuleConstDef = 8, 
-    RuleTableBlock = 9, RuleRulesBlock = 10, RuleProductionRulesBlock = 11, 
-    RuleCodingRulesBlock = 12, RuleRules = 13, RuleRuleDefs = 14, RuleProductionRuleDefs = 15, 
-    RuleCodingRuleDefs = 16, RuleAnyRule = 17, RuleProductionRule = 18, 
-    RuleCodingRule = 19, RuleRuleDef = 20, RuleProductionRuleDef = 21, RuleCodingRuleDef = 22, 
-    RuleTagPrefix = 23, RuleTag = 24, RuleWeight = 25, RuleLside = 26, RuleLcontext = 27, 
-    RuleRcontext = 28, RuleRside = 29, RuleWord = 30, RuleLChar = 31, RuleLItem = 32, 
-    RuleRItem = 33, RuleValidLeftChar = 34, RuleValidRightChar = 35, RuleValidChar = 36, 
-    RuleParamsWithCond = 37, RuleParams = 38, RuleParam = 39, RuleCond = 40, 
-    RuleArgs = 41, RuleArg = 42, RuleExpression = 43, RuleArguments = 44, 
-    RuleArgument = 45, RuleConstant = 46
+    RuleDefinition = 5, RuleAxiomDef = 6, RulePropDef = 7, RuleFuncDef = 8, 
+    RuleConstDef = 9, RuleTableBlock = 10, RuleRulesBlock = 11, RuleProductionRulesBlock = 12, 
+    RuleCodingRulesBlock = 13, RuleRules = 14, RuleRuleDefs = 15, RuleProductionRuleDefs = 16, 
+    RuleCodingRuleDefs = 17, RuleAnyRule = 18, RuleProductionRule = 19, 
+    RuleCodingRule = 20, RuleRuleDef = 21, RuleProductionRuleDef = 22, RuleCodingRuleDef = 23, 
+    RuleTagPrefix = 24, RuleTag = 25, RuleWeight = 26, RuleLside = 27, RuleLcontext = 28, 
+    RuleRcontext = 29, RuleRside = 30, RuleWord = 31, RuleLChar = 32, RuleLItem = 33, 
+    RuleRItem = 34, RuleValidLeftChar = 35, RuleValidRightChar = 36, RuleValidChar = 37, 
+    RuleParamsWithCond = 38, RuleParams = 39, RuleParam = 40, RuleCond = 41, 
+    RuleArgs = 42, RuleArg = 43, RuleExpression = 44, RuleArguments = 45, 
+    RuleArgument = 46, RuleConstant = 47
   };
 
   LSysDParser(antlr4::TokenStream *input);
@@ -57,6 +57,7 @@ public:
   class NameContext;
   class DefinitionsContext;
   class DefinitionContext;
+  class AxiomDefContext;
   class PropDefContext;
   class FuncDefContext;
   class ConstDefContext;
@@ -104,10 +105,15 @@ public:
     MainContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
     antlr4::tree::TerminalNode *EOF();
-    DefinitionsContext *definitions();
-    NameContext *name();
     std::vector<SepContext *> sep();
     SepContext* sep(size_t i);
+    NameContext *name();
+    antlr4::tree::TerminalNode *LBRACE();
+    DefinitionsContext *definitions();
+    antlr4::tree::TerminalNode *RBRACE();
+    std::vector<NlContext *> nl();
+    NlContext* nl(size_t i);
+    WordContext *word();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    
@@ -175,6 +181,7 @@ public:
   public:
     DefinitionContext(antlr4::ParserRuleContext *parent, size_t invokingState);
     virtual size_t getRuleIndex() const override;
+    AxiomDefContext *axiomDef();
     PropDefContext *propDef();
     FuncDefContext *funcDef();
     TableBlockContext *tableBlock();
@@ -188,6 +195,19 @@ public:
   };
 
   DefinitionContext* definition();
+
+  class  AxiomDefContext : public antlr4::ParserRuleContext {
+  public:
+    AxiomDefContext(antlr4::ParserRuleContext *parent, size_t invokingState);
+    virtual size_t getRuleIndex() const override;
+    antlr4::tree::TerminalNode *KWAXIOM();
+    WordContext *word();
+
+    virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
+   
+  };
+
+  AxiomDefContext* axiomDef();
 
   class  PropDefContext : public antlr4::ParserRuleContext {
   public:

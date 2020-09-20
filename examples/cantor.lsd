@@ -1,20 +1,23 @@
 
-lsystem CantorSet
+lsystem CantorSet {
 
-set axiom = 'S';
-set iterations = 5;
-set rotation = 90;
-set initial_heading = 0;
+	axiom S;
 
-rules {
+	set iterations = 5;
+	set rotation = 90;
+	set initial_heading = 0;
 
-	S -> [bSaS]AAA
-	a -> aaa
-	A -> AAA
+	rules {
 
-	S => F
-	A => F
-	a => f
-	b => +ff-
+		S -> [bSaS]AAA
+		a -> aaa
+		A -> AAA
+
+		S => F
+		A => F
+		a => f
+		b => +ff-
+
+	}
 
 }

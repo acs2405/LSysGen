@@ -1,6 +1,9 @@
 
 #include "misc.h"
 
+#include <regex>
+#include <utility>
+#include <sstream>
 #include <cstdlib>
 #include <chrono>
 

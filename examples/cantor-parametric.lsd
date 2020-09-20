@@ -1,21 +1,24 @@
 
-lsystem ParametricCantorSet
+lsystem ParametricCantorSet {
 
-set axiom = 'S(0)';
-set iterations = 4;
-set rotation = 90;
-set initial_heading = 0;
-set width = 25.0;
-set height = .3;
+	axiom S(0);
+	
+	set iterations = 4;
+	set rotation = 90;
+	set initial_heading = 0;
+	set width = 25.0;
+	set height = .3;
 
-rules {
+	rules {
 
-	S(n) -> [b(n+1)S(n+1)a((1.0/3)**(n+1))S(n+1)]A((1.0/3)**n)
-	b(n) -> b(n+1)
+		S(n) -> [b(n+1)S(n+1)a((1.0/3)**(n+1))S(n+1)]A((1.0/3)**n)
+		b(n) -> b(n+1)
 
-	S(n) => F(width*(1.0/3)**n)
-	A(l) => F(width*l)
-	a(l) => f(width*l)
-	b(n) => +f(height)-
+		S(n) => F(width*(1.0/3)**n)
+		A(l) => F(width*l)
+		a(l) => f(width*l)
+		b(n) => +f(height)-
+
+	}
 
 }

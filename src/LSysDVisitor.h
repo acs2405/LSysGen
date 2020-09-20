@@ -19,6 +19,7 @@ using namespace lsysgen;
 
 class LSysDVisitor: public LSysDParserBaseVisitor {
     Environment* env;
+    ParseTreeNode<InstanceNodeContent, char>* axiom;
     std::map<std::string, Rule<char>*>* taggedRules;
     Table<char>* codingRules;
     Table<char>* defaultTable;
@@ -69,6 +70,8 @@ public:
     antlrcpp::Any visitDefinitions(LSysDParser::DefinitionsContext *ctx) override;
 
     antlrcpp::Any visitDefinition(LSysDParser::DefinitionContext *ctx) override;
+
+    antlrcpp::Any visitAxiomDef(LSysDParser::AxiomDefContext *ctx) override;
 
     antlrcpp::Any visitPropDef(LSysDParser::PropDefContext *ctx) override;
 

@@ -39,6 +39,10 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitAxiomDef(LSysDParser::AxiomDefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitPropDef(LSysDParser::PropDefContext *ctx) override {
     return visitChildren(ctx);
   }

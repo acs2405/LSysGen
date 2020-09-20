@@ -8,7 +8,9 @@ options { tokenVocab=LSysDLexer; language=Cpp; }
 //options {LSysDLexer};
 
 main
-  : sep? ((name sep)? sep? definitions sep? | name sep? | ) EOF
+  : sep? ((name nl? LBRACE sep? definitions sep? RBRACE sep?)?) EOF
+  | sep? (definitions sep?) EOF
+  | nl? word nl? EOF
   ;
 
 sep
@@ -28,13 +30,18 @@ definitions
   ;
 
 definition
-  : propDef
+  : axiomDef
+  | propDef
   | funcDef
   | tableBlock
   | rulesBlock
   | productionRulesBlock
   | codingRulesBlock
   | ruleDef
+  ;
+
+axiomDef
+  : KWAXIOM word
   ;
 
 propDef
@@ -213,7 +220,7 @@ expression
   | expression (BITOR) expression                                           # BitBinaryExpr
   | expression (AND) expression                                             # LogicBinaryExpr
   | expression (OR) expression                                              # LogicBinaryExpr
-  |<assoc=right> KWIF expression KWTHEN expression (KWELSE expression)?     # IfElseExpr
+  |<assoc=right> KWIF expression KWTHEN expression KWELSE expression        # IfElseExpr
 //   | expression neg=NOT? op=KWIN expression                                  # InExpr
 //   | functiondef                                                             # FunctionDefExpr
   ;

@@ -31,6 +31,8 @@ public:
 
     virtual antlrcpp::Any visitDefinition(LSysDParser::DefinitionContext *context) = 0;
 
+    virtual antlrcpp::Any visitAxiomDef(LSysDParser::AxiomDefContext *context) = 0;
+
     virtual antlrcpp::Any visitPropDef(LSysDParser::PropDefContext *context) = 0;
 
     virtual antlrcpp::Any visitFuncDef(LSysDParser::FuncDefContext *context) = 0;

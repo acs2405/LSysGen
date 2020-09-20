@@ -16,8 +16,6 @@ set(ANTLR4_WITH_STATIC_CRT OFF)
 
 # set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# # CMake commands copied by the CMake file for CImg
-
 # # To use PKG_CHECK_MODULES to find some optional packages
 # find_package(PkgConfig)
 
@@ -94,10 +92,10 @@ if (MSVC)
 endif()
 
 # Debug:
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Og")
+# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og")
 
 # Optimized:
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
 
 foreach( src_file ${ANTLR_LSysDLexer_CXX_OUTPUTS} ${ANTLR_LSysDParser_CXX_OUTPUTS} )
@@ -127,7 +125,6 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/antlr4-generated/
   ${PROJECT_SOURCE_DIR}/src/
   ${PROJECT_SOURCE_DIR}/
-  ${PROJECT_SOURCE_DIR}/libs/
   )
 
 set(lsysgen_SRC_COMMON 
@@ -143,7 +140,6 @@ set(lsysgen_SRC_COMMON
   ${PROJECT_SOURCE_DIR}/src/LSysDExpressionEvaluator.cpp
   ${PROJECT_SOURCE_DIR}/src/lsysgen.cpp
   ${PROJECT_SOURCE_DIR}/src/interpreter2D.cpp
-  # ${lsysgen_GENERATED_SRC}
   )
 
 set(lsysgen_2D_SRC
@@ -151,7 +147,7 @@ set(lsysgen_2D_SRC
   )
 
 set(lsysgen_JP_SRC
-  ${PROJECT_SOURCE_DIR}/src/Printer.cpp
+  ${PROJECT_SOURCE_DIR}/src/printer.cpp
   )
 
 set(lsysgen_SVG_SRC
@@ -176,7 +172,6 @@ target_link_libraries(lsysgen ${SYSTEM_LIBS})
 if (LSYSGEN_GRAPHICS)
   add_executable(lsys2d ${lsysgen_2D_SRC})
   target_link_libraries(lsys2d lsysgen)
-
   target_link_libraries(lsys2d ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 endif()
 
@@ -207,45 +202,14 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 endif()
 
 # if(WIN32)
-#   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dll")
-#   # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.lib")
 # endif()
 
 # if(APPLE)
-#   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dylib")
-#   # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.dylib")
 # elseif(UNIX)
-#   target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.so")
-#   # target_link_libraries(lsysgen "${PROJECT_SOURCE_DIR}/antlr-runtime-src/run/usr/local/lib/libantlr4-runtime.so")
 # endif()
 
 # if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-# add_custom_command(TARGET lsysgen POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#   "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.so"
-#   $<TARGET_FILE_DIR:lsysgen>)
 # endif()
-
-# if(WIN32)
-# add_custom_command(TARGET lsysgen POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#   "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dll"
-#   $<TARGET_FILE_DIR:lsysgen>)
-# endif()
-
-# if(APPLE)
-# add_custom_command(TARGET lsysgen POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#   # "${PROJECT_SOURCE_DIR}/libs/antlr4-runtime.dylib"
-#   "${PROJECT_SOURCE_DIR}/libs/libantlr4-runtime.dylib"
-#   $<TARGET_FILE_DIR:lsysgen>)
-# endif()
-
-# # copy the input file next to the generated executable
-# add_custom_command(TARGET lsysgen POST_BUILD
-#   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#   "${PROJECT_SOURCE_DIR}/b2.lsd"
-#   $<TARGET_FILE_DIR:lsysgen>)
 
 # # copy the input file next to the generated executable
 # foreach( resource_file ${lsysgen_RESOURCES} )
@@ -254,19 +218,3 @@ endif()
 #         ${resource_file}
 #         $<TARGET_FILE_DIR:lsysgen>)
 # endforeach( resource_file ${lsysgen_RESOURCES} )
-
-# necessary because the default working directory of Visual Studio
-# is not the same as the one in which the binary is created
-# so we copy the input file twice:
-# one for when you launch the executale in Visual Studio (CTRL+F5)
-# one for when you launch it normally
-
-# # copy the input file next to the generated executable
-# if (WIN32)
-# foreach( resource_file ${lsysgen_RESOURCES} )
-#       add_custom_command(TARGET lsysgen POST_BUILD
-#         COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#         "${PROJECT_SOURCE_DIR}/b2.lsd"
-#         $<TARGET_FILE_DIR:lsysgen>/../)
-# endforeach( resource_file ${lsysgen_RESOURCES} )
-# endif()

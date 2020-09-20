@@ -26,9 +26,6 @@ class Environment;
 #include <map>
 #include <list>
 #include <vector>
-#include <regex>
-#include <utility>
-#include <sstream>
 
 
 namespace lsysgen {

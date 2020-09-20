@@ -2,40 +2,40 @@
 #include "LSysDVisitor.h"
 
 #include <utility>
-#include <sstream>
+// #include <sstream>
 
 
-ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
-    std::stringstream ss;
-    ss << s;
-    antlr4::ANTLRInputStream input(ss);
-    LSysDLexer lexer(&input);
-    antlr4::CommonTokenStream tokens(&lexer);
-    LSysDParser parser(&tokens);
+// ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
+//     std::stringstream ss;
+//     ss << s;
+//     antlr4::ANTLRInputStream input(ss);
+//     LSysDLexer lexer(&input);
+//     antlr4::CommonTokenStream tokens(&lexer);
+//     LSysDParser parser(&tokens);
 
-    if (parser.getNumberOfSyntaxErrors() != 0)
-        return nullptr;
+//     if (parser.getNumberOfSyntaxErrors() != 0)
+//         return nullptr;
 
-    antlr4::tree::ParseTree *tree = parser.word();
+//     antlr4::tree::ParseTree *tree = parser.word();
 
-    // TreeShapeListener listener;
-    // tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+//     // TreeShapeListener listener;
+//     // tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
 
-    Environment* childEnv = new Environment(this->env);
-    childEnv->set("i", 0);
-    LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
-    ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
+//     Environment* childEnv = new Environment(this->env);
+//     childEnv->set("i", 0);
+//     LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
+//     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
 
-    if (visitor.errors()->size() > 0) {
-        visitor.dumpErrors();
-        return nullptr;
-    }
+//     if (visitor.errors()->size() > 0) {
+//         visitor.dumpErrors();
+//         return nullptr;
+//     }
 
-    return node;
-}
+//     return node;
+// }
 
 LSysDVisitor::LSysDVisitor(std::string filename, std::vector<std::string>* sourceLines, Environment* env):
-        filename(filename), sourceLines(sourceLines), parentTrace(nullptr) {
+        filename(filename), sourceLines(sourceLines), parentTrace(nullptr), axiom(nullptr) {
     this->env = env ? new Environment(env) : new Environment();
     this->currentTable = nullptr;
     this->parentNode = nullptr;
@@ -102,9 +102,13 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     // this->tablesList->push_back(t);
     this->codingRules = new Table<char>("<coding>");
 
-    visitChildren(ctx);
-
     LSystem<char>* lsys;
+
+    if (ctx->word() != nullptr) {
+        this->axiom = this->visitWord(ctx->word()).as<ParseTreeNode<InstanceNodeContent, char>*>();
+    } else {
+        visitChildren(ctx);
+    }
 
     if (this->errors()->size() == 0) {
         lsys = new LSystem<char>();
@@ -118,20 +122,25 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         lsys->defaultTable = this->defaultTable;
         lsys->codingRules = this->codingRules;
         lsys->taggedRules = this->taggedRules;
+        if (this->axiom != nullptr) {
+            lsys->axiom = this->axiom;
+        } else {
+            this->error("No axiom is defined in the L system");
+        }
+        // if (this->env->has("axiom")) {
+        //     Value v = this->env->get("axiom");
+        //     if (v.isString()) {
+        //         std::string axiom = v.asString();
+        //         lsys->axiom = this->parseInstanceNode(axiom);
+        //     } else
+        //         this->error("axiom must be a string");
+        // }
         if (this->env->has("table_func")) {
             Value v = this->env->get("table_func");
             if (v.isFunction() && v.asFunction()->params()->size() == 1)
                 lsys->tableFunc = v.asFunction();
             else
                 this->error("table_func must be a function with one parameter");
-        }
-        if (this->env->has("axiom")) {
-            Value v = this->env->get("axiom");
-            if (v.isString()) {
-                std::string axiom = v.asString();
-                lsys->axiom = this->parseInstanceNode(axiom);
-            } else
-                this->error("axiom must be a string");
         }
         if (this->env->has("iterations")) {
             Value v = this->env->get("iterations");
@@ -166,15 +175,6 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             else
                 this->error("rotation must be a number");
         }
-        // if (this->env->has("line_length")) {
-        //     Value v = this->env->get("line_length");
-        //     if (v.isFloat())
-        //         lsys->lineLength = v.asFloat();
-        //     else if (v.isInt())
-        //         lsys->lineLength = v.asInt();
-        //     else
-        //         this->error("line_length must be a number");
-        // }
         if (this->env->has("line_width")) {
             Value v = this->env->get("line_width");
             if (v.isFloat())
@@ -211,6 +211,15 @@ antlrcpp::Any LSysDVisitor::visitDefinition(LSysDParser::DefinitionContext *ctx)
     //     return nullptr;
     // }
     return visitChildren(ctx);
+}
+
+antlrcpp::Any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
+    if (this->axiom == nullptr) {
+        this->axiom = this->visitWord(ctx->word()).as<ParseTreeNode<InstanceNodeContent, char>*>();
+    } else {
+        this->error("The axiom is already defined", ctx);
+    }
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitPropDef(LSysDParser::PropDefContext *ctx) {

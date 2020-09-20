@@ -1,25 +1,27 @@
-# ./lsystem.py -R "A(i)->B(i+1)C(i+1)A(i+1);B(i)->B(i+1);C(i)->C(i+1);B(i)=>F(360/i);C(i)=>-(360/i)" -A "F(200)-(170)A(1)" -I 5 -E '' -H 0 -D 12.5 -o -
 
-lsystem Star
+lsystem Star {
 
-set iterations = 2
-set initial_heading = 0.0
-set rotation = 12.5
-set axiom = "B(1)C(1)A(1)"
+	axiom B(1)C(1)A(1)
 
-set e = 1
+	set iterations = 2
+	set initial_heading = 0.0
+	set rotation = 12.5
 
-# TODO: No debe omitir los espacios:
-#set f(x) = e if x == 1 else 1+f(x-1)
+	set e = 1
 
-production rules {
-	A(i) -> B(i+1)C(i+1)B(i+1)C(i+1)A(i+1)
-	B(i) -> B(i+1)
-	C(i) -> C(i+1)
-}
+	# TODO: No debe omitir los espacios:
+	#set f(x) = if x == 1 then e else 1+f(x-1)
 
-coding rules {
-	A(i) => 
-	B(i) => F(50)
-	C(i) => -(180 - 180/(2.0*i-1)) # Para estrellas de lados impares
+	production rules {
+		A(i) -> B(i+1)C(i+1)B(i+1)C(i+1)A(i+1)
+		B(i) -> B(i+1)
+		C(i) -> C(i+1)
+	}
+
+	coding rules {
+		A(i) => 
+		B(i) => F(50)
+		C(i) => -(180 - 180/(2.0*i-1)) # Para estrellas de lados impares
+	}
+
 }

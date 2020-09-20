@@ -26,7 +26,7 @@ extern "C" int lsystem_get_iteration_number(LSystem<char>* lsystem);
 extern "C" const char* lsystem_get_result_string(LSystem<char>* lsystem);
 extern "C" const char* lsystem_to_svg(LSystem<char>* lsystem);
 
-lsysgen::LSystem<char>* parseLSystemFromFile(const char* file);
+lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file);
 
 lsysgen::LSystem<char>* parseLSystemFromStream(std::istream& stream, std::string const& file="<default>");
 

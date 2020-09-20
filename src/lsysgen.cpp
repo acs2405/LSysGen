@@ -55,7 +55,7 @@ const char* lsystem_to_svg(LSystem<char>* lsystem) {
 
 
 
-lsysgen::LSystem<char>* parseLSystemFromFile(const char* file) {
+lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file) {
     if (file == "-") {
         return parseLSystemFromStream(std::cin, "<stdin>");
     } else {

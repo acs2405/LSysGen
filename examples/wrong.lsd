@@ -1,5 +1,6 @@
 
-set axiom = "a"
+axiom a
+
 set table_func(i, j) = "t1"  # Invalid
 
 # a => FFF        # Valid

@@ -123,7 +123,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                 double sign = node->element() == '+' ? 1.0 : -1.0;
                 values = node->content()->values;
                 if (values == nullptr || values->size() == 0) {
-                    state.dir += lsystem ? sign*lsystem->rotation : DEFAULT_ROTATION;
+                    state.dir += sign*(lsystem && !std::isnan(lsystem->rotation) ? lsystem->rotation : DEFAULT_ROTATION);
                 } else if(values->size() == 1) {
                     v[0] = values->front();
                     if (v[0].isInt())

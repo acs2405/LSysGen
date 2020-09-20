@@ -8,10 +8,6 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 ## Example images (generated with the program)
 
-![Sierpinski](./images/sierpinski-6.svg)
-
-Sierpinski triangle (sierpinski.lsd, 6 iterations)
-
 ![Some parametric random plant](./images/b2-20-1.svg)
 
 Some parametric random plant (b2.lsd, 20 iterations)
@@ -40,18 +36,6 @@ This program uses Boost libraries. To install boost:
 sudo apt install libboost1.67-dev
 ```
 
-<!--To compile the program you will need to put the ANTLR 4 (I am using 4.8) `.so` libraries in `libs/`. You can build them from source, in their [C++ runtime repo](https://github.com/antlr/antlr4/tree/master/runtime/Cpp) (you can download the version 4.8 [here](https://www.antlr.org/download/antlr4-cpp-runtime-4.8-source.zip)), and copy the generated libraries (in `dist/`) to `libs/`. To build from source, run:
-
-```
-cd <antlr4-runtime-source-dir>
-mkdir build && cd build
-cmake ..
-make
-mkdir <lsysgen-dir>/libs
-cp ../dist/* <lsysgen-dir>/libs
-```
--->
-
 Then, in LSysGen folder, run:
 
 ```
@@ -62,7 +46,7 @@ make
 
 If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output, `lsys2svg` that prints and SVG image of the L system and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
 
-(Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
+(*Optional*) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
 ```
 java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
@@ -109,7 +93,109 @@ $ python3 lsys\.py \-h
 
 By default, the program will interpret the L-System and will draw it in a new window.-->
 
+## Example L systems
+
+Example `*.lsd` files are provided in `examples/`. You just have to execute the program with the name of the file as its parameter, and optionally a number of iterations.
+
 ## Syntax and semantics
+
+### Document structure
+
+To define an L system with an axiom and the rules that transform it, I have created the LSD (L System Descriptor) specific purpose language.
+
+In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:
+
+```
+echo "n(255,0,0)F+F+PF+F+F+Fp+F+F" | ./build/lsys2d - > images/test.svg
+```
+
+But this is not the main case. If we want to *generate* the L system, we create an LSD document for it.
+
+The LSD document consists on a series of definitions inside a name:
+
+```
+lsystem Name {
+
+    # definitions...
+
+}
+```
+
+or anonymous, without any name:
+
+```
+# definitions...
+```
+
+The three most important definitions in an L system are the **axiom**, the **rules** and the **number of iterations** (they are explained in further subsections).
+
+For example, the sierpinski triangle in `examples/sierpinski.lsd`:
+
+```
+lsystem SierpinskiTriangle {
+
+    axiom F-G-G
+
+    set iterations = 6
+    set initial_heading = 0
+    set rotation = -120
+
+    rules {
+        F -> F-G+F+G-F
+        G -> GG
+
+        G => F
+    }
+
+}
+```
+
+If we run:
+
+```
+./build/lsys2svg examples/sierpinski.lsd > images/sierp.svg
+```
+
+This generates:
+
+![Sierpinski](./images/sierpinski-6.svg)
+
+An example of an anonymous L system:
+
+```
+echo "axiom A; A->B; B->AB" | ./build/lsys - 5
+```
+
+This gives us `BABABBAB`.
+
+### Comments
+
+Every line followed by the character `#` is a comment and will be ignored by the interpreter:
+
+```
+# Hey I'm a comment
+set notAComment = 3 #aComment
+```
+
+### The axiom
+
+The axiom of an L system is the initial string and must be always defined once for each L system. This string is changed by the rules in the first iteration. The result of that is changed again by the rules in the second iteration... and so on.
+
+We define an axiom:
+
+```
+axiom AB;
+```
+
+Semicolons at the end of each definition are only required if you wish to write several definitions in the same line.
+
+### Number of iterations
+
+This is the number of times that rules will be applied to generate the L system. We just have to define the property `iterations` as a non-negative integer:
+
+```
+set iterations = 6
+```
 
 ### Production rules
 
@@ -138,7 +224,7 @@ A DOL system (the most basic one) has rules of type:
 char -> replacement
 ```
 
-where the `char` occurrences are replaced by `replacement`.
+where the `char` occurrences are replaced by `replacement` in each iteration.
 A DIL system (context-sensitive) would have rules with a left context:
 
 ```
@@ -294,33 +380,30 @@ u => [+F]     # Valid
     
 The syntax of the coding rules is the same than production rules', but using double arrow (`=>`). They also work similarly. Note that coding rules don't belong to tables, but they are global.
 
-### Comments
-
-Every line followed by the character `#` is a comment:
-
-```
-# Hey I'm a comment
-set notAComment = 3 #aComment
-```
-
 ### Properties
 
-We have seen the `table_func` function to choose which table to choose each time. We can also define properties. The ones that the system understand (and require) are:
+We have seen the `iterations` property and the `table_func` function to choose which table to choose each iteration. We can define any property. These are predefined properties used by the L system generator:
 
 ```
-set axiom = "aabb"          # This line sets the axiom string of the L-System
-set iterations = 8          # This line sets the number of iterations that the system will be executing
-set ignore = ""             # (optional) This property sets the characters that must be ignored as context (see contexts in rules)
-set initial_heading = 90    # (optional, defaults 90) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
-set rotation = 30           # (optional, defaults 30) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
-set line_width = 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width os 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set iterations = 8          # (defaults 0) This line sets the number of iterations that the system will be executing
+set ignore = ""             # (optional, defaults "") This property sets the characters that must be ignored as context (see contexts in rules)
 ```
 
-Example `*.lsd` files are provided in `examples/`. You just have to execute the program with the name of the file as its parameter.
+And these are the properties used by the 2D interpreter:
+
+```
+set initial_heading = 90    # (optional, defaults 0) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
+set rotation = 30           # (optional, defaults 12) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width = 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+```
+
+You can also define any other property you want, and use them in the expressions of parametric rules.
 
 ## 2D Display interpretation
 
-The program `lsys2d` draws vector graphics after the resulting string, interpreting some special characters:
+The program `lsys2d` draws vector graphics after the resulting string and `lsys2svg` creates an SVG image file from the same result (without opening a window).
+
+The special characters that 2D interpretation uses are:
 
 - `F` draws a forward line.
 - `G` draws a backward line.
@@ -365,6 +448,7 @@ inkscape -o test.png -w 1000 -b white test.svg
 - Get rid of boost dependency?
 - Capture all LSD semantic errors and expression evaluation errors
 - Debug
+- Compile in windows?
 - Run in a web page
 - 3D representation and model export?
 - Music representation?
