@@ -17,7 +17,7 @@
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 3) {
-        std::cerr << "Usage: lsysgen FILE.lsd [N_ITERATIONS]" << std::endl;
+        std::cerr << "Usage: lsys2d FILE.lsd [N_ITERATIONS]" << std::endl;
         exit(1);
     }
 
@@ -64,12 +64,6 @@ public:
     static void specialKeyPressed(int key, int x, int y) {drawer->specialKeyPressed(key, x, y);}
 };
 Drawer2D* Drawer2DDisplayer::drawer = nullptr;
-
-Color::Color(float r, float g, float b, float a): r(r), g(g), b(b), a(a) {}
-Color::Color(): r(0.0), g(0.0), b(0.0), a(1.0) {}
-
-State2D::State2D(): x(0), y(0), dir(0.0), 
-        penColor(Color()), fillColor(Color()) {}
 
 Drawer2D::Drawer2D(LSystem<char>* lsystem): lsystem(lsystem) {}
 
@@ -178,7 +172,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                 }
             }
             if (fill)
-                fillList->push_back(Point2D{state.x, state.y});
+                fillList->push_back(Point2D{state.pos.x, state.pos.y});
             if (node->element() == 'p') {
                 if (fill) {
                     if (draw) {
@@ -204,23 +198,23 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                 // glEnd();
                 glBegin(GL_LINE_STRIP);
                 glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
-                glVertex2f(state.x, state.y);
+                glVertex2f(state.pos.x, state.pos.y);
             } else if (lastDraw == true && draw == false) {
                 glEnd();
                 // glBegin(GL_POINTS);
             }
             if (move > 0) {
-                state.x += move*std::cos(state.dir*M_PI/180);
-                state.y += move*std::sin(state.dir*M_PI/180);
-                if (state.x < bounds.x0)
-                    bounds.x0 = state.x;
-                if (state.y < bounds.y0)
-                    bounds.y0 = state.y;
-                if (state.x > bounds.x1)
-                    bounds.x1 = state.x;
-                if (state.y > bounds.y1)
-                    bounds.y1 = state.y;
-                glVertex2f(state.x, state.y);
+                state.pos.x += move*std::cos(state.dir*M_PI/180);
+                state.pos.y += move*std::sin(state.dir*M_PI/180);
+                if (state.pos.x < bounds.x0)
+                    bounds.x0 = state.pos.x;
+                if (state.pos.y < bounds.y0)
+                    bounds.y0 = state.pos.y;
+                if (state.pos.x > bounds.x1)
+                    bounds.x1 = state.pos.x;
+                if (state.pos.y > bounds.y1)
+                    bounds.y1 = state.pos.y;
+                glVertex2f(state.pos.x, state.pos.y);
             }
             lastDraw = draw;
         } else {

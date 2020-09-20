@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv) {
     if (argc < 2 || argc > 3) {
-        std::cerr << "Usage: lsysgen FILE.lsd [N_ITERATIONS]" << std::endl;
+        std::cerr << "Usage: lsys FILE.lsd [N_ITERATIONS]" << std::endl;
         exit(1);
     }
 
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     // for (lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* iteration : *lsystem->encodedProgression) {
     //     std::cout << i++ << ": " << iteration->toString() << std::endl;
     // }
-    std::cout << lsystem->encodedProgression->back()->toString() << std::endl;
+    std::cout << lsystem->current()->toString() << std::endl;
 
     return 0;
 }

@@ -6,6 +6,28 @@ The project is able to generate L-Systems after its axiom and rules and print th
 
 An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).
 
+## Example images (generated with the program)
+
+![Image](./images/sierpinski-6.svg)
+
+{{< caption >}}Sierpinski triangle (sierpinski.lsd, 6 iterations){{< /caption >}}
+
+![Image](./images/b2-20-1.svg)
+
+{{< caption >}}B2 (b2.lsd, 20 iterations){{< /caption >}}
+
+![Image](./images/penrose-4.svg)
+
+{{< caption >}}Penrose tiling (penrose.lsd, 4 iterations){{< /caption >}}
+
+![Image](./images/cantor-parametric-8.svg)
+
+{{< caption >}}Cantor (cantor-parametric.lsd, 8 iterations){{< /caption >}}
+
+![Image](./images/dragon-10.svg)
+
+{{< caption >}}Dragon curve (dragon.lsd, 10 iterations){{< /caption >}}
+
 ## The program
 
 ### Compilation
@@ -18,7 +40,7 @@ This program uses Boost libraries. To install boost:
 sudo apt install libboost1.67-dev
 ```
 
-To compile the program you will need to put the ANTLR 4 (I am using 4.8) `.so` libraries <!--(`*.a`, `*.so` for Linux, `*.a` and `*.dylib` for macOS and `*.dll` for Windows) -->in `libs/`. You can build them from source, in their [C++ runtime repo](https://github.com/antlr/antlr4/tree/master/runtime/Cpp) (you can download the version 4.8 [here](https://www.antlr.org/download/antlr4-cpp-runtime-4.8-source.zip)), and copy the generated libraries (in `dist/`) to `libs/`. To build from source, run:
+<!--To compile the program you will need to put the ANTLR 4 (I am using 4.8) `.so` libraries in `libs/`. You can build them from source, in their [C++ runtime repo](https://github.com/antlr/antlr4/tree/master/runtime/Cpp) (you can download the version 4.8 [here](https://www.antlr.org/download/antlr4-cpp-runtime-4.8-source.zip)), and copy the generated libraries (in `dist/`) to `libs/`. To build from source, run:
 
 ```
 cd <antlr4-runtime-source-dir>
@@ -28,6 +50,7 @@ make
 mkdir <lsysgen-dir>/libs
 cp ../dist/* <lsysgen-dir>/libs
 ```
+-->
 
 Then, in LSysGen folder, run:
 
@@ -37,7 +60,7 @@ cmake ..
 make
 ```
 
-If everything goes well, you will have the executable `lsys` that prints the generated string in the standard output, and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
+If everything goes well, you will get the shared library `lsysgen.so` the executable `lsys` that prints the generated string in the standard output, `lsys2svg` that prints and SVG image of the L system and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
 
 (Optional) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
 
@@ -55,16 +78,17 @@ antlr4 -Dlanguage=Cpp -o antlr-gen/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-li
 
 There are two executables in this project: `lsys` and `lsys2d`. They work with the same inputs, but `lsys` prints the result and `lsys2d` shows a 2D representation of the result in a new window.
 
-There is an extra Python executable, `lsys.py`, that fetches the generated shared library and works just like the `lsys` executable, but serves as a Python wrapper example of the library.
+There is also a Python module, `lsys.py`, that fetches the generated shared library and serves as a Python wrapper of the library (through its class `LSystem` that is able to print the L system and also its SVG representation).
 
 To execute any of the above mentioned programs, go to `build/` and run either of:
 
 ```
 ./lsys FILE [N_ITERATIONS]
+./lsys2svg FILE [N_ITERATIONS]
 ./lsys2d FILE [N_ITERATIONS]
 ```
 
-Or run the python script, depending on which is your python interpreter (first and second lines are equivalent):
+The python script is also runnable and prints the resulting L system string and the SVG image:
 
 ```
 ./lsys.py FILE [N_ITERATIONS]
@@ -76,7 +100,7 @@ python lsys.py FILE [N_ITERATIONS]
 ```
 echo "set axiom='a';a->b;b->ab;" | ./lsys - 12
 echo "set axiom='a';set iterations=12;a->b;b->ab;" | ./lsys -
-./lsys b2.lsd 20
+./lsys ../examples/b2.lsd 20
 ```
 
 <!--There are some useful options that you can see with the help:
@@ -295,7 +319,7 @@ Example `*.lsd` files are provided in `examples/`. You just have to execute the 
 
 ## 2D Display interpretation
 
-The program draws vector graphics after the resulting string, interpreting some special characters:
+The program `lsys2d` draws vector graphics after the resulting string, interpreting some special characters:
 
 - `F` draws a forward line.
 - `G` draws a backward line.
@@ -317,6 +341,8 @@ The state is a position, heading and color configuration. When closing a bracket
 - `n` works as `c` but only with pen color.
 - `l` works as `c` but only with fill color.
 
+Color changes won't be visible while filling, so they are not recommended under filling.
+
 - `P` to start delimiting a figure to fill.
 - `p` to end delimiting the figure.
 
@@ -324,13 +350,21 @@ It is not possible to fill two figures if one contains another in the string. Th
 
 The rest of the characters will be ignored when displaying.
 
+## SVG
+
+`lsys2svg` converts the L-system to SVG. If you want to convert the image later to PNG, for example, in linux you can use inkscape:
+
+```
+inkscape -o test.png -w 1000 -b white test.svg
+```
+
 ## Next steps
 
 - Manage pointers (destructors and deletes)
+- Get rid of boost dependency?
 - Capture all LSD semantic errors and expression evaluation errors
-- Catch bugs
-- Interactive window
-- Export to image
+- Debug
+- Run in a web page
 - 3D representation and model export?
 - Music representation?
 - Optimize expressions (getting rid of strings and transforming trivial expressions into values)

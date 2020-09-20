@@ -6,20 +6,36 @@
 
 
 
-const char* generateLSystem(const char* file, int iterations) {
+lsysgen::LSystem<char>* lsystem_create(const char* file, int iterations) {
     lsysgen::LSystem<char>* lsystem = parseLSystemFromFile(file);
 
     if (lsystem == nullptr)
-        return "";
+        return nullptr;
 
     if (iterations >= 0) {
         lsystem->iterations = iterations;
     }
 
     lsystem->prepare();
-    lsystem->iterate();
+    // lsystem->iterate();
 
-    std::string sret = lsystem->encodedProgression->back()->toString();
+    return lsystem;
+}
+
+void lsystem_generate(LSystem<char>* lsystem) {
+    lsystem->iterate();
+}
+
+void lsystem_iterate(LSystem<char>* lsystem, int iterations) {
+    lsystem->iterate(iterations);
+}
+
+int lsystem_get_iteration_number(LSystem<char>* lsystem) {
+    return lsystem->iteration();
+}
+
+const char* lsystem_get_result_string(LSystem<char>* lsystem) {
+    std::string sret = lsystem->current()->toString();
     const char* ret1 = sret.c_str();
     char *ret = new char[sret.size()+1];
     strcpy(ret, ret1);
@@ -27,7 +43,19 @@ const char* generateLSystem(const char* file, int iterations) {
     return ret;
 }
 
-lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file) {
+const char* lsystem_to_svg(LSystem<char>* lsystem) {
+
+    std::string sret = node2svg(lsystem->current(), lsystem);
+    const char* ret1 = sret.c_str();
+    char *ret = new char[sret.size()+1];
+    strcpy(ret, ret1);
+
+    return ret;
+}
+
+
+
+lsysgen::LSystem<char>* parseLSystemFromFile(const char* file) {
     if (file == "-") {
         return parseLSystemFromStream(std::cin, "<stdin>");
     } else {

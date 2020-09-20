@@ -166,6 +166,24 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             else
                 this->error("rotation must be a number");
         }
+        // if (this->env->has("line_length")) {
+        //     Value v = this->env->get("line_length");
+        //     if (v.isFloat())
+        //         lsys->lineLength = v.asFloat();
+        //     else if (v.isInt())
+        //         lsys->lineLength = v.asInt();
+        //     else
+        //         this->error("line_length must be a number");
+        // }
+        if (this->env->has("line_width")) {
+            Value v = this->env->get("line_width");
+            if (v.isFloat())
+                lsys->lineWidth = v.asFloat();
+            else if (v.isInt())
+                lsys->lineWidth = v.asInt();
+            else
+                this->error("line_width must be a number");
+        }
         lsys->env = this->env;
     }
 

@@ -4,17 +4,12 @@
 
 namespace lsysgen {
 
-class Color;
-
-class Point2D;
-
-class State2D;
-
 class Drawer2D;
 
 }
 
 #include "lsysgen.h"
+#include "interpreter2D.h"
 
 #if defined(__linux) || defined(__linux__) || defined(linux)
 #define LINUX
@@ -33,33 +28,33 @@ class Drawer2D;
 
 namespace lsysgen {
 
-struct Color {
-	float r;
-	float g;
-	float b;
-	float a;
+// struct Color {
+// 	float r;
+// 	float g;
+// 	float b;
+// 	float a;
 
-	Color(float r, float g, float b, float a=1.0);
-	Color();
-};
+// 	Color(float r, float g, float b, float a=1.0);
+// 	Color();
+// };
 
-class Point2D {
-public:
-	float x;
-	float y;
-};
+// class Point2D {
+// public:
+// 	float x;
+// 	float y;
+// };
 
-class State2D {
-public:
-	float x;
-	float y;
-	double dir;
-	Color penColor;
-	Color fillColor;
-	// bool filling;
+// class State2D {
+// public:
+// 	float x;
+// 	float y;
+// 	double dir;
+// 	Color penColor;
+// 	Color fillColor;
+// 	// bool filling;
 
-	State2D();
-};
+// 	State2D();
+// };
 
 class Drawer2D {
 	LSystem<char>* lsystem;

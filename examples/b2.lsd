@@ -7,6 +7,7 @@ set iterations = 20
 set ignore = "F+-c"
 set initial_heading = 90
 set rotation = 12.5
+set line_width = 1.0
 
 set table_func(i) = if (i % 5 != 0) then 't1' else 't1'
 

@@ -44,6 +44,8 @@ public:
 	std::list<T>* ignore;
 	double initialHeading;
 	double rotation;
+	// double lineLength;
+	double lineWidth;
 
     std::vector<ParseTreeNode<InstanceNodeContent, T>*>* progression;
     std::vector<ParseTreeNode<InstanceNodeContent, T>*>* encodedProgression;
@@ -57,6 +59,7 @@ public:
 	void iterate();
 	void iterate(int iterations);
 	ParseTreeNode<InstanceNodeContent, T>* current();
+	int iteration();
 	Table<T>* getTable(int i);
 };
 

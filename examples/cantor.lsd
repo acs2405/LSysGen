@@ -15,6 +15,6 @@ rules {
 	S => F
 	A => F
 	a => f
-	b => +f-
+	b => +ff-
 
 }

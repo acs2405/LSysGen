@@ -24,4 +24,6 @@ rules {
 coding rules {
 	R(l, w) => F #[-(90)PF(w/2.0)+(90)F(l)+(90)F(w)+(90)F(l)+(90)F(w/2.0)p]f(l)
 	C => [+(90-a/2)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F-(a)F]
+	#A =>
+	#B =>
 }

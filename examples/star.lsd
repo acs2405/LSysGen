@@ -20,6 +20,6 @@ production rules {
 
 coding rules {
 	A(i) => 
-	B(i) => F(1)
+	B(i) => F(50)
 	C(i) => -(180 - 180/(2.0*i-1)) # Para estrellas de lados impares
 }

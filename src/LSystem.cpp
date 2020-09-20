@@ -9,7 +9,8 @@ namespace lsysgen {
 template<typename T>
 LSystem<T>::LSystem(): env(nullptr), name(""), tables(nullptr), defaultTable(nullptr), 
         codingRules(nullptr), taggedRules(nullptr), tableFunc(nullptr), axiom(nullptr), 
-        iterations(0), ignore(nullptr), initialHeading(0.0), rotation(0.0), _current(-1) {
+        iterations(0), ignore(nullptr), initialHeading(0.0), rotation(0.0),
+        lineWidth(0.0), _current(-1) {
     this->progression = new std::vector<ParseTreeNode<InstanceNodeContent, T>*>();
     this->encodedProgression = new std::vector<ParseTreeNode<InstanceNodeContent, T>*>();
 }
@@ -65,6 +66,11 @@ void LSystem<T>::iterate(int iterations) {
 template<typename T>
 ParseTreeNode<InstanceNodeContent, T>* LSystem<T>::current() {
     return this->encodedProgression->at(this->_current);
+}
+
+template<typename T>
+int LSystem<T>::iteration() {
+    return this->_current;
 }
 
 template<typename T>
