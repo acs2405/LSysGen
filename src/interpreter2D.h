@@ -38,9 +38,10 @@ public:
 	// float x;
 	// float y;
 	Point2D pos;
-	double dir;
+	float dir;
 	Color penColor;
 	Color fillColor;
+	float lineWidth;
 	// bool filling;
 
 	State2D();

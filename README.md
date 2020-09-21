@@ -422,13 +422,16 @@ The special characters that 2D interpretation uses are:
 - `[` pushes a state / creates a branch.
 - `]` pops a state / closes the branch.
 
-The state is a position, heading and color configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
+The state is a position, heading, color and line width configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
 
 - `c(r, g, b)` or `c(r, g, b, a)` changes the pen and fill color to the specified by the parameter(s) (`r` for red, `g` for green, `b` for blue and `a` for opacity; colors and opacity values range from 0 to 255 or from 0.0 to 1.0) until the end of the current branch or until it is changed again. For example, `c(255, 0, 0)` sets color to red (opaque by default), `c(80, 80, 80, 0.5)` sets color to semi-transparent dark grey and `c(1.0, 0.0, 1.0, 1.0)` sets color to opaque pink. Default fill and pen color is black.
 - `n` works as `c` but only with pen color.
 - `l` works as `c` but only with fill color.
 
-Color changes won't be visible while filling, so they are not recommended under filling.
+- `w()` or `w(wid)` changes the line width of the following lines to `wid` or to the value of the property `line_width` by default.
+`w(wid)` works as the property `line_width` but it affects anly the following lines instead of being global.
+
+Color and line width changes won't be visible while filling, so they are not recommended under filling.
 
 - `P` to start delimiting a figure to fill. `P(r, g, b)` and `P(r, g, b, a)` is also valid and works as l but just for the current fill.
 - `p` to end delimiting the figure.

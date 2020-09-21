@@ -32,7 +32,7 @@ std::string Color::toString() const {
     // return std::format("#{0:02X}{1:02X}{2:02X}", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
 }
 
-State2D::State2D(): pos(), dir(0.0), penColor(), fillColor() {}
+State2D::State2D(): pos(), dir(0.0), penColor(), fillColor(), lineWidth(NAN) {}
 
 Bounds2D::Bounds2D(): p0(), p1() {}
 
@@ -44,6 +44,8 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, LSystem<c
     State2D initialState;
     Bounds2D bounds;
     initialState.dir = lsystem ? lsystem->initialHeading : DEFAULT_INITIAL_HEADING;
+    float globalLineWidth = lsystem && !std::isnan(lsystem->lineWidth) ? lsystem->lineWidth : DEFAULT_LINE_WIDTH;
+    initialState.lineWidth = globalLineWidth;
     std::string svgContent = node2svg(parent, initialState, bounds, lsystem);
     float marginProportion = 0.05;
     float boundsWidth = bounds.p1.x - bounds.p0.x,
@@ -88,7 +90,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
     // std::list<Point2D>* fillList = new std::list<Point2D>();
     bool draw = false, fill = false, drawn = false;
     float globalLineWidth = lsystem && !std::isnan(lsystem->lineWidth) ? lsystem->lineWidth : DEFAULT_LINE_WIDTH;
-    float lineWidth = globalLineWidth;
+    // float lineWidth = globalLineWidth;
     std::string element = "";
     char curve = 0;
     std::list<Point2D> curvePoints;
@@ -107,7 +109,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
             }
             if (!inPath) {
                 element = "<path stroke=\"" + state.penColor.toString();
-                element += "\" stroke-width=\"" + std::to_string(lineWidth);
+                element += "\" stroke-width=\"" + std::to_string(state.lineWidth);
                 element += "\" fill=\"" + fillstr + "\" d=\"M";
                 element += state.pos.toString();
                 inPath = true;
@@ -134,7 +136,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                 } else if(values->size() == 1) {
                     v[0] = values->front();
                     if (v[0].isInt())
-                        state.dir += static_cast<double>(sign*v[0].asInt());
+                        state.dir += static_cast<float>(sign*v[0].asInt());
                     else if (v[0].isFloat())
                         state.dir += sign*v[0].asFloat();
                     // TODO else error
@@ -248,15 +250,19 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
             } else if (node->element() == 'w') {
                 if (values != nullptr) {
                     if(values->size() == 0) {
-                        lineWidth = globalLineWidth;
+                        state.lineWidth = globalLineWidth;
                         endPath = true;
                     } else if(values->size() == 1) {
                         if (values->at(0).isInt())
-                            lineWidth = static_cast<float>(values->at(0).asInt());
+                            state.lineWidth = static_cast<float>(values->at(0).asInt());
                         else if (values->at(0).isFloat())
-                            lineWidth = values->at(0).asFloat();
+                            state.lineWidth = values->at(0).asFloat();
                         // TODO else error
-                        endPath = true;
+                        if (fill) {
+                            // TODO error ¿cambiar el ancho dentro de un relleno?
+                        } else {
+                            endPath = true;
+                        }
                     } // TODO else error
                 }
             } else if (node->element() == 'z' || node->element() == 's' ||
@@ -291,7 +297,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                     svgContent += "\" cy=\"" + std::to_string(state.pos.y);
                     svgContent += "\" r=\"" + std::to_string(r);
                     svgContent += "\" stroke=\"" + state.penColor.toString();
-                    svgContent += "\" stroke-width=\"" + std::to_string(lineWidth);
+                    svgContent += "\" stroke-width=\"" + std::to_string(state.lineWidth);
                     svgContent += "\" fill=\"" + fillstr + "\"/>\n";
                 }
             }
