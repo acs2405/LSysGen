@@ -23,13 +23,16 @@ Color::Color(float r, float g, float b, float a): r(r), g(g), b(b), a(a) {}
 Color::Color(): r(0.0), g(0.0), b(0.0), a(1.0) {}
 
 std::string Color::toString() const {
-    char buf[25];
-    sprintf(buf, "#%02X%02X%02X", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
+    char buf[50];
+    if (a == 1.0)
+        sprintf(buf, "#%02X%02X%02X", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
+    else
+        sprintf(buf, "rgba(%d,%d,%d,%f)", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b), a);
     return buf;
     // return std::format("#{0:02X}{1:02X}{2:02X}", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
 }
 
-State2D::State2D(): pos(), dir(0.0), penColor(Color()), fillColor(Color()) {}
+State2D::State2D(): pos(), dir(0.0), penColor(), fillColor() {}
 
 Bounds2D::Bounds2D(): p0(), p1() {}
 
@@ -77,37 +80,42 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
     // glBegin(GL_POINTS);
     ParseTreeNode<InstanceNodeContent, char>* node;
     std::vector<Value>* values;
-    Value v[3];
+    Value v[4];
     double move;
-    bool draw = false, endPath = false, inPath = false;
+    bool endPath = false, inPath = false;
     // std::string command = "";
     // bool fill = false;
     // std::list<Point2D>* fillList = new std::list<Point2D>();
-    bool fill = false;
+    bool draw = false, fill = false, drawn = false;
+    float globalLineWidth = lsystem && !std::isnan(lsystem->lineWidth) ? lsystem->lineWidth : DEFAULT_LINE_WIDTH;
+    float lineWidth = globalLineWidth;
+    std::string element = "";
+    char curve = 0;
+    std::list<Point2D> curvePoints;
     for (node = parent->leftmostChild();
             node != nullptr;
             node = node->right()) {
+        draw = false;
         move = 0.0;
         if (node->isLeaf()) {
+            values = node->content()->values;
+            std::string fillstr;
+            if (fill) {
+                fillstr = state.fillColor.toString();
+            } else {
+                fillstr = "none";
+            }
             if (!inPath) {
-                std::string fillstr;
-                if (fill) {
-                    fillstr = state.fillColor.toString();
-                } else {
-                    fillstr = "none";
-                }
-                svgContent += "<path stroke=\"" + state.penColor.toString();
-                // float lineLength = lsystem && lsystem->lineLength > 0 ? lsystem->lineLength : DEFAULT_LINE_LENGTH;
-                float lineWidth = lsystem && lsystem->lineWidth > 0 ? lsystem->lineWidth : DEFAULT_LINE_WIDTH;
-                svgContent += "\" stroke-width=\"" + std::to_string(lineWidth);
-                svgContent += "\" fill=\"" + fillstr + "\" d=\"M";
-                svgContent += state.pos.toString();
+                element = "<path stroke=\"" + state.penColor.toString();
+                element += "\" stroke-width=\"" + std::to_string(lineWidth);
+                element += "\" fill=\"" + fillstr + "\" d=\"M";
+                element += state.pos.toString();
                 inPath = true;
             }
             if (node->element() == 'F' || node->element() == 'G' ||
                     node->element() == 'f' || node->element() == 'g') {
                 double sign = (node->element() == 'F' || node->element() == 'f') ? 1.0 : -1.0;
-                values = node->content()->values;
+                draw = (node->element() == 'F' || node->element() == 'G') ? true : false;
                 if (values == nullptr || values->size() == 0) {
                     move = sign;
                 } else if(values->size() == 1) {
@@ -118,11 +126,9 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                         move = v[0].asFloat()*sign;
                     // TODO else error
                 } // TODO else error
-                draw = (node->element() == 'F' || node->element() == 'G') ? true : false;
                 // command = (node->element() == 'F' || node->element() == 'G') ? "L" : "M";
             } else if (node->element() == '+' || node->element() == '-') {
                 double sign = node->element() == '+' ? 1.0 : -1.0;
-                values = node->content()->values;
                 if (values == nullptr || values->size() == 0) {
                     state.dir += sign*(lsystem && !std::isnan(lsystem->rotation) ? lsystem->rotation : DEFAULT_ROTATION);
                 } else if(values->size() == 1) {
@@ -134,32 +140,43 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                     // TODO else error
                 } // TODO else error
             } else if (node->element() == 'c' || node->element() == 'n' ||
-                    node->element() == 'l') {
-                values = node->content()->values;
-                if (values != nullptr) {
+                    node->element() == 'l' || node->element() == 'P') {
+                if (values != nullptr && (values->size() == 3 || values->size() == 4)) {
                     float r = 1.0, g = 1.0, b = 1.0, a = 1.0;
-                    if(values->size() == 1) {
-                        v[0] = values->front();
-                        r = ((v[0].asInt() & 0xFF0000)>>16) / 255.0;
-                        g = ((v[0].asInt() & 0x00FF00)>> 8) / 255.0;
-                        b = ((v[0].asInt() & 0x0000FF)    ) / 255.0;
-                        a = 1.0;
-                    } else if (values->size() == 3) {
+                    // if(values->size() == 1) {
+                    //     v[0] = values->front();
+                    //     r = ((v[0].asInt() & 0xFF0000)>>16) / 255.0;
+                    //     g = ((v[0].asInt() & 0x00FF00)>> 8) / 255.0;
+                    //     b = ((v[0].asInt() & 0x0000FF)    ) / 255.0;
+                    //     a = 1.0;
+                    // } else 
+                    if (values->size() == 3 || values->size() == 4) {
                         v[0] = values->at(0);
                         v[1] = values->at(1);
                         v[2] = values->at(2);
+                        a = 1.0;
+                        if (values->size() == 4)
+                            v[3] = values->at(3);
                         if (v[0].isInt() && v[1].isInt() && v[2].isInt()) {
                             r = v[0].asInt() / 255.0;
                             g = v[1].asInt() / 255.0;
                             b = v[2].asInt() / 255.0;
+                            if (values->size() == 4) {
+                                if (v[3].isInt())
+                                    a = v[3].asInt() / 255.0;
+                                else if (v[3].isFloat())
+                                    a = v[3].asFloat();
+                                // TODO else error
+                            }
                         } else if (v[0].isFloat() && v[1].isFloat() && v[2].isFloat()) {
                             r = v[0].asFloat();
                             g = v[1].asFloat();
                             b = v[2].asFloat();
+                            if (values->size() == 4)
+                                a = v[3].asFloat();
                         } else {
                             // TODO error
                         }
-                        a = 1.0;
                     } else {
                         // TODO error
                     }
@@ -169,14 +186,14 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                         state.penColor.b = b;
                         state.penColor.a = a;
                     }
-                    if (node->element() == 'c' || node->element() == 'l') {
+                    if (node->element() == 'c' || node->element() == 'l' || node->element() == 'P') {
                         state.fillColor.r = r;
                         state.fillColor.g = g;
                         state.fillColor.b = b;
                         state.fillColor.a = a;
                     }
                     if (fill) {
-                        // TODO ¿cambiar el color dentro de un relleno?
+                        // TODO error ¿cambiar el color dentro de un relleno?
                     } else {
                         endPath = true;
                     }
@@ -189,39 +206,100 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                     // glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
                     // std::cout << state.penColor.r << ", " << state.penColor.g << ", " << state.penColor.b << std::endl;
                 }
-            } else if (node->element() == 'P') {
-                if (fill) {
-                    // TODO error
-                } else {
-                    // Save points to fill a polygon with them later
-                    // fill = new Shape2D(Shape2D::MODE_FILL);
-                    fill = true;
-                    endPath = true;
+            }
+            if (node->element() == 'P') {
+                if (values == nullptr || values->size() == 3 || values->size() == 4) {
+                    if (fill) {
+                        // TODO error
+                    } else {
+                        // Save points to fill a polygon with them later
+                        // fill = new Shape2D(Shape2D::MODE_FILL);
+                        fill = true;
+                        endPath = true;
+                    }
                 }
             }
             // if (fill)
             //     fill->points->push_back(Point2D{state.x, state.y});
             if (node->element() == 'p') {
-                if (fill) {
-                    // if (draw) {
-                    //     glEnd();
-                    // }
-                    // glBegin(GL_POLYGON);
-                    // glColor4f(state.fillColor.r, state.fillColor.g, state.fillColor.b, state.fillColor.a);
-                    // // Fill a polygon with the saved points
-                    // for (Point2D p : *fill)
-                    //     glVertex2f(p.x, p.y);
-                    // // fill->clear();
-                    // glEnd();
-                    // if (draw) {
-                    //     glBegin(GL_LINE_STRIP);
-                    //     glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
-                    // }
-                    // fill = nullptr;
-                    fill = false;
+                if (values == nullptr) {
+                    if (fill) {
+                        // if (draw) {
+                        //     glEnd();
+                        // }
+                        // glBegin(GL_POLYGON);
+                        // glColor4f(state.fillColor.r, state.fillColor.g, state.fillColor.b, state.fillColor.a);
+                        // // Fill a polygon with the saved points
+                        // for (Point2D p : *fill)
+                        //     glVertex2f(p.x, p.y);
+                        // // fill->clear();
+                        // glEnd();
+                        // if (draw) {
+                        //     glBegin(GL_LINE_STRIP);
+                        //     glColor4f(state.penColor.r, state.penColor.g, state.penColor.b, state.penColor.a);
+                        // }
+                        // fill = nullptr;
+                        fill = false;
+                        endPath = true;
+                    } else {
+                        // TODO error
+                    }
+                }
+            } else if (node->element() == 'w') {
+                if (values != nullptr) {
+                    if(values->size() == 0) {
+                        lineWidth = globalLineWidth;
+                        endPath = true;
+                    } else if(values->size() == 1) {
+                        if (values->at(0).isInt())
+                            lineWidth = static_cast<float>(values->at(0).asInt());
+                        else if (values->at(0).isFloat())
+                            lineWidth = values->at(0).asFloat();
+                        // TODO else error
+                        endPath = true;
+                    } // TODO else error
+                }
+            } else if (node->element() == 'z' || node->element() == 's' ||
+                    node->element() == 'q' || node->element() == 't') {
+                if (values != nullptr) {
+                    if (curve == 0) {
+                        if (node->element() == 'z')
+                            curve = 'C';
+                        else if (node->element() == 's')
+                            curve = 'S';
+                        else if (node->element() == 'q')
+                            curve = 'Q';
+                        else if (node->element() == 't')
+                            curve = 'T';
+                        // if (!drawn)
+                        //     curvePoints.push_back(state.pos);
+                    } // TODO else error
+                }
+            } else if (node->element() == 'c') {
+                if (values == nullptr || values->size() == 0 || values->size() == 1) {
+                    float r = 0;
+                    if(values == nullptr || values->size() == 0) {
+                        r = 1.0;
+                    } else if(values->size() == 1) {
+                        if (values->at(0).isInt())
+                            r = static_cast<float>(values->at(0).asInt());
+                        else if (values->at(0).isFloat())
+                            r = values->at(0).asFloat();
+                        // TODO else error
+                    } // TODO else error
+                    svgContent += "<circle cx=\"" + std::to_string(state.pos.x);
+                    svgContent += "\" cy=\"" + std::to_string(state.pos.y);
+                    svgContent += "\" r=\"" + std::to_string(r);
+                    svgContent += "\" stroke=\"" + state.penColor.toString();
+                    svgContent += "\" stroke-width=\"" + std::to_string(lineWidth);
+                    svgContent += "\" fill=\"" + fillstr + "\"/>\n";
+                }
+            }
+            if (node->element() == 'Z') {
+                if (values == nullptr) {
+                    element += 'Z';
+                    // if (!fill)
                     endPath = true;
-                } else {
-                    // TODO error
                 }
             }
             // if (!lastDraw && draw) {
@@ -233,7 +311,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
             //     glEnd();
             //     // glBegin(GL_POINTS);
             // }
-            if (move > 0) {
+            if (move != 0) {
                 state.pos.x += move*std::cos(state.dir*M_PI/180);
                 state.pos.y += move*std::sin(-state.dir*M_PI/180);
                 if (state.pos.x < bounds.p0.x)
@@ -245,38 +323,53 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                 if (state.pos.y > bounds.p1.y)
                     bounds.p1.y = state.pos.y;
             }
+            if (move != 0) {
+                // glVertex2f(state.x, state.y);
+                if (curve && draw) {
+                    curvePoints.push_back(state.pos);
+                    if ((curvePoints.size() == 1 && curve == 'T') || 
+                            (curvePoints.size() == 2 && (curve == 'S' || curve == 'Q')) ||
+                            (curvePoints.size() == 3 && curve == 'C')) {
+                        element += curve;
+                        element += curvePoints.front().toString();
+                        curvePoints.pop_front();
+                        for (Point2D p : curvePoints)
+                            element += "," + p.toString();
+                        curvePoints.clear();
+                        curve = 0;
+                        drawn = true;
+                    }
+                } else if (!curve) {
+                    if (draw)
+                        element += "L";
+                    else
+                        element += "M";
+                    element += state.pos.toString();
+                    if (draw || fill)
+                        drawn = true;
+                }
+            }
             if (endPath) {
                 if (inPath) {
-                    svgContent += "\" />\n";
+                    element += "\" />\n";
+                    // fill = false;
                     inPath = false;
                 }
+                if (drawn)
+                    svgContent += element;
+                element = "";
+                curve = 0;
+                curvePoints.clear();
                 endPath = false;
-            }
-            // if (!inPath) {
-            //     std::string fillstr;
-            //     if (fill) {
-            //         fillstr = state.fillColor.toString();
-            //     } else {
-            //         fillstr = "none";
-            //     }
-            //     svgContent += "<path stroke=\"" + state.penColor.toString();
-            //     svgContent += "\" fill=\"" + fillstr + "\" d=\"";
-            //     inPath = true;
-            // }
-            if (move > 0) {
-                // glVertex2f(state.x, state.y);
-                if (draw)
-                    svgContent += "L";
-                else
-                    svgContent += "M";
-                svgContent += state.pos.toString();
+                drawn = false;
             }
         } else {
             stack->push_back(std::make_pair(state, node));
         }
     }
     if (inPath) {
-        svgContent += "\" />\n";
+        element += "\"/>\n";
+        svgContent += element;
     }
     // if (fill)
     //     glEnd(); //TODO error

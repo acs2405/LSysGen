@@ -11,7 +11,7 @@ template<typename T>
 LSystem<T>::LSystem(): env(nullptr), name(""), tables(nullptr), defaultTable(nullptr), 
         codingRules(nullptr), taggedRules(nullptr), tableFunc(nullptr), axiom(nullptr), 
         iterations(0), ignore(nullptr), initialHeading(0.0), rotation(NAN),
-        lineWidth(0.0), _current(-1) {
+        lineWidth(NAN), _current(-1) {
     this->progression = new std::vector<ParseTreeNode<InstanceNodeContent, T>*>();
     this->encodedProgression = new std::vector<ParseTreeNode<InstanceNodeContent, T>*>();
 }

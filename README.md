@@ -6,23 +6,23 @@ The project is able to generate L-Systems after its axiom and rules, print the r
 
 An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).
 
-## Example images (generated with the program)
+## Examples (generated with the program)
 
-![Some parametric random plant](./images/b2-20-1.svg)
+![Some parametric random plant](./images/B2-20-1.svg)
 
-Some parametric random plant (b2.lsd, 20 iterations)
+Some parametric random plant (B2.lsd, 20 iterations)
 
-![Penrose tiling](./images/penrose-4.svg)
+![Penrose tiling](./images/PenroseTiling-4.svg)
 
-Penrose tiling (penrose.lsd, 4 iterations)
+Penrose tiling (PenroseTiling.lsd, 4 iterations)
 
-![Cantor](./images/cantor-parametric-8.svg)
+![Cantor set](./images/ParametricCantorSet-8.svg)
 
-Cantor (cantor-parametric.lsd, 8 iterations)
+Cantor set (ParametricCantorSet.lsd, 8 iterations)
 
-![Dragon curve](./images/dragon-10.svg)
+![Dragon curve](./images/Dragon-10.svg)
 
-Dragon curve (dragon.lsd, 10 iterations)
+Dragon curve (Dragon.lsd, 10 iterations)
 
 ## The program
 
@@ -154,7 +154,7 @@ lsystem SierpinskiTriangle {
 If we run:
 
 ```
-./build/lsys2svg examples/sierpinski.lsd > images/sierp.svg
+./build/lsys2svg examples/SierpinskiTriangle.lsd > images/SierpinskiTriangle-6.svg
 ```
 
 This generates:
@@ -410,29 +410,40 @@ The special characters that 2D interpretation uses are:
 - `F` draws a forward line.
 - `G` draws a backward line.
 - `f` moves forward without drawing.
+- `g` moves backward without drawing.
 
-`F`, `G` and `f` can have one parameter that specifies the length of the line/move. Default is `1`.
+`F`, `G`, `f` and `g` can have one parameter that specifies the length of the line/move. Default is `1.0`.
 
 - `+` rotates counterclockwise.
 - `-` rotates clockwise.
 
 `+` and `-` can accept one parameter that specifies the rotation angle (in degrees). Default angle is defined by the user in the property `rotation`.
 
-- `[` pushes a state.
-- `]` pops a state.
+- `[` pushes a state / creates a branch.
+- `]` pops a state / closes the branch.
 
 The state is a position, heading and color configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
 
-- `c(0xRRGGBB)` or `c(r, g, b)` changes the pen and fill color to the specified by the parameter(s) until the end of the current branch or until it is changed again. For example, `c(0xff0000)` sets color to red, `c(80, 80, 80)` sets color to dark grey and `c(1.0, 0.0, 1.0)` sets color to pink. Default fill and pen color is black.
+- `c(r, g, b)` or `c(r, g, b, a)` changes the pen and fill color to the specified by the parameter(s) (`r` for red, `g` for green, `b` for blue and `a` for opacity; colors and opacity values range from 0 to 255 or from 0.0 to 1.0) until the end of the current branch or until it is changed again. For example, `c(255, 0, 0)` sets color to red (opaque by default), `c(80, 80, 80, 0.5)` sets color to semi-transparent dark grey and `c(1.0, 0.0, 1.0, 1.0)` sets color to opaque pink. Default fill and pen color is black.
 - `n` works as `c` but only with pen color.
 - `l` works as `c` but only with fill color.
 
 Color changes won't be visible while filling, so they are not recommended under filling.
 
-- `P` to start delimiting a figure to fill.
+- `P` to start delimiting a figure to fill. `P(r, g, b)` and `P(r, g, b, a)` is also valid and works as l but just for the current fill.
 - `p` to end delimiting the figure.
 
-It is not possible to fill two figures if one contains another in the string. This is, a `P` must be followed by a `p` before another `P`. Every `P` must be end eventually in a `p`, and there must not be a `p` without a `P` before. They work in the same branch, not in children nor in parent.
+It is not possible to fill two figures if one contains another in the string. This is, every `P` must be followed by a `p` before branch end or another `P`, and there must not be a `p` without a `P` before. They work in the same branch, not in children nor in parent, and if you start a branch while filling, the new branch won't be filled.
+
+- `Z` to close the current path.
+Paths are continuous until a color or line width change or a `P`, `p` or `Z` is found.
+
+- `c`, `c()` and `c(r)` draws a circle of centre the current position and of radius `r` or `1.0` by default. This command does not end the current path.
+
+- `q` starts a quadratic bezier curve. It uses the next two points to define the curve, ending in the second one.
+- `t` works as `q` but is always defined just after `q` and uses its last point for the first point, so `t` only requires to define one point.
+- `z` starts a cubic bezier curve. It uses the next three points to define the curve, ending in the third one.
+- `s` works as `z` but is always defined just after `z` and uses its last point for the first point, so `s` only requires to define two points.
 
 The rest of the characters will be ignored when displaying.
 
