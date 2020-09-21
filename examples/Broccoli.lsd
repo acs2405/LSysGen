@@ -1,15 +1,18 @@
 
 lsystem Broccoli {
 
-	axiom w(.5)c(0.0)FF0(0.0)
+	axiom w(.5)c(0.0)0(0.0)
 
-	set iterations = 8
+	set iterations = 7
 	set rotation = 45
 	set initial_heading = 90
 	set ignore = "+-c"
 
 	set minColor = .75
 	set maxColor = .15
+
+	set minWidth = .5
+	set maxWidth = 5.0
 
 	rules {
 		1(a) -> 1(a)
@@ -23,11 +26,10 @@ lsystem Broccoli {
 		#+(d) -> -(d)
 		#+(d) -> +(d)
 
-		1(a) => F((i-a)+.5) #R(5, 20*(a)/i)
-		0(a) => F #R(5, 20*(a)/i)
+		1(a) => w(minWidth - (minWidth - maxWidth)*((i-a)/i)**1.5)F((i-a)+.5) #R(5, 20*(a)/i)
+		0(a) => w(minWidth)F #R(5, 20*(a)/i)
 
 		c(a) => c(0.0, minColor - (minColor - maxColor)*a/i, 0.0)
-		R(l, w) => [-(90)PF(w/2.0)+(90)F(l)+(90)F(w)+(90)F(l)+(90)F(w/2.0)p]f(l)
 	}
 
 }
