@@ -16,6 +16,10 @@ Some parametric random plant (B2.lsd, 20 iterations)
 
 Penrose tiling (PenroseTiling.lsd, 4 iterations)
 
+![Broccoli](./images/Broccoli-8.svg)
+
+Broccoli (Broccoli.lsd, 8 iterations)
+
 ![Cantor set](./images/ParametricCantorSet-8.svg)
 
 Cantor set (ParametricCantorSet.lsd, 8 iterations)

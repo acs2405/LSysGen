@@ -1,7 +1,7 @@
 
 lsystem Broccoli {
 
-	axiom c(0.0)FF0(0.0)
+	axiom w(.5)c(0.0)FF0(0.0)
 
 	set iterations = 8
 	set rotation = 45
