@@ -159,7 +159,7 @@ If we run:
 
 This generates:
 
-![Sierpinski](./images/sierpinski-6.svg)
+![Sierpinski](./images/SierpinskiTriangle-6.svg)
 
 An example of an anonymous L system:
 
