@@ -24,11 +24,13 @@ class LSysDExpressionEvaluator: public LSysDParserBaseVisitor {
     Scope* scope;
 
 public:
-    LSysDExpressionEvaluator(std::string const& filename, const std::vector<std::string>* sourceLines);
-    LSysDExpressionEvaluator(const ErrorHandler* eh);
-    LSysDExpressionEvaluator(const LSysDExpressionEvaluator* ev);
+    // LSysDExpressionEvaluator(std::string const& filename, std::vector<std::string> const* sourceLines);
+    LSysDExpressionEvaluator(ErrorHandler * eh);
+    LSysDExpressionEvaluator(LSysDExpressionEvaluator const& ev);
 
     ~LSysDExpressionEvaluator();
+
+    ErrorHandler * messages();
 
     Value eval(LSysDParser::ExpressionContext* expr, Scope* scope);
 

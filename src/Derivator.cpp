@@ -23,14 +23,7 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
         std::list<Rule<T> *> const* candidateRules = table->rulesFor(node->element());
         std::list<Rule<T> *> applicableRules;
         Scope paramMapping(scope);
-        // std::cerr << "In" << std::endl;
-        // std::cerr << paramMapping.parent() << std::endl;
-        // std::cerr << paramMapping.parent()->get("i").type()->name() << std::endl;
-        // std::cerr << paramMapping.parent()->parent()->parent() << std::endl;
         Value v = paramMapping.get("i");
-        // std::cerr << "In" << std::endl;
-        // std::cerr << v.asInt() << std::endl;
-        // std::cerr << "In" << std::endl;
         for (Rule<T> * r : *candidateRules) {
             // std::cerr << "RULE CANDIDATE: " << r->toString() << std::endl;
             // Check arguments:
@@ -49,11 +42,14 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
             // Check condition:
             if (r->cond()) {
                 Value v = evaluator->eval(r->cond(), &paramMapping);
-                if (v.isBool()) {
+                if (v.isError())
+                    return nullptr;
+                else if (v.isBool()) {
                     if (!v.asBool())
                         continue;
-                } else if (!v.isError()) {
+                } else {
                     eh->fatalError("The condition expression (of type " + v.type()->name() + ") must be a boolean");
+                    return nullptr;
                 }
             }
             applicableRules.push_back(r);
@@ -61,8 +57,12 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
         ParseTreeNode<InstanceNodeContent, T> * ret;
         if (applicableRules.size() > 0) {
             Rule<T> const* chosenRule = this->chooseRule(applicableRules);
+            if (chosenRule == nullptr)
+                return nullptr;
             // std::cerr << "RULE APPLIED: " << chosenRule->toString() << std::endl;
             ret = this->evaluateRightNode(chosenRule->rside, &paramMapping);
+            if (ret == nullptr)
+                return nullptr;
         } else {
             ret = new ParseTreeNode<InstanceNodeContent, T>(*node);
             ret = ret->encapsulate();
@@ -74,6 +74,8 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
                 child != nullptr; 
                 child = child->right()) {
             ParseTreeNode<InstanceNodeContent, T> * encapsulatedChildReplacement = derive(child, table, ignore, scope);
+            if (encapsulatedChildReplacement == nullptr)
+                return nullptr;
             for (ParseTreeNode<InstanceNodeContent, T> * child2 = encapsulatedChildReplacement->leftmostChild(); 
                     child2 != nullptr; 
                     child2 = child2->right())
@@ -101,12 +103,13 @@ bool Derivator<T>::checkSideContext(ParseTreeNode<LeftSideNodeContent, T> * cont
             return false;
         if (ctxNode->isLeaf()) {
             ignore->end();
-            while (insNode->isBranch() || std::find(ignore->begin(), ignore->end(), insNode->element()) != ignore->end()) {
+            while (insNode->isBranch() || 
+                    std::find(ignore->begin(), ignore->end(), insNode->element()) != ignore->end()) {
                 insNode = rightSide ? insNode->right() : insNode->nextLeft();
                 if (insNode == nullptr)
                     return false;
             }
-            if (ctxNode->element() != insNode->element())
+            if (ctxNode->element() != insNode->element() || ctxNode->element() == '_')
                 return false;
         } else if (ctxNode->isBranch()) {
             if (!insNode->isBranch())
@@ -136,8 +139,13 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(ParseTre
     if (node->isLeaf()) {
         if (node->content().args != nullptr) {
             std::vector<Value> * values = new std::vector<Value>();
-            for (LSysDParser::ExpressionContext * arg : *node->content().args)
-                values->push_back(evaluator->eval(arg, paramMapping));
+            for (LSysDParser::ExpressionContext * arg : *node->content().args) {
+                Value ret = evaluator->eval(arg, paramMapping);
+                // if (evaluator->messages()->failed())
+                if (ret.isError())
+                    return nullptr;
+                values->push_back(ret);
+            }
             instanceNode->content().values = values;
         }
     } else {
@@ -145,6 +153,8 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(ParseTre
                 child != nullptr;
                 child = child->right()) {
             ParseTreeNode<InstanceNodeContent, T> * childInstanceNode = this->evaluateRightNode(child, paramMapping);
+            if (childInstanceNode == nullptr)
+                return nullptr;
             instanceNode->addChild(childInstanceNode);
         }
     }

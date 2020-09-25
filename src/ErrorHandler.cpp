@@ -10,11 +10,11 @@ namespace lsysgen {
 
 ErrorHandler::ErrorHandler(std::string const& filename, std::vector<std::string> const* sourceLines, StackTrace const* st): 
         _filename(filename), _sourceLines(sourceLines), _parentTrace(st), 
-        _messages(), _errors(), _warnings(), _notices() {}
+        _messages(), _errors(), _warnings(), _notices(), _failed(false) {}
 
 ErrorHandler::ErrorHandler(ErrorHandler const& eh): 
         _filename(eh._filename), _sourceLines(eh._sourceLines), _parentTrace(eh._parentTrace), 
-        _messages(), _errors(), _warnings(), _notices() {}
+        _messages(), _errors(), _warnings(), _notices(), _failed(false) {}
 
 ErrorHandler::~ErrorHandler() {
     _messages.clear();
@@ -23,15 +23,17 @@ ErrorHandler::~ErrorHandler() {
 void ErrorHandler::fatalError(std::string const& msg, StackTrace const* st) {
     Message const* e = this->createMessage(msg, Message::TYPE_FATAL_ERROR, st);
     _errors.push_back(e);
+    _failed = true;
     this->addMessage(e);
-    this->dump();
-    std::cerr << "LSystem halted due to a runtime error." << std::endl;
-    exit(1);
+    // this->dump();
+    // std::cerr << "LSystem halted due to a runtime error." << std::endl;
+    // exit(1);
 }
 
 void ErrorHandler::error(std::string const& msg, StackTrace const* st) {
     Message const* err = this->createMessage(msg, Message::TYPE_ERROR, st);
     _errors.push_back(err);
+    _failed = true;
     this->addMessage(err);
 }
 
@@ -49,18 +51,22 @@ void ErrorHandler::notice(std::string const& msg, StackTrace const* st) {
 
 Message * ErrorHandler::createMessage(std::string const& msg, int msgType, StackTrace const* st) const {
     // st must never be in the parent trace stack.
-    return new Message(msgType, msg, st != nullptr ? st : new StackTrace(*_parentTrace));
+    if (st == nullptr) {
+        if (_parentTrace != nullptr)
+            st = new StackTrace(*_parentTrace);
+    }
+    return new Message(msgType, msg, st);
 }
 
 void ErrorHandler::addMessage(Message const* m) {
     _messages.push_back(m);
-    m->print();
+    std::cerr << *m << std::endl;
 }
 
 void ErrorHandler::dump() {
     // // Do not print here if you delete traces when abandoned
     // for (Message const* msg : _messages)
-    //     msg->print();
+    //     std::cerr << *msg << std::endl;
     _messages.clear();
     _errors.clear();
     _warnings.clear();
@@ -91,6 +97,8 @@ void ErrorHandler::traceUp() {
 }
 
 StackTrace const* ErrorHandler::currentTrace() const {return _parentTrace;}
+
+bool ErrorHandler::failed () const {return _failed;}
 
 std::list<Message const*> const& ErrorHandler::messages() const {return _messages;}
 std::list<Message const*> const& ErrorHandler::errors() const {return _errors;}
@@ -133,17 +141,21 @@ std::string Message::buildMessage() const {
         return _trace->getTraceString(_type, msgTypeStr);
     else {
         std::stringstream ss;
-        ss << msgTypeStr << " " << _msg << std::endl;
+        ss << msgTypeStr << std::endl;
         return ss.str();
     }
 }
 
-void Message::print(std::ostream& os) const {
-    os << this->buildMessage() << std::endl;
-}
+// void Message::print(std::ostream& os) const {
+//     os << this->buildMessage() << std::endl;
+// }
 
-void Message::print() const {
-    this->print(std::cerr);
+// void Message::print() const {
+//     this->print(std::cerr);
+// }
+
+std::ostream & operator<<(std::ostream & os, Message const& m) {
+    return os << m.buildMessage();
 }
 
 
@@ -166,7 +178,6 @@ StackTrace::StackTrace(StackTrace const& st):
 
 StackTrace::~StackTrace() {}
 
-int StackTrace::getLineNumber() const {return _tokInit->getLine();}
 std::string StackTrace::getLine(std::string const& format) const {
     // std::cout << "HERE!" << std::endl;
     int n = this->getColNumber();
@@ -229,9 +240,20 @@ std::string StackTrace::getTraceString(int msgType, std::string const& text) con
 //         ss << _parent->getCallTraceString();
 //     return ss.str();
 // }
+int StackTrace::getLineNumber() const {return _tokInit->getLine();}
 int StackTrace::getColNumber() const {return _tokInit->getCharPositionInLine();}
-int StackTrace::getLength() const {return _tokEnd->getStopIndex() - _tokInit->getStartIndex();}
-int StackTrace::getEndCol() const {return this->getColNumber() + this->getLength();}
+int StackTrace::getLength() const {
+    return _tokEnd->getStopIndex() - _tokInit->getStartIndex();
+    // return this->getEndCol() - this->getColNumber();
+}
+int StackTrace::getEndCol() const {return this->getColNumber() + this->getLength();
+    // std::cerr << (*_sourceLines)[this->getLineNumber()] << std::endl;
+    // std::cerr << _tokInit->getCharPositionInLine() << ", " << (*_sourceLines)[this->getLineNumber()].size() << std::endl;
+    // return std::min(
+    //         _tokInit->getCharPositionInLine(), 
+    //         (*_sourceLines)[this->getLineNumber()].size()
+    //     );
+}
 int StackTrace::getPos() const {return _tokInit->getStartIndex();}
 // std::string StackTrace::getTokenText() const {return _tokInit->getText();}
 StackTrace const* StackTrace::getParent() const {return _parent;}

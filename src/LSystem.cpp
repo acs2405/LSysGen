@@ -10,8 +10,7 @@ namespace lsysgen {
 
 template<typename T>
 LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), eh(module->messages()), 
-        derivator(eh, module->evaluator()), 
-        _tables(), _codingRules(), _taggedRules(), _tableFunc(nullptr), _axiom(nullptr), 
+        derivator(eh, module->evaluator()), _tableFunc(nullptr), _axiom(nullptr), 
         _iterations(0), _ignore(), initialHeading(0.0), rotation(NAN), lineWidth(NAN), 
         background(), _current(-1), _lastWord(nullptr), _encodedProgression() {
     this->_scope = new Scope(module->scope());
@@ -102,6 +101,8 @@ void LSystem<T>::populateProperties() {
 
 template<typename T>
 void LSystem<T>::prepare() {
+    if (eh->failed())
+        return;
     if (this->_current < 0) {
         std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
@@ -115,12 +116,17 @@ void LSystem<T>::prepare() {
         // this->_axiom = this->parser.parseWord(this->_axiom, this->_scope());
         this->_scope->set("i", 0);
         this->_lastWord = this->_axiom;  // seed
-        this->_encodedProgression.push_back(derivator.derive(_lastWord, _codingRules, _ignore, _scope));
+        ParseTreeNode<InstanceNodeContent, T> * derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
+        if (derived == nullptr)
+            return;
+        this->_encodedProgression.push_back(derived);
     }
 }
 
 template<typename T>
 void LSystem<T>::iterate() {
+    if (eh->failed())
+        return;
     this->prepare();
     if (this->_current < this->_iterations) {
         int iterations = this->_iterations - this->_current;
@@ -130,20 +136,27 @@ void LSystem<T>::iterate() {
 
 template<typename T>
 void LSystem<T>::iterate(int iterations) {
+    if (eh->failed())
+        return;
     this->prepare();
     for (int i = this->_encodedProgression.size(); i < this->_current + iterations + 1; ++i) {
         Table<T> * table = this->getTable(i);
+        if (table == nullptr)
+            return;
         this->_scope->set("i", i);
         // std::cout << "ROUND " << i << std::endl;
         // std::cout << this->_scope->get("i").asInt() << std::endl;
         ParseTreeNode<InstanceNodeContent, T> * lastWord = this->_lastWord;
-        // std::cerr << "HERE prederive " << std::endl;
-        this->_lastWord = derivator.derive(lastWord, table, _ignore, _scope);
-        // std::cerr << "HERE postderive " << std::endl;
+        ParseTreeNode<InstanceNodeContent, T> * derived;
+        derived = derivator.derive(lastWord, table, _ignore, _scope);
+        if (derived == nullptr)
+            return;
+        this->_lastWord = derived;
         delete lastWord;
-        // std::cerr << "HERE preencode " << std::endl;
-        this->_encodedProgression.push_back(derivator.derive(_lastWord, _codingRules, _ignore, _scope));
-        // std::cerr << "HERE postdecode " << std::endl;
+        derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
+        if (derived == nullptr)
+            return;
+        this->_encodedProgression.push_back(derived);
     }
     this->_current += iterations;
     if (this->_current < 0)
@@ -153,7 +166,10 @@ void LSystem<T>::iterate(int iterations) {
 
 template<typename T>
 ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
-    return this->_encodedProgression.at(this->_current);
+    if (_encodedProgression.size() > 0)
+        return this->_encodedProgression.at(this->_current);
+    else
+        return nullptr;
 }
 
 template<typename T>
@@ -172,6 +188,8 @@ Table<T> * LSystem<T>::getTable(int i) {
         return this->_defaultTable;
     // std::cout << this->_tableFunc->toString() << std::endl;
     Value val = this->_tableFunc->call(new std::list<Value> {Value(i)}, _scope, _module->evaluator());
+    if (val.isError())
+        return nullptr;
     if (!val.isString()) {
         eh->fatalError("Table function must return a string");
         return nullptr;

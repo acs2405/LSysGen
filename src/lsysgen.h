@@ -23,6 +23,7 @@ extern "C" lsysgen::LSystem<char>* lsystem_create(const char* file);
 extern "C" void lsystem_generate(LSystem<char>* lsystem);
 extern "C" void lsystem_iterate(LSystem<char>* lsystem, int iterations=1);
 extern "C" int lsystem_get_iteration_number(LSystem<char>* lsystem);
+extern "C" int lsystem_get_number_of_errors(LSystem<char>* lsystem);
 extern "C" const char* lsystem_get_result_string(LSystem<char>* lsystem);
 extern "C" const char* lsystem_to_svg(LSystem<char>* lsystem);
 

@@ -3,23 +3,23 @@
 #include "misc.h"
 
 
-LSysDExpressionEvaluator::LSysDExpressionEvaluator(std::string const& filename, const std::vector<std::string>* sourceLines): 
-        scope(nullptr), eh(new ErrorHandler(filename, sourceLines)) {
+// LSysDExpressionEvaluator::LSysDExpressionEvaluator(std::string const& filename, std::vector<std::string> const* sourceLines): 
+//         scope(nullptr), eh(new ErrorHandler(filename, sourceLines)) {
+//     this->ops = new Operations(this->eh);
+// }
+
+LSysDExpressionEvaluator::LSysDExpressionEvaluator(ErrorHandler * eh): 
+        scope(nullptr), eh(eh) {
     this->ops = new Operations(this->eh);
 }
 
-LSysDExpressionEvaluator::LSysDExpressionEvaluator(const ErrorHandler* eh): 
-        scope(nullptr), eh(new ErrorHandler(*eh)) {
-    this->ops = new Operations(this->eh);
-}
-
-LSysDExpressionEvaluator::LSysDExpressionEvaluator(const LSysDExpressionEvaluator* ev): 
-        scope(nullptr), eh(new ErrorHandler(*ev->eh)) {
+LSysDExpressionEvaluator::LSysDExpressionEvaluator(LSysDExpressionEvaluator const& ev): 
+        scope(nullptr), eh(ev.eh) {
     this->ops = new Operations(this->eh);
 }
 
 LSysDExpressionEvaluator::~LSysDExpressionEvaluator() {
-    delete eh;
+    // delete eh;
     delete ops;
 }
 
@@ -27,6 +27,8 @@ LSysDExpressionEvaluator::~LSysDExpressionEvaluator() {
 //     return ctx->getText();
 // }
 
+
+ErrorHandler * LSysDExpressionEvaluator::messages() {return eh;}
 
 Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope* scope) {
     this->scope = scope;
@@ -125,7 +127,7 @@ antlrcpp::Any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::Funct
     Value vf = this->visit(ctx->expression());
     if (vf.isFunction()) {
         eh->traceDown(eh->trace(ctx, ctx, "called by:"));
-        Value ret = vf.asFunction()->call(args, scope, new LSysDExpressionEvaluator(this));
+        Value ret = vf.asFunction()->call(args, scope, new LSysDExpressionEvaluator(*this));
         eh->traceUp();
         return ret;
     } else if (!vf.isError()) {

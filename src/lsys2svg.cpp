@@ -23,6 +23,11 @@ int main(int argc, char** argv) {
         lsystem->iterate();
     }
 
+    if (lsystem->messages()->failed()) {
+        lsystem->messages()->dump();
+        return 1;
+    }
+
     std::cout << node2svg(lsystem->current(), lsystem) << std::endl;
     // }
 

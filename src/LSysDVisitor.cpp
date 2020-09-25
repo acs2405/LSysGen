@@ -29,8 +29,8 @@
 //     LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
 //     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
 
-//     if (visitor.errors()->size() > 0) {
-//         visitor.dumpErrors();
+//     if (visitor.eh->failed()) {
+//         visitor.eg->dump();
 //         return nullptr;
 //     }
 
@@ -54,6 +54,7 @@ LSysDVisitor::LSysDVisitor(std::string const& filename, std::vector<std::string>
 }
 
 LSysDVisitor::~LSysDVisitor() {
+    // delete eh;
 }
 
 ErrorHandler* LSysDVisitor::messages() {return eh;}
@@ -74,8 +75,8 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             // std::regex_replace(moduleName, std::regex("[-]"), "_");
             // std::regex_replace(moduleName, std::regex("[^a-zA-Z0-9_]"), "");
         } else {
-            eh->fatalError("The file name must end in .lsd");
-            // moduleName = filename;
+            eh->fatalError("The input file name must end in .lsd");
+            return static_cast<Module<char> *>(nullptr);
         }
     }
     module = new Module<char>(moduleName);
@@ -85,8 +86,8 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     currentScope = module->_scope;
     if (ctx->module()) {
         visitChildren(ctx);
-        if (eh->errors().size() > 0 || module->eh->errors().size() > 0)
-            return static_cast<Module<char>*>(nullptr);
+        if (eh->failed() > 0 || module->eh->failed())
+            return static_cast<Module<char> *>(nullptr);
     } else {
         currentLSystem = new LSystem<char>(module);
         currentLSystem->_name = module->_name;
@@ -98,8 +99,8 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         } else if (ctx->word()) {
             currentLSystem->_axiom = this->visitWord(ctx->word());
         }
-        if (eh->errors().size() > 0 || module->eh->errors().size() > 0)
-            return static_cast<Module<char>*>(nullptr);
+        if (eh->failed() || module->eh->failed())
+            return static_cast<Module<char> *>(nullptr);
         currentScope = currentScope->parent();
         currentLSystem->populateProperties();
         module->_lsystems[currentLSystem->_name] = currentLSystem;
@@ -115,6 +116,11 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
                 module->_mainLSystem = ls.second;
                 break;
             }
+        }
+        if (module->_mainLSystem == nullptr) {
+            eh->error("No main L system could be chosen in " + module->_filename + 
+                    ". Try including only one L system or calling one after the file name");
+            return static_cast<Module<char> *>(nullptr);
         }
     }
 
@@ -147,7 +153,7 @@ antlrcpp::Any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
 antlrcpp::Any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
     if (currentScope->has(pname))
-        eh->error("'" + pname + "' constant already defined", eh->trace(ctx->ID()));
+        eh->error("'" + pname + "' symbol is already defined", eh->trace(ctx->ID()));
     Value val = module->_evaluator->eval(ctx->expression(), currentScope);
     currentScope->set(pname, val);
     // std::cout << "PROP" << std::endl;
@@ -161,7 +167,7 @@ antlrcpp::Any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationC
 antlrcpp::Any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
     if (currentScope->has(pname))
-        eh->error("'" + pname + "' constant already defined", eh->trace(ctx->ID()));
+        eh->error("'" + pname + "' symbol is already defined", eh->trace(ctx->ID()));
     Value val = module->_evaluator->eval(ctx->expression(), currentScope);
     currentScope->set(pname, val);
     return nullptr;
@@ -170,7 +176,7 @@ antlrcpp::Any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationConte
 antlrcpp::Any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
     std::string fname = ctx->ID()->getText();
     if (currentScope->has(fname))
-        eh->error("'" + fname + "' field already defined", eh->trace(ctx->ID()));
+        eh->error("'" + fname + "' symbol is already defined", eh->trace(ctx->ID()));
     // LSysDParser::ExpressionContext* expr = ctx->expression();
     std::list<Parameter*>* params = this->visitParams(ctx->params());
     currentScope->set(fname, new Function(params, ctx->expression(), ctx));
@@ -355,7 +361,7 @@ antlrcpp::Any LSysDVisitor::visitCodingRuleDef(LSysDParser::CodingRuleDefContext
 antlrcpp::Any LSysDVisitor::visitTagPrefix(LSysDParser::TagPrefixContext *ctx) {
     std::string tag = this->visitTag(ctx->tag());
     if (currentLSystem->_taggedRules.find(tag) != currentLSystem->_taggedRules.end())
-        eh->error("tag '" + tag + "' already defined", eh->trace(ctx->tag()));
+        eh->error("tag '" + tag + "' is already defined", eh->trace(ctx->tag()));
     return tag;
 }
 
@@ -373,7 +379,7 @@ antlrcpp::Any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
             eh->error("rule weight must be a decimal number", eh->trace(ctx->INT()));
         }
     } else if (ctx->FLOAT()) {
-        weight = stof(ctx->INT()->getText());
+        weight = stof(ctx->FLOAT()->getText());
     } else
         weight = Rule<char>::WEIGHT_ALWAYS;
     return weight;
@@ -504,7 +510,7 @@ antlrcpp::Any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharConte
     // int pos = 0;
     for (char c : s) {
         if (c == '_')
-            eh->error("'_' (underscore) character is not valid for the right side of a rule", eh->trace(ctx));
+            eh->error("'_' (underscore) character is not valid for the right side of a rule or for an axiom", eh->trace(ctx));
         ParseTreeNode<NodeContent, char>* node;
         if (!this->parentNode->isInstance())
             node = (new ParseTreeNode<RightSideNodeContent, char>(c))->asGeneric();

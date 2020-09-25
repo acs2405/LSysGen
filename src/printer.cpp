@@ -24,6 +24,11 @@ int main(int argc, char** argv) {
         lsystem->iterate();
     }
 
+    if (lsystem->messages()->failed()) {
+        lsystem->messages()->dump();
+        return 1;
+    }
+
     // int i = 0;
     // for (lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* iteration : *lsystem->encodedProgression) {
     //     std::cout << i++ << ": " << iteration->toString() << std::endl;

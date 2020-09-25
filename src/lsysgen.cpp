@@ -14,7 +14,10 @@ lsysgen::LSystem<char>* lsystem_create(const char* file) {
 
     lsystem->prepare();
 
-    // lsystem->messages()->dump();
+    if (lsystem->messages()->failed()) {
+        lsystem->messages()->dump();
+        return nullptr;
+    }
 
     return lsystem;
 }
@@ -31,23 +34,32 @@ int lsystem_get_iteration_number(LSystem<char>* lsystem) {
     return lsystem->iteration();
 }
 
-const char* lsystem_get_result_string(LSystem<char>* lsystem) {
-    std::string sret = lsystem->current()->toString();
-    const char* ret1 = sret.c_str();
-    char *ret = new char[sret.size()+1];
-    strcpy(ret, ret1);
+int lsystem_get_number_of_errors(LSystem<char>* lsystem) {
+    return lsystem->messages()->failed();
+}
 
-    return ret;
+const char* lsystem_get_result_string(LSystem<char>* lsystem) {
+    if (lsystem->messages()->errors().size() == 0) {
+        std::string sret = lsystem->current()->toString();
+        const char* ret1 = sret.c_str();
+        char *ret = new char[sret.size()+1];
+        strcpy(ret, ret1);
+
+        return ret;
+    } else
+        return nullptr;
 }
 
 const char* lsystem_to_svg(LSystem<char>* lsystem) {
+    if (lsystem->messages()->errors().size() == 0) {
+        std::string sret = node2svg(lsystem->current(), lsystem);
+        const char* ret1 = sret.c_str();
+        char *ret = new char[sret.size()+1];
+        strcpy(ret, ret1);
 
-    std::string sret = node2svg(lsystem->current(), lsystem);
-    const char* ret1 = sret.c_str();
-    char *ret = new char[sret.size()+1];
-    strcpy(ret, ret1);
-
-    return ret;
+        return ret;
+    } else
+        return nullptr;
 }
 
 
@@ -98,7 +110,7 @@ lsysgen::LSystem<char>* parseLSystemFromStream(std::istream& stream, std::string
     LSysDVisitor visitor(file, lines);
     lsysgen::Module<char>* module = visitor.visit(tree);
 
-    if (visitor.messages()->errors().size() > 0) {
+    if (visitor.messages()->failed()) {
         visitor.messages()->dump();
         return nullptr;
     }

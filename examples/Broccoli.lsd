@@ -15,7 +15,7 @@ lsystem Broccoli {
 	set maxWidth := 5.0
 
 	# Transition function (p : 0..1):
-	function t(p, minVal, maxVal) := minVal - (minVal - maxVal)*p+""
+	function t(p, minVal, maxVal) := minVal - (minVal - maxVal)*p
 
 	rules {
 		1(a) -> 1(a)

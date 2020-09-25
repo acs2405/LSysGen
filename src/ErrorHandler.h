@@ -28,6 +28,8 @@ class ErrorHandler {
     std::list<Message const*> _warnings;
     std::list<Message const*> _notices;
 
+    bool _failed;
+
     std::string const _filename;
     std::vector<std::string> const* _sourceLines;
     StackTrace const* _parentTrace;
@@ -57,6 +59,8 @@ public:
     void traceUp();
 
     StackTrace const* currentTrace() const;
+
+    bool failed() const;
 
     std::list<Message const*> const& messages() const;
     std::list<Message const*> const& errors() const;
@@ -89,9 +93,12 @@ public:
 
     std::string buildMessage() const;
 
-    void print(std::ostream& os) const;
-    void print() const;
+    // void print(std::ostream& os) const;
+    // void print() const;
 };
+
+std::ostream & operator<<(std::ostream & os, Message const& m);
+
 
 class StackTrace {
     antlr4::Token const* _tokInit;
