@@ -3,33 +3,37 @@ lsystem Broccoli {
 
 	axiom w(.5)c(0.0)0(0.0)
 
-	set iterations = 7
-	set rotation = 45
-	set initial_heading = 90
-	set ignore = "+-c"
+	set iterations := 7
+	set rotation := 45
+	set initial_heading := 90
+	set ignore := "+-c"
 
-	set minColor = .75
-	set maxColor = .15
+	set minColor := .75
+	set maxColor := .20
 
-	set minWidth = .5
-	set maxWidth = 5.0
+	set minWidth := .5
+	set maxWidth := 5.0
+
+	# Transition function (p : 0..1):
+	function t(p, minVal, maxVal) := minVal - (minVal - maxVal)*p+""
 
 	rules {
 		1(a) -> 1(a)
-		1 < 0(a) -> 1(a)c(a)[+(45)0(a+1)][-(45)0(a+1)]
-		1 < 0(a) -> 1(a)c(a)[+(45)0(a+1)][-(50)0(a+1)][+(15)0(a+1)]
-		1 < 0(a) -> 1(a)c(a)[-(60)0(a+1)][+(20)0(a+1)]
-		(2) 0(a) -> 1(a)c(a)[+(60)0(a+1)][+(30)0(a+1)][-(30)0(a+1)][-(60)0(a+1)]
-		1 < 0(a) -> 1(a)c(a)[+(60)0(a+1)][0][-(60)0(a+1)]
+		1 < 0(a) -> 1(a)c(a+1)[+(45)0(a+1)][-(45)0(a+1)]
+		1 < 0(a) -> 1(a)c(a+1)[+(45)0(a+1)][-(50)0(a+1)][+(15)0(a+1)]
+		1 < 0(a) -> 1(a)c(a+1)[-(60)0(a+1)][+(20)0(a+1)]
+		2:  0(a) -> 1(a)c(a+1)[+(60)0(a+1)][+(30)0(a+1)][-(25)0(a+1)][-(60)0(a+1)]
+		1 < 0(a) -> 1(a)c(a+1)[+(60)0(a+1)][0][-(60)0(a+1)]
 		#-(d) -> +(d)
 		#-(d) -> -(d)
 		#+(d) -> -(d)
 		#+(d) -> +(d)
 
-		1(a) => w(minWidth - (minWidth - maxWidth)*((i-a)/i)**1.5)F((i-a)+.5) #R(5, 20*(a)/i)
-		0(a) => w(minWidth)F #R(5, 20*(a)/i)
+		1(a) => w(t(((i-a)/i)**1.5, minWidth, maxWidth))F((i-a)+.5)
+		0(a) => w(minWidth)F
+		# w(0)Pc(t(((i-a)/i)**1.5, minWidth, maxWidth)/2)p
 
-		c(a) => c(0.0, minColor - (minColor - maxColor)*a/i, 0.0)
+		c(a) => c(0.0, t(a/i, minColor, maxColor), 0.0)
 	}
 
 }

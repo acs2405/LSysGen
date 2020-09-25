@@ -8,9 +8,40 @@ options { tokenVocab=LSysDLexer; language=Cpp; }
 //options {LSysDLexer};
 
 main
-  : sep? ((name nl? LBRACE sep? definitions sep? RBRACE sep?)?) EOF
-  | sep? (definitions sep?) EOF
+  : module EOF
+  | inLsysDefs EOF
   | nl? word nl? EOF
+  ;
+
+module
+  : /*imports*/ globalDefs
+  ;
+
+globalDefs
+  : sep? (globalDef sep)* globalDef? sep?
+  ;
+
+globalDef
+  : lsystem
+  | declaration
+  | funcDef
+  ;
+
+declaration
+  : varDeclaration
+  | constDeclaration
+  ;
+
+varDeclaration
+  : KWVAR ID (ASSIGN expression)
+  ;
+
+constDeclaration
+  : KWSET ID ASSIGN expression
+  ;
+
+lsystem
+  : KWLSYS ID nl? LBRACE inLsysDefs RBRACE
   ;
 
 sep
@@ -21,23 +52,57 @@ nl
   : NEW_LINE+
   ;
 
-name
-  : KWLSYS ID
+inLsysDefs
+  : sep? (inLsysDef sep)* inLsysDef? sep?
   ;
 
-definitions
-  : (definition sep)* definition?
-  ;
-
-definition
+inLsysDef
   : axiomDef
-  | propDef
+  | statement
   | funcDef
   | tableBlock
   | rulesBlock
   | productionRulesBlock
   | codingRulesBlock
   | ruleDef
+  ;
+
+blockOrOneStatement
+  : block
+  | oneStatement
+  ;
+
+block
+  : LBRACE statement? RBRACE
+  ;
+
+oneStatement
+  : oneStmtNeedsSep | oneStmtEndsInBlock
+  ;
+
+oneStmtNeedsSep
+  : expression
+  | assignment
+  | declaration
+  | KWRETURN expression?
+  | KWIF nl? LPAREN nl? expression nl? RPAREN nl? oneStmtNeedsSep
+  | KWIF nl? LPAREN nl? expression nl? RPAREN nl? blockOrOneStatement nl? KWELSE nl? oneStmtNeedsSep
+  | KWWHILE nl? LPAREN nl? expression nl? RPAREN nl? oneStmtNeedsSep
+  | KWDO nl? blockOrOneStatement nl? KWWHILE nl? LPAREN nl? expression nl? RPAREN
+  ;
+
+oneStmtEndsInBlock
+  : KWIF nl? LPAREN nl? expression nl? RPAREN nl? block
+  | KWIF nl? LPAREN nl? expression nl? RPAREN nl? blockOrOneStatement nl? KWELSE nl? block
+  | KWWHILE nl? LPAREN nl? expression nl? RPAREN nl? block
+  ;
+
+statement
+  : sep? (oneStmtNeedsSep sep | oneStmtEndsInBlock sep?)* oneStatement sep?
+  ;
+
+assignment
+  : ID ASSIGN expression
   ;
 
 axiomDef
@@ -49,7 +114,7 @@ propDef
   ;
 
 funcDef
-  : KWSET ID LPAREN params RPAREN ASSIGN expression
+  : KWFUNCTION ID LPAREN params RPAREN (ASSIGN expression | block)
   ;
 
 constDef
@@ -94,7 +159,7 @@ anyRule
   ;
 
 productionRule
-  : productionRuleDef | tag
+  : productionRuleDef // | tag
   ;
 
 codingRule
@@ -106,11 +171,11 @@ ruleDef
   ;
 
 productionRuleDef
-  : tagPrefix? weight? lcontext? lside rcontext? ARROW nl? rside
+  : weight? lcontext? lside rcontext? cond? ARROW nl? rside //weight?
   ;
 
 codingRuleDef
-  : tagPrefix? weight? lcontext? lside rcontext? DARROW nl? rside
+  : weight? lcontext? lside rcontext? cond? DARROW nl? rside //weight?
   ;
 
 tagPrefix
@@ -122,9 +187,7 @@ tag
   ;
 
 weight
-  : LPAREN INT RPAREN
-  | LPAREN XM RPAREN
-  | XM
+  : (INT | FLOAT | XM) COLON
   ;
 
 lside
@@ -148,17 +211,18 @@ word
   ;
 
 lChar
-  : validLeftChar (LPAREN paramsWithCond RPAREN)?
+  : validLeftChar (LPAREN params RPAREN)?
   ;
 
 lItem
-  : validLeftChar (LPAREN paramsWithCond RPAREN)?
+  : validLeftChar (LPAREN params RPAREN)?
   | LBRACK lItem* RBRACK
   ;
 
 rItem
   : validRightChar (LPAREN args RPAREN)?
   | LBRACK rItem* RBRACK
+  | block
   ;
 
 validLeftChar
@@ -173,10 +237,6 @@ validChar
   : (ID|INT|ADD|SUB|RULECHAR)
   ;
 
-paramsWithCond
-  : params ( BITOR cond )?
-  ;
-
 params
   : ( param (COMMA param)* )?
   ;
@@ -186,7 +246,7 @@ param
   ;
 
 cond
-  : expression
+  : COLON expression
   ;
 
 args
@@ -208,18 +268,18 @@ expression
 //   | expression ACCESSOR                                                     # PropertyAccessorExpr
   | expression LPAREN arguments RPAREN                                      # FunctionCallExpr
 //   | expression LBRACK index RBRACK                                          # IndexExpr
-  | (ADD | SUB) expression                                                  # AritUnaryExpr
-  | (NOT | BITNOT) expression                                               # LogicUnaryExpr
-  |<assoc=right> expression (POW) expression                                # AritBinaryExpr
-  | expression (MUL | DIV | MOD) expression                                 # AritBinaryExpr
-  | expression (ADD | SUB) expression                                       # AritBinaryExpr
-  | expression (LT | GT | LE | GE) expression                               # CmpBinaryExpr
-  | expression (EQ | NE) expression                                         # CmpBinaryExpr
-  | expression (BITAND) expression                                          # BitBinaryExpr
-  | expression (BITXOR) expression                                          # BitBinaryExpr
-  | expression (BITOR) expression                                           # BitBinaryExpr
-  | expression (AND) expression                                             # LogicBinaryExpr
-  | expression (OR) expression                                              # LogicBinaryExpr
+  | op=(ADD | SUB) expression                                               # AritUnaryExpr
+  | op=(NOT | BITNOT) expression                                            # LogicUnaryExpr
+  |<assoc=right> expression op=POW expression                               # AritBinaryExpr
+  | expression op=(MUL | DIV | MOD) expression                              # AritBinaryExpr
+  | expression op=(ADD | SUB) expression                                    # AritBinaryExpr
+  | expression op=(LT | GT | LE | GE) expression                            # CmpBinaryExpr
+  | expression op=(EQ | NE) expression                                      # CmpBinaryExpr
+  | expression op=BITAND expression                                         # BitBinaryExpr
+  | expression op=BITXOR expression                                         # BitBinaryExpr
+  | expression op=BITOR expression                                          # BitBinaryExpr
+  | expression op=AND expression                                            # LogicBinaryExpr
+  | expression op=OR expression                                             # LogicBinaryExpr
   |<assoc=right> KWIF expression KWTHEN expression KWELSE expression        # IfElseExpr
 //   | expression neg=NOT? op=KWIN expression                                  # InExpr
 //   | functiondef                                                             # FunctionDefExpr
@@ -303,6 +363,6 @@ constant
 //   | KWINF                 # InfValue
   | KWTRUE                # TrueValue
   | KWFALSE               # FalseValue
-//   | KWNONE                # NullValue
+  | KWNULL                # NullValue
   ;
 

@@ -9,14 +9,17 @@ class LSystem;
 
 }
 
+#include "Module.h"
 #include "ParseTreeNode.h"
 #include "NodeContent.h"
 #include "Table.h"
 #include "Rule.h"
-#include "misc.h"
+#include "values.h"
+#include "ErrorHandler.h"
+#include "LSysDVisitor.h"
+#include "Derivator.h"
 
 #include <string>
-#include <iostream>
 #include <map>
 #include <list>
 #include <vector>
@@ -25,43 +28,55 @@ namespace lsysgen {
 
 template<typename T>
 class LSystem {
+    friend LSysDVisitor;
+    
     int _current;
 
+    Module<T> * _module;
+    Scope * _scope;
+    // LSysDExpressionEvaluator * _evaluator;
+
+    std::string _name;
+    std::map<std::string, Table<T> *> _tables;
+    // std::list<Table<T> *> * _tablesList;
+    Table<T> * _defaultTable;
+    Table<T> * _codingRules;
+    std::map<std::string, Rule<T> *> _taggedRules;
+
+    ParseTreeNode<InstanceNodeContent, T> * _axiom;
+    int _iterations;
+    std::list<T> * _ignore;
+    Function * _tableFunc;
+
+    ParseTreeNode<InstanceNodeContent, T> * _lastWord;
+    std::vector<ParseTreeNode<InstanceNodeContent, T> *> _encodedProgression;
+
+    ErrorHandler * eh;
+    Derivator<T> derivator;
+
+    void populateProperties();
+
 public:
-    Environment* env;
-    // LSysDExpressionEvaluator* evaluator;
-
-	std::string name;
-	std::map<std::string, Table<T>*>* tables;
-	// std::list<Table<T>*>* tablesList;
-	Table<T>* defaultTable;
-	Table<T>* codingRules;
-	std::map<std::string, Rule<T>*>* taggedRules;
-
-	Function* tableFunc;
-	ParseTreeNode<InstanceNodeContent, T>* axiom;
-	int iterations;
-	std::list<T>* ignore;
-	double initialHeading;
-	double rotation;
-	// double lineLength;
-	double lineWidth;
-	std::string background;
-
-    std::vector<ParseTreeNode<InstanceNodeContent, T>*>* progression;
-    std::vector<ParseTreeNode<InstanceNodeContent, T>*>* encodedProgression;
+    double initialHeading;
+    double rotation;
+    // double lineLength;
+    double lineWidth;
+    std::string background;
 
 public:
-	LSystem();
+    LSystem(Module<T> * module);
 
-	~LSystem();
+    ~LSystem();
 
-	void prepare();
-	void iterate();
-	void iterate(int iterations);
-	ParseTreeNode<InstanceNodeContent, T>* current();
-	int iteration();
-	Table<T>* getTable(int i);
+    ErrorHandler * messages();
+
+    void prepare();
+    void iterate();
+    void iterate(int iterations);
+    ParseTreeNode<InstanceNodeContent, T> * current();
+    int iteration() const;
+    std::string const& name() const;
+    Table<T> * getTable(int i);
 };
 
 }

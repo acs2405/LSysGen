@@ -415,8 +415,10 @@ The special characters that 2D interpretation uses are:
 - `G` draws a backward line.
 - `f` moves forward without drawing.
 - `g` moves backward without drawing.
+- `h` moves horizontally without drawing.
+- `v` moves vertically without drawing.
 
-`F`, `G`, `f` and `g` can have one parameter that specifies the length of the line/move. Default is `1.0`.
+`F`, `G`, `f`, `g`, `h` and `v` can have one parameter that specifies the length of the line/move. Default is `1.0`.
 
 - `+` rotates counterclockwise.
 - `-` rotates clockwise.

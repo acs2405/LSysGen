@@ -17,9 +17,9 @@ template<typename T>
 NodeContent<T>::NodeContent(T const& element):
         _element(element) {}
 template<typename T>
-NodeContent<T>::NodeContent(NodeContent<T>* content):
-        _element(content->_element) {}
-// template NodeContent<char>::NodeContent(NodeContent<char>* content);
+NodeContent<T>::NodeContent(NodeContent<T> const& content):
+        _element(content._element) {}
+// template NodeContent<char>::NodeContent(NodeContent<char> * content);
 
 template<typename T>
 NodeContent<T>::~NodeContent() {}
@@ -48,20 +48,26 @@ std::string NodeContent<T>::toString() const {
 
 
 template<typename T>
-LeftSideNodeContent<T>::LeftSideNodeContent(): NodeContent<T>() {}
+LeftSideNodeContent<T>::LeftSideNodeContent(): 
+        NodeContent<T>(), params(nullptr) {}
 template<typename T>
 LeftSideNodeContent<T>::LeftSideNodeContent(T const& element):
-        NodeContent<T>(element), params(nullptr), cond(nullptr) {}
+        NodeContent<T>(element), params(nullptr) {}
 template<typename T>
-LeftSideNodeContent<T>::LeftSideNodeContent(LeftSideNodeContent<T>* content):
-        NodeContent<T>(content->element()), params(content->params), cond(content->cond) {}
+LeftSideNodeContent<T>::LeftSideNodeContent(LeftSideNodeContent<T> const& content):
+        NodeContent<T>(content.element()) {
+    if (content.params)
+        this->params = new std::list<Parameter *>(*content.params);
+    else
+        this->params = nullptr;
+}
 
 template<typename T>
 LeftSideNodeContent<T>::~LeftSideNodeContent() {
-    if (this->params != nullptr) {
-        this->params->clear();
-        delete this->params;
-    }
+    // if (this->params != nullptr) {
+    //     this->params->clear();
+    delete this->params;
+    // }
 }
 
 template<typename T>
@@ -87,8 +93,6 @@ std::string LeftSideNodeContent<T>::toString() const {
                 ret += ",";
             ret += (*param)->name;
         }
-        if (this->cond)
-            ret += "|" + this->cond->getText();
         ret += ")";
     }
     return this->element() + ret;
@@ -104,13 +108,19 @@ std::string LeftSideNodeContent<T>::toString() const {
 
 
 template<typename T>
-RightSideNodeContent<T>::RightSideNodeContent(): NodeContent<T>() {}
+RightSideNodeContent<T>::RightSideNodeContent(): 
+        NodeContent<T>(), args(nullptr) {}
 template<typename T>
 RightSideNodeContent<T>::RightSideNodeContent(T const& element):
         NodeContent<T>(element), args(nullptr) {}
 template<typename T>
-RightSideNodeContent<T>::RightSideNodeContent(RightSideNodeContent<T>* content):
-        NodeContent<T>(content->element()), args(content->args) {}
+RightSideNodeContent<T>::RightSideNodeContent(RightSideNodeContent<T> const& content):
+        NodeContent<T>(content.element()) {
+    if (content.args)
+        this->args = new std::list<LSysDParser::ExpressionContext *>(*content.args);
+    else
+        this->args = nullptr;
+}
 
 template<typename T>
 RightSideNodeContent<T>::~RightSideNodeContent() {
@@ -146,17 +156,26 @@ std::string RightSideNodeContent<T>::toString() const {
 
 
 template<typename T>
-InstanceNodeContent<T>::InstanceNodeContent(): NodeContent<T>() {}
+InstanceNodeContent<T>::InstanceNodeContent(): 
+        NodeContent<T>(), values(nullptr) {}
 template<typename T>
 InstanceNodeContent<T>::InstanceNodeContent(T const& element):
         NodeContent<T>(element), values(nullptr) {}
 template<typename T>
-InstanceNodeContent<T>::InstanceNodeContent(InstanceNodeContent<T>* content):
-        NodeContent<T>(content->element()), values(content->values) {}
+InstanceNodeContent<T>::InstanceNodeContent(InstanceNodeContent<T> const& content):
+        NodeContent<T>(content.element()) {
+    if (content.values)
+        this->values = new std::vector<Value>(*content.values);
+    else
+        this->values = nullptr;
+}
 
 template<typename T>
 InstanceNodeContent<T>::~InstanceNodeContent() {
-    delete this->values;
+        // std::cerr << "HERE deleting node content of " << this->element() << std::endl;
+        // std::cerr << values << std::endl;if(values!=nullptr)
+        // std::cerr << values->size() << std::endl;
+    delete values;
 }
 
 template<typename T>

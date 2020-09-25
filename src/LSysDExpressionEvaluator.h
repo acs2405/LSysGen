@@ -2,10 +2,14 @@
 #pragma once
 
 
+class LSysDExpressionEvaluator;
+
+
 #include "LSysDParserBaseVisitor.h"
 #include "antlr4-runtime.h"
-#include "misc.h"
+#include "values.h"
 #include "operations.h"
+#include "ErrorHandler.h"
 
 #include <string>
 #include <iostream>
@@ -13,15 +17,20 @@
 using namespace lsysgen;
 
 class LSysDExpressionEvaluator: public LSysDParserBaseVisitor {
-    Environment* env;
+    friend Operations;
+    
+    ErrorHandler* eh;
+    Operations* ops;
+    Scope* scope;
 
-    void error(std::string msg, antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);
 public:
-    LSysDExpressionEvaluator();
+    LSysDExpressionEvaluator(std::string const& filename, const std::vector<std::string>* sourceLines);
+    LSysDExpressionEvaluator(const ErrorHandler* eh);
+    LSysDExpressionEvaluator(const LSysDExpressionEvaluator* ev);
 
     ~LSysDExpressionEvaluator();
 
-    Value eval(LSysDParser::ExpressionContext* expr, Environment* env);
+    Value eval(LSysDParser::ExpressionContext* expr, Scope* scope);
 
 private:
     antlrcpp::Any visitConstExpr(LSysDParser::ConstExprContext *ctx) override;
@@ -102,5 +111,5 @@ private:
 
     antlrcpp::Any visitFalseValue(LSysDParser::FalseValueContext *ctx) override;
 
-    // antlrcpp::Any visitNullValue(LSysDParser::NullValueContext *ctx) override;
+    antlrcpp::Any visitNullValue(LSysDParser::NullValueContext *ctx) override;
 };

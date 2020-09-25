@@ -6,18 +6,15 @@
 
 
 
-lsysgen::LSystem<char>* lsystem_create(const char* file, int iterations) {
+lsysgen::LSystem<char>* lsystem_create(const char* file) {
     lsysgen::LSystem<char>* lsystem = parseLSystemFromFile(file);
 
     if (lsystem == nullptr)
         return nullptr;
 
-    if (iterations >= 0) {
-        lsystem->iterations = iterations;
-    }
-
     lsystem->prepare();
-    // lsystem->iterate();
+
+    // lsystem->messages()->dump();
 
     return lsystem;
 }
@@ -57,7 +54,7 @@ const char* lsystem_to_svg(LSystem<char>* lsystem) {
 
 lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file) {
     if (file == "-") {
-        return parseLSystemFromStream(std::cin, "<stdin>");
+        return parseLSystemFromStream(std::cin, file); //"<stdin>");
     } else {
         std::fstream fstream;
         fstream.open(file);
@@ -98,18 +95,15 @@ lsysgen::LSystem<char>* parseLSystemFromStream(std::istream& stream, std::string
     while (std::getline(ss, line))
         lines->push_back(line);
 
-    // TreeShapeListener listener;
-    // tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
+    LSysDVisitor visitor(file, lines);
+    lsysgen::Module<char>* module = visitor.visit(tree);
+
+    if (visitor.messages()->errors().size() > 0) {
+        visitor.messages()->dump();
+        return nullptr;
+    }
     
-    LSysDVisitor* visitor = new LSysDVisitor(file, lines);
-    lsysgen::LSystem<char>* lsystem = visitor->visit(tree);
-
-    // std::list<Error*> *errs = visitor->getErrors();
-    // std::cerr << errs->size() << " errors" << std::endl;
-    // for (Error *e : errs)
-    //     std::cerr << e.getMessage() << std::endl;
-
-    // std::cout << tree->getText() << std::endl;
+    lsysgen::LSystem<char>* lsystem = module->mainLSystem();
 
     return lsystem;
 }

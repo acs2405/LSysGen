@@ -50,27 +50,25 @@ else()
     )
 endif()
 
-cmake_policy(SET CMP0072 NEW)
-find_package(OpenGL)
-find_package(GLUT)
-if(OpenGL_FOUND AND GLUT_FOUND)
-  # cmake_policy(SET CMP0072 NEW)
+# cmake_policy(SET CMP0072 NEW)
+# find_package(OpenGL)
+# find_package(GLUT)
+# if(OpenGL_FOUND AND GLUT_FOUND)
+#   # cmake_policy(SET CMP0072 NEW)
 
-  # find_package(OpenGL REQUIRED)
-  # find_package(GLUT REQUIRED)
+#   # find_package(OpenGL REQUIRED)
+#   # find_package(GLUT REQUIRED)
 
-  # add_compile_definitions(LSYSGEN_WINDOW)
-  set(LSYSGEN_GRAPHICS True)
+#   # add_compile_definitions(LSYSGEN_WINDOW)
+#   set(LSYSGEN_GRAPHICS True)
 
-  include_directories(${OPENGL_INCLUDE_DIRS})
-  include_directories(${GLUT_INCLUDE_DIRS})
-else()
-  # add_compile_definitions(LSYSGEN_JUST_PRINT)
-  # add_compile_definitions(LSYSGEN_INTERACTIVE)
-  set(LSYSGEN_GRAPHICS False)
-endif()
-
-# add_subdirectory(antlr-runtime)
+#   include_directories(${OPENGL_INCLUDE_DIRS})
+#   include_directories(${GLUT_INCLUDE_DIRS})
+# else()
+#   # add_compile_definitions(LSYSGEN_JUST_PRINT)
+#   # add_compile_definitions(LSYSGEN_INTERACTIVE)
+#   set(LSYSGEN_GRAPHICS False)
+# endif()
 
 # Add CIMG Flags to Compilation Flags
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CIMG_CFLAGS}")
@@ -129,12 +127,15 @@ include_directories(
 
 set(lsysgen_SRC_COMMON 
   ${PROJECT_SOURCE_DIR}/src/misc.cpp
+  ${PROJECT_SOURCE_DIR}/src/values.cpp
   ${PROJECT_SOURCE_DIR}/src/operations.cpp
   ${PROJECT_SOURCE_DIR}/src/ParseTreeNode.cpp
   ${PROJECT_SOURCE_DIR}/src/NodeContent.cpp
   ${PROJECT_SOURCE_DIR}/src/Rule.cpp
   ${PROJECT_SOURCE_DIR}/src/Table.cpp
+  ${PROJECT_SOURCE_DIR}/src/Derivator.cpp
   ${PROJECT_SOURCE_DIR}/src/LSystem.cpp
+  ${PROJECT_SOURCE_DIR}/src/Module.cpp
   ${PROJECT_SOURCE_DIR}/src/ErrorHandler.cpp
   ${PROJECT_SOURCE_DIR}/src/LSysDVisitor.cpp
   ${PROJECT_SOURCE_DIR}/src/LSysDExpressionEvaluator.cpp
@@ -142,9 +143,9 @@ set(lsysgen_SRC_COMMON
   ${PROJECT_SOURCE_DIR}/src/interpreter2D.cpp
   )
 
-set(lsysgen_2D_SRC
-  ${PROJECT_SOURCE_DIR}/src/Drawer2D.cpp
-  )
+# set(lsysgen_2D_SRC
+#   ${PROJECT_SOURCE_DIR}/src/Drawer2D.cpp
+#   )
 
 set(lsysgen_JP_SRC
   ${PROJECT_SOURCE_DIR}/src/printer.cpp
@@ -154,7 +155,7 @@ set(lsysgen_SVG_SRC
   ${PROJECT_SOURCE_DIR}/src/lsys2svg.cpp
   )
 
-set(lsysgen_SRC ${lsysgen_SRC_COMMON} ${lsysgen_2D_SRC} ${lsysgen_JP_SRC} ${lsysgen_SVG_SRC})
+set(lsysgen_SRC ${lsysgen_SRC_COMMON} ${lsysgen_JP_SRC} ${lsysgen_SVG_SRC})
 
 
 
@@ -169,11 +170,11 @@ target_link_libraries(lsysgen ${SYSTEM_LIBS})
 
 
 
-if (LSYSGEN_GRAPHICS)
-  add_executable(lsys2d ${lsysgen_2D_SRC})
-  target_link_libraries(lsys2d lsysgen)
-  target_link_libraries(lsys2d ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
-endif()
+# if (LSYSGEN_GRAPHICS)
+#   add_executable(lsys2d ${lsysgen_2D_SRC})
+#   target_link_libraries(lsys2d lsysgen)
+#   target_link_libraries(lsys2d ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
+# endif()
 
 add_executable(lsys ${lsysgen_JP_SRC})
 target_link_libraries( lsys lsysgen )

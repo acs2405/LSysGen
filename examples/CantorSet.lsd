@@ -3,9 +3,9 @@ lsystem CantorSet {
 
 	axiom S;
 
-	set iterations = 5;
-	set rotation = 90;
-	set initial_heading = 0;
+	set iterations := 5;
+	set rotation := 90;
+	set initial_heading := 0;
 
 	rules {
 

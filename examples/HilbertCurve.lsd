@@ -2,9 +2,9 @@
 lsystem HilbertCurve {
 	axiom L
 
-	set background = "#ddd"
-	set rotation = 90
-	set iterations = 5
+	set background := "#ddd"
+	set rotation := 90
+	set iterations := 5
 
 	L -> +RF-LFL-FR+
 	R -> -LF+RFR+FL-

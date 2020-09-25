@@ -3,28 +3,28 @@ lsystem B3 {
 
 	axiom w(.15)F1(0, 0, 0, 0)F1(0, 0.25, 0.25, 0.25)F1(0, 0, 0, 0)
 	
-	set background = "white"
-	set iterations = 20
-	set ignore = "F+-cW"
-	set initial_heading = 90
-	set rotation = 12.5
-	set line_width = .1
+	set background := "white"
+	set iterations := 20
+	set ignore := "F+-cW"
+	set initial_heading := 90
+	set rotation := 12.5
+	set line_width := .1
 
-	set table_func(i) = if (i % 5 != 0) then 't1' else 't1'
+	function table_func(i) := if (i % 5 != 0) then 't1' else 't1'
 
 	table t1 {
-		(10) 0 <0(k,r,g,b)> 0 -> 1(k,r,g,b)
-		(10) 0 <0(k,r,g,b)> 1 -> 1(k,r,g,b)[W(k+1)c(r,g,b)-F1(k+1,r,g,b)F1(k+1,r,g,b)]
-		(10) 0 <1(k,r,g,b)> 0 -> 1(k,1-r,g,b)
-		(10) 0 <1(k,r,g,b)> 1 -> 1(k,r,g,b)
-		(10) 1 <0(k,r,g,b)> 0 -> 0(k,r,g,1-b)
-		(10) 1 <0(k,r,g,b)> 1 -> 1(k,r,g,b)-F1(k,r,g,b)
-		(10) 1 <1(k,r,g,b)> 0 -> 1(k,r,g,b)
-		(10) 1 <1(k,r,g,b)> 1 -> 0(k,r,1-g,b)
-		( 1) 0 <0(k,r,g,b)> 0 -> 0(k,r,g,b)
-		( 1) 1 <1(k,r,g,b)> 1 -> 1(k,r,g,b)
-		(40) 0 <1(k,r,g,b)> 1 -> 0(k,r,g,b)[W(k+1)c(r,g,b)+F1(k+1,r,g,b)F1(k+1,r,g,b)]
-		( 1) 1 <0(k,r,g,b)> 0 -> 1(k,r,g,b)
+		10: 0 <0(k,r,g,b)> 0 -> 1(k,r,g,b)
+		10: 0 <0(k,r,g,b)> 1 -> 1(k,r,g,b)[W(k+1)c(r,g,b)-F1(k+1,r,g,b)F1(k+1,r,g,b)]
+		10: 0 <1(k,r,g,b)> 0 -> 1(k,1-r,g,b)
+		10: 0 <1(k,r,g,b)> 1 -> 1(k,r,g,b)
+		10: 1 <0(k,r,g,b)> 0 -> 0(k,r,g,1-b)
+		10: 1 <0(k,r,g,b)> 1 -> 1(k,r,g,b)-F1(k,r,g,b)
+		10: 1 <1(k,r,g,b)> 0 -> 1(k,r,g,b)
+		10: 1 <1(k,r,g,b)> 1 -> 0(k,r,1-g,b)
+		 1: 0 <0(k,r,g,b)> 0 -> 0(k,r,g,b)
+		 1: 1 <1(k,r,g,b)> 1 -> 1(k,r,g,b)
+		40: 0 <1(k,r,g,b)> 1 -> 0(k,r,g,b)[W(k+1)c(r,g,b)+F1(k+1,r,g,b)F1(k+1,r,g,b)]
+		 1: 1 <0(k,r,g,b)> 0 -> 1(k,r,g,b)
 		- -> +
 		+ -> -
 	}

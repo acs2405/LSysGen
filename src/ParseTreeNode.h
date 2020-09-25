@@ -20,100 +20,83 @@ namespace lsysgen {
 template<template<typename> typename C, typename T>
 class ParseTreeNode {
 public:
-	static const int LEAF = 1;
-	static const int BRANCH = 2;
+    static int const TYPE_LEAF;
+    static int const TYPE_BRANCH;
 
-	// class iterator {
-	// 	ParseTreeNode<C,T>* n;
+    // class iterator {
+    //  ParseTreeNode<C,T> * n;
 
-	// 	iterator();
-	// 	iterator(ParseTreeNode<C,T>* n);
+    //  iterator();
+    //  iterator(ParseTreeNode<C,T> * n);
 
-	// public:
-	// 	iterator operator++();
-	// 	ParseTreeNode<C,T>* operator*();
-	// };
+    // public:
+    //  iterator operator++();
+    //  ParseTreeNode<C,T> * operator *();
+    // };
 
 private:
-	C<T>* _content;
-	const int _type;
-	ParseTreeNode<C,T>* _parent;
-	ParseTreeNode<C,T>* _left;
-	ParseTreeNode<C,T>* _right;
-	ParseTreeNode<C,T>* _leftmostChild;
-	ParseTreeNode<C,T>* _rightmostChild;
+    C<T> * _content;
+    int const _type;
+    ParseTreeNode<C,T> * _parent;
+    ParseTreeNode<C,T> * _left;
+    ParseTreeNode<C,T> * _right;
+    ParseTreeNode<C,T> * _leftmostChild;
+    ParseTreeNode<C,T> * _rightmostChild;
 
 public:
-	ParseTreeNode ();
-	ParseTreeNode (T const& element);
-	ParseTreeNode (T const& element, int type);
-	ParseTreeNode (ParseTreeNode<C,T>* n);
+    ParseTreeNode ();
+    ParseTreeNode (T const& element);
+    ParseTreeNode (T const& element, int type);
+    ParseTreeNode (ParseTreeNode<C,T> const& n);
 
-	~ParseTreeNode ();
+    ~ParseTreeNode ();
 
-	void addChild(ParseTreeNode<C,T>* child);
+    void addChild(ParseTreeNode<C,T> * child);
 
-	bool isRoot() const;
-	bool isLocalLeftmost() const;
-	bool isLocalRightmost() const;
-	bool isBranch() const;
-	bool isLeaf() const;
+    void prune();
 
-	// Getters
-	ParseTreeNode<C,T>* left() const;
-	ParseTreeNode<C,T>* right() const;
-	ParseTreeNode<C,T>* parent() const;
-	ParseTreeNode<C,T>* leftmostChild() const;
-	ParseTreeNode<C,T>* rightmostChild() const;
-	C<T>* content();
-	const C<T>* content() const;
-	T element() const;
-	int type() const;
+    bool isRoot() const;
+    bool isLocalLeftmost() const;
+    bool isLocalRightmost() const;
+    bool isBranch() const;
+    bool isLeaf() const;
 
-	bool isInstance() const;
-	
-	ParseTreeNode<NodeContent,T>* asGeneric();
-	const ParseTreeNode<NodeContent,T>* asGeneric() const;
+    // Getters
+    ParseTreeNode<C,T> * left() const;
+    ParseTreeNode<C,T> * right() const;
+    ParseTreeNode<C,T> * parent() const;
+    ParseTreeNode<C,T> * leftmostChild() const;
+    ParseTreeNode<C,T> * rightmostChild() const;
+    C<T>& content();
+    C<T> const& content() const;
+    T element() const;
+    int type() const;
 
-	// These functions go upwards when no left/right node is found
-	ParseTreeNode<C,T>* nextLeft() const;
-	ParseTreeNode<C,T>* nextRight() const;
+    bool isInstance() const;
+    
+    ParseTreeNode<NodeContent,T> * asGeneric();
+    ParseTreeNode<NodeContent,T> const* asGeneric() const;
 
-	// Returns the root node
-	ParseTreeNode<C,T>* root();
-	const ParseTreeNode<C,T>* root() const;
+    // These functions go upwards when no left/right node is found
+    ParseTreeNode<C,T> * nextLeft() const;
+    ParseTreeNode<C,T> * nextRight() const;
 
-	// Returns the number of left siblings this node has
-	int siblingNo() const;
-	int size() const;
+    // Returns the root node
+    ParseTreeNode<C,T> * root();
+    ParseTreeNode<C,T> const* root() const;
 
-	ParseTreeNode<C,T>* encapsulate();
+    // Returns the number of left siblings this node has
+    int siblingNo() const;
+    int size() const;
 
-	// virtual std::string elementToString();
-	std::string toString(const ParseTreeNode<C,T>* markNode=nullptr) const;
-	std::string toStringWithContext() const;
+    ParseTreeNode<C,T> * encapsulate();
 
-	// // Left to right direct children iterator
-	// iterator begin();
-	// iterator end();
-	// // Right to left direct children iterator
-	// reverse_iterator rbegin();
-	// reverse_iterator rend();
-	// // Left to right siblings iterator (including this or not)
-	// sibling_iterator sbegin(bool including=true);
-	// sibling_iterator send(bool including=true);
-	// // Right to left siblings iterator (including this or not)
-	// reverse_sibling_iterator rsbegin(bool including=true);
-	// reverse_sibling_iterator rsend(bool including=true);
-	// // Left to right global iterator (including this or not). This uses nextLeft()
-	// global_iterator gbegin(bool including=true);
-	// global_iterator gend(bool including=true);
-	// // Right to left global iterator (including this or not). This uses nextRight()
-	// reverse_global_iterator rgbegin(bool including=true);
-	// reverse_global_iterator rgend(bool including=true);
-
-	// Returns a copy of the node with just its content and its type
-	// virtual ParseTreeNode<C,T>* copy();
+    // virtual std::string elementToString();
+    std::string toString(ParseTreeNode<C,T> const* markNode=nullptr) const;
+    std::string toStringWithContext() const;
 };
+
+template<template<typename> typename C, typename T>
+std::ostream& operator<<(std::ostream& os, ParseTreeNode<C, T> const& n);
 
 }

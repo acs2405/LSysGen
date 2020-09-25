@@ -5,6 +5,8 @@
 #include <cmath>
 // #include <format>
 
+using namespace lsysgen;
+
 
 // DEFAULT_INITIAL_HEADING = 0;
 // DEFAULT_ROTATION = 12;
@@ -40,7 +42,9 @@ Bounds2D::Bounds2D(): p0(), p1() {}
 // Shape2D::Shape2D(int mode): points(), mode(mode) {};
 
 
-std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, LSystem<char>* lsystem) {
+std::string node2svg(
+        ParseTreeNode<InstanceNodeContent, char>* parent, 
+        LSystem<char>* lsystem) {
     State2D initialState;
     Bounds2D bounds;
     initialState.dir = lsystem ? lsystem->initialHeading : DEFAULT_INITIAL_HEADING;
@@ -75,7 +79,11 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, LSystem<c
     return svg;
 }
 
-std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& state, Bounds2D &bounds, LSystem<char>* lsystem) {
+std::string node2svg(
+        ParseTreeNode<InstanceNodeContent, char>* parent, 
+        State2D& state, 
+        Bounds2D &bounds, 
+        LSystem<char>* lsystem) {
     std::string svgContent = "";
 
     auto stack = new std::list<std::pair<State2D, ParseTreeNode<InstanceNodeContent, char>*>>();
@@ -100,7 +108,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
         draw = false;
         move = 0.0;
         if (node->isLeaf()) {
-            values = node->content()->values;
+            values = node->content().values;
             std::string fillstr;
             if (fill) {
                 fillstr = state.fillColor.toString();
@@ -108,6 +116,7 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                 fillstr = "none";
             }
             if (!inPath) {
+                // svgContent += "<g fill=\"" + fillstr + "\">";
                 element = "<path stroke=\"" + state.penColor.toString();
                 element += "\" stroke-width=\"" + std::to_string(state.lineWidth);
                 element += "\" fill=\"" + fillstr + "\" d=\"M";
@@ -129,6 +138,17 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
                     // TODO else error
                 } // TODO else error
                 // command = (node->element() == 'F' || node->element() == 'G') ? "L" : "M";
+            } else if (node->element() == 'h' || node->element() == 'v') {
+                if (values == nullptr || values->size() == 0) {
+                    move = 1;
+                } else if(values->size() == 1) {
+                    v[0] = values->front();
+                    if (v[0].isInt())
+                        move = static_cast<double>(v[0].asInt());
+                    if (v[0].isFloat())
+                        move = v[0].asFloat();
+                    // TODO else error
+                } // TODO else error
             } else if (node->element() == '+' || node->element() == '-') {
                 double sign = node->element() == '+' ? 1.0 : -1.0;
                 if (values == nullptr || values->size() == 0) {
@@ -318,16 +338,22 @@ std::string node2svg(ParseTreeNode<InstanceNodeContent, char>* parent, State2D& 
             //     // glBegin(GL_POINTS);
             // }
             if (move != 0) {
-                state.pos.x += move*std::cos(state.dir*M_PI/180);
-                state.pos.y += move*std::sin(-state.dir*M_PI/180);
-                if (state.pos.x < bounds.p0.x)
-                    bounds.p0.x = state.pos.x;
-                if (state.pos.y < bounds.p0.y)
-                    bounds.p0.y = state.pos.y;
-                if (state.pos.x > bounds.p1.x)
-                    bounds.p1.x = state.pos.x;
-                if (state.pos.y > bounds.p1.y)
-                    bounds.p1.y = state.pos.y;
+                if (node->element() == 'h') {
+                    state.pos.x += move;
+                } else if (node->element() == 'v') {
+                    state.pos.y -= move;
+                } else {
+                    state.pos.x += move*std::cos(state.dir*M_PI/180);
+                    state.pos.y += move*std::sin(-state.dir*M_PI/180);
+                    if (state.pos.x < bounds.p0.x)
+                        bounds.p0.x = state.pos.x;
+                    if (state.pos.y < bounds.p0.y)
+                        bounds.p0.y = state.pos.y;
+                    if (state.pos.x > bounds.p1.x)
+                        bounds.p1.x = state.pos.x;
+                    if (state.pos.y > bounds.p1.y)
+                        bounds.p1.y = state.pos.y;
+                }
             }
             if (move != 0) {
                 // glVertex2f(state.x, state.y);

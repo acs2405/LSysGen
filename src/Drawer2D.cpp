@@ -28,13 +28,15 @@ int main(int argc, char** argv) {
     if (lsystem == nullptr)
         exit(1);
 
+    lsystem->prepare();
+
     if (argc == 3) {
         int n = std::stoi(argv[2]);
-        lsystem->iterations = n;
+        // lsystem->iterations = n;
+        lsystem->iterate(n);
+    } else {
+        lsystem->iterate();
     }
-
-    lsystem->prepare();
-    lsystem->iterate();
 
     // int i = 0;
     // for (lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* iteration : *lsystem->encodedProgression) {
@@ -87,7 +89,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
             if (node->element() == 'F' || node->element() == 'G' ||
                     node->element() == 'f' || node->element() == 'g') {
                 double sign = (node->element() == 'F' || node->element() == 'f') ? 1.0 : -1.0;
-                values = node->content()->values;
+                values = node->content().values;
                 if (values == nullptr || values->size() == 0) {
                     move = sign;
                 } else if(values->size() == 1) {
@@ -101,7 +103,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                 draw = (node->element() == 'F' || node->element() == 'G') ? true : false;
             } else if (node->element() == '+' || node->element() == '-') {
                 double sign = node->element() == '+' ? 1.0 : -1.0;
-                values = node->content()->values;
+                values = node->content().values;
                 if (values == nullptr || values->size() == 0) {
                     state.dir += sign*(lsystem && !std::isnan(lsystem->rotation) ? lsystem->rotation : DEFAULT_ROTATION);
                 } else if(values->size() == 1) {
@@ -114,7 +116,7 @@ void Drawer2D::drawBranch(ParseTreeNode<InstanceNodeContent, char>* parent, Stat
                 } // TODO else error
             } else if (node->element() == 'c' || node->element() == 'n' ||
                     node->element() == 'l') {
-                values = node->content()->values;
+                values = node->content().values;
                 if (values != nullptr) {
                     float r = 1.0, g = 1.0, b = 1.0, a = 1.0;
                     if(values->size() == 1) {
@@ -367,7 +369,7 @@ void Drawer2D::display() {
 void Drawer2D::prepare(int argc, char** argv) {
     Drawer2DDisplayer::drawer = this;
     glutInit(&argc, argv);                 // Initialize GLUT
-    glutCreateWindow(this->lsystem->name.c_str()); // Create a window with the given title
+    glutCreateWindow(this->lsystem->name().c_str()); // Create a window with the given title
     glutInitWindowSize(320, 320);   // Set the window's initial width & height
     glutInitWindowPosition(50, 50); // Position the window's initial top-left corner
     glutIdleFunc(Drawer2DDisplayer::display); // Register display callback handler for window re-paint

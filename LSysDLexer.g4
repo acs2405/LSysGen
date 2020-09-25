@@ -95,26 +95,31 @@ fragment QUOT
 KWAND: 'and';
 KWAXIOM: 'axiom';
 KWCODING: 'coding';
+KWDO: 'do';
 KWELSE: 'else';
-KWFALSE: 'False';
+KWFALSE: 'false';
 KWFOR: 'for';
 //KWFROM: 'from';
+KWFUNCTION: 'function';
 KWIF: 'if';
 //KWIMPORT: 'import';
 KWIN: 'in';
-//KWINF: 'Inf';
-KWLAMBDA: 'lambda';
+//KWINF: 'inf';
+//KWLAMBDA: 'lambda';
 KWLSYS: 'lsystem';
-//KWNAN: 'Nan';
+//KWNAN: 'nan';
 KWNOT: 'not';
-KWNONE: 'None';
+KWNULL: 'null';
 KWOR: 'or';
 KWPRODUCTION: 'production';
+KWRETURN: 'return';
 KWRULES: 'rules';
 KWSET: 'set';
 KWTABLE: 'table';
 KWTHEN: 'then';
-KWTRUE: 'True';
+KWTRUE: 'true';
+KWVAR: 'var';
+KWWHILE: 'while';
 
 // Separators
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -146,11 +151,11 @@ fragment BSLASH: '\\';
 ARROW : '->';
 DARROW : '=>';
 
-ASSIGN : '=';
+ASSIGN : ':=';
 
 GT : '>';
 LT : '<';
-EQ : '==';
+EQ : '='|'==';
 LE : '<=';
 GE : '>=';
 NE : '!=';

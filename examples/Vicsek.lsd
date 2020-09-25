@@ -4,10 +4,10 @@ lsystem Vicsek {
 	axiom A
 	#axiom PAp
 
-	set iterations = 4
-	set rotation = 90
-	set background = "#fca"
-	set line_width = 0
+	set iterations := 4
+	set rotation := 90
+	set background := "#fca"
+	set line_width := 0
 
 	rules {
 

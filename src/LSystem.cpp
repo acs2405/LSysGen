@@ -1,23 +1,104 @@
 
 #include "LSystem.h"
 
+#include "misc.h"
+
+#include <iostream>
 #include <cmath>
-#include <cstdlib>
-#include <chrono>
 
 namespace lsysgen {
 
 template<typename T>
-LSystem<T>::LSystem(): env(nullptr), name(""), tables(nullptr), defaultTable(nullptr), 
-        codingRules(nullptr), taggedRules(nullptr), tableFunc(nullptr), axiom(nullptr), 
-        iterations(0), ignore(nullptr), initialHeading(0.0), rotation(NAN),
-        lineWidth(NAN), _current(-1) {
-    this->progression = new std::vector<ParseTreeNode<InstanceNodeContent, T>*>();
-    this->encodedProgression = new std::vector<ParseTreeNode<InstanceNodeContent, T>*>();
+LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), eh(module->messages()), 
+        derivator(eh, module->evaluator()), 
+        _tables(), _codingRules(), _taggedRules(), _tableFunc(nullptr), _axiom(nullptr), 
+        _iterations(0), _ignore(), initialHeading(0.0), rotation(NAN), lineWidth(NAN), 
+        background(), _current(-1), _lastWord(nullptr), _encodedProgression() {
+    this->_scope = new Scope(module->scope());
+
+    this->_defaultTable = new Table<char>("<default>");
+    this->_tables[this->_defaultTable->name] = this->_defaultTable;
+    this->_codingRules = new Table<char>("<coding>");
 }
 
 template<typename T>
-LSystem<T>::~LSystem() {}
+LSystem<T>::~LSystem() {
+    for (auto t : _tables)
+        delete t.second;
+    // delete _defaultTable;
+    delete _codingRules;
+    delete _axiom;
+    delete _ignore;
+    // delete _tableFunc;
+    delete _lastWord;
+    _encodedProgression.clear();
+    // for (ParseTreeNode<InstanceNodeContent, T> * n : _encodedProgression)
+    //     delete n;
+    delete _scope;
+}
+
+template<typename T>
+ErrorHandler * LSystem<T>::messages() {return this->eh;}
+
+template<typename T>
+void LSystem<T>::populateProperties() {
+    if (_scope->has("table_func")) {
+        Value v = _scope->get("table_func");
+        if (v.isFunction() && v.asFunction()->params()->size() == 1)
+            this->_tableFunc = v.asFunction();
+        else if (!v.isError())
+            eh->fatalError("table_func property must be a function with one parameter");
+    }
+    if (_scope->has("iterations")) {
+        Value v = _scope->get("iterations");
+        if (v.isInt())
+            this->_iterations = v.asInt();
+        else if (!v.isError())
+            eh->fatalError("iterations property must be a integer number");
+    }
+    if (_scope->has("ignore")) {
+        Value v = _scope->get("ignore");
+        if (v.isString()) {
+            std::string ignore = v.asString();
+            this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
+        } else if (!v.isError())
+            eh->fatalError("ignore property must be a string");
+    }
+    if (_scope->has("initial_heading")) {
+        Value v = _scope->get("initial_heading");
+        if (v.isFloat())
+            this->initialHeading = v.asFloat();
+        else if (v.isInt())
+            this->initialHeading = v.asInt();
+        else if (!v.isError())
+            eh->fatalError("initial_heading property must be a number");
+    }
+    if (_scope->has("rotation")) {
+        Value v = _scope->get("rotation");
+        if (v.isFloat())
+            this->rotation = v.asFloat();
+        else if (v.isInt())
+            this->rotation = v.asInt();
+        else if (!v.isError())
+            eh->fatalError("rotation property must be a number");
+    }
+    if (_scope->has("line_width")) {
+        Value v = _scope->get("line_width");
+        if (v.isFloat())
+            this->lineWidth = v.asFloat();
+        else if (v.isInt())
+            this->lineWidth = v.asInt();
+        else if (!v.isError())
+            eh->fatalError("line_width property must be a number");
+    }
+    if (_scope->has("background")) {
+        Value v = _scope->get("background");
+        if (v.isString()) {
+            this->background = sanitizeXML(v.asString());
+        } else if (!v.isError())
+            eh->fatalError("background property must be a string");
+    }
+}
 
 template<typename T>
 void LSystem<T>::prepare() {
@@ -26,70 +107,81 @@ void LSystem<T>::prepare() {
         auto duration = now.time_since_epoch();
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         srand(millis);
-        if (this->axiom == nullptr)
-            this->axiom = new ParseTreeNode<InstanceNodeContent, T>();
-        if (this->ignore == nullptr)
-            this->ignore = new std::list<T>();
+        if (this->_axiom == nullptr)
+            this->_axiom = new ParseTreeNode<InstanceNodeContent, T>();
+        if (this->_ignore == nullptr)
+            this->_ignore = new std::list<T>();
         this->_current = 0;
-        // this->axiom = this->parser.parseWord(this->axiom, this->environment());
-        this->env->set("i", 0);
-        this->progression->push_back(this->axiom);  // seed
-        // this->encodedProgression->push_back(this->progression->back());
-        this->encodedProgression->push_back(derive(this->axiom, this->codingRules, this->ignore, this->env));
+        // this->_axiom = this->parser.parseWord(this->_axiom, this->_scope());
+        this->_scope->set("i", 0);
+        this->_lastWord = this->_axiom;  // seed
+        this->_encodedProgression.push_back(derivator.derive(_lastWord, _codingRules, _ignore, _scope));
     }
 }
 
 template<typename T>
 void LSystem<T>::iterate() {
-    if (this->_current < this->iterations) {
-        int iterations = this->iterations - this->_current;
+    this->prepare();
+    if (this->_current < this->_iterations) {
+        int iterations = this->_iterations - this->_current;
         this->iterate(iterations);
     }
 }
 
 template<typename T>
 void LSystem<T>::iterate(int iterations) {
-    for (int i = this->progression->size(); i < this->_current + iterations + 1; ++i) {
-        Table<T>* table = this->getTable(i);
-        this->env->set("i", i);
+    this->prepare();
+    for (int i = this->_encodedProgression.size(); i < this->_current + iterations + 1; ++i) {
+        Table<T> * table = this->getTable(i);
+        this->_scope->set("i", i);
         // std::cout << "ROUND " << i << std::endl;
-    // std::cout << this->env->get("i").asInt() << std::endl;
-        this->progression->push_back(derive(this->progression->back(), table, this->ignore, this->env));
-        // this->encodedProgression->push_back(this->progression->back());
-        this->encodedProgression->push_back(derive(this->progression->back(), this->codingRules, this->ignore, this->env));
+        // std::cout << this->_scope->get("i").asInt() << std::endl;
+        ParseTreeNode<InstanceNodeContent, T> * lastWord = this->_lastWord;
+        // std::cerr << "HERE prederive " << std::endl;
+        this->_lastWord = derivator.derive(lastWord, table, _ignore, _scope);
+        // std::cerr << "HERE postderive " << std::endl;
+        delete lastWord;
+        // std::cerr << "HERE preencode " << std::endl;
+        this->_encodedProgression.push_back(derivator.derive(_lastWord, _codingRules, _ignore, _scope));
+        // std::cerr << "HERE postdecode " << std::endl;
     }
     this->_current += iterations;
     if (this->_current < 0)
         this->_current = 0;
-    this->env->set("i", Value(this->_current));
+    this->_scope->set("i", this->_current);
 }
 
 template<typename T>
-ParseTreeNode<InstanceNodeContent, T>* LSystem<T>::current() {
-    return this->encodedProgression->at(this->_current);
+ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
+    return this->_encodedProgression.at(this->_current);
 }
 
 template<typename T>
-int LSystem<T>::iteration() {
+int LSystem<T>::iteration() const {
     return this->_current;
 }
 
 template<typename T>
-Table<T>* LSystem<T>::getTable(int i) {
-    if (this->tableFunc == nullptr)
-        return this->defaultTable;
-    // std::cout << this->tableFunc->toString() << std::endl;
-    Value val = this->tableFunc->call(new std::list<Value> {Value(i)});
+std::string const& LSystem<T>::name() const {
+    return this->_name;
+}
+
+template<typename T>
+Table<T> * LSystem<T>::getTable(int i) {
+    if (this->_tableFunc == nullptr)
+        return this->_defaultTable;
+    // std::cout << this->_tableFunc->toString() << std::endl;
+    Value val = this->_tableFunc->call(new std::list<Value> {Value(i)}, _scope, _module->evaluator());
     if (!val.isString()) {
-        err("Table function must return a string");
+        eh->fatalError("Table function must return a string");
         return nullptr;
     }
     std::string tableIndex = val.asString();
-    if (this->tables->find(tableIndex) != this->tables->end())
-        return this->tables->at(tableIndex);
+    if (this->_tables.find(tableIndex) != this->_tables.end())
+        return this->_tables.at(tableIndex);
     // if type(tableIndex) == int and tableIndex < len(this->tablesList):
     //     return this->tablesList[tableIndex];
-    err("Error in table function: no table '" + tableIndex + "' found");
+    eh->fatalError("Error in table function: no table '" + tableIndex + "' found");
     return nullptr;
 }
 

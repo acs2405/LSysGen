@@ -19,7 +19,7 @@
 
 // extern "C" const char* generateLSystem(const char* file, int iterations=-1);
 
-extern "C" lsysgen::LSystem<char>* lsystem_create(const char* file, int iterations=-1);
+extern "C" lsysgen::LSystem<char>* lsystem_create(const char* file);
 extern "C" void lsystem_generate(LSystem<char>* lsystem);
 extern "C" void lsystem_iterate(LSystem<char>* lsystem, int iterations=1);
 extern "C" int lsystem_get_iteration_number(LSystem<char>* lsystem);

@@ -21,15 +21,41 @@ public:
    */
     virtual antlrcpp::Any visitMain(LSysDParser::MainContext *context) = 0;
 
+    virtual antlrcpp::Any visitModule(LSysDParser::ModuleContext *context) = 0;
+
+    virtual antlrcpp::Any visitGlobalDefs(LSysDParser::GlobalDefsContext *context) = 0;
+
+    virtual antlrcpp::Any visitGlobalDef(LSysDParser::GlobalDefContext *context) = 0;
+
+    virtual antlrcpp::Any visitDeclaration(LSysDParser::DeclarationContext *context) = 0;
+
+    virtual antlrcpp::Any visitVarDeclaration(LSysDParser::VarDeclarationContext *context) = 0;
+
+    virtual antlrcpp::Any visitConstDeclaration(LSysDParser::ConstDeclarationContext *context) = 0;
+
+    virtual antlrcpp::Any visitLsystem(LSysDParser::LsystemContext *context) = 0;
+
     virtual antlrcpp::Any visitSep(LSysDParser::SepContext *context) = 0;
 
     virtual antlrcpp::Any visitNl(LSysDParser::NlContext *context) = 0;
 
-    virtual antlrcpp::Any visitName(LSysDParser::NameContext *context) = 0;
+    virtual antlrcpp::Any visitInLsysDefs(LSysDParser::InLsysDefsContext *context) = 0;
 
-    virtual antlrcpp::Any visitDefinitions(LSysDParser::DefinitionsContext *context) = 0;
+    virtual antlrcpp::Any visitInLsysDef(LSysDParser::InLsysDefContext *context) = 0;
 
-    virtual antlrcpp::Any visitDefinition(LSysDParser::DefinitionContext *context) = 0;
+    virtual antlrcpp::Any visitBlockOrOneStatement(LSysDParser::BlockOrOneStatementContext *context) = 0;
+
+    virtual antlrcpp::Any visitBlock(LSysDParser::BlockContext *context) = 0;
+
+    virtual antlrcpp::Any visitOneStatement(LSysDParser::OneStatementContext *context) = 0;
+
+    virtual antlrcpp::Any visitOneStmtNeedsSep(LSysDParser::OneStmtNeedsSepContext *context) = 0;
+
+    virtual antlrcpp::Any visitOneStmtEndsInBlock(LSysDParser::OneStmtEndsInBlockContext *context) = 0;
+
+    virtual antlrcpp::Any visitStatement(LSysDParser::StatementContext *context) = 0;
+
+    virtual antlrcpp::Any visitAssignment(LSysDParser::AssignmentContext *context) = 0;
 
     virtual antlrcpp::Any visitAxiomDef(LSysDParser::AxiomDefContext *context) = 0;
 
@@ -95,8 +121,6 @@ public:
 
     virtual antlrcpp::Any visitValidChar(LSysDParser::ValidCharContext *context) = 0;
 
-    virtual antlrcpp::Any visitParamsWithCond(LSysDParser::ParamsWithCondContext *context) = 0;
-
     virtual antlrcpp::Any visitParams(LSysDParser::ParamsContext *context) = 0;
 
     virtual antlrcpp::Any visitParam(LSysDParser::ParamContext *context) = 0;
@@ -142,6 +166,8 @@ public:
     virtual antlrcpp::Any visitTrueValue(LSysDParser::TrueValueContext *context) = 0;
 
     virtual antlrcpp::Any visitFalseValue(LSysDParser::FalseValueContext *context) = 0;
+
+    virtual antlrcpp::Any visitNullValue(LSysDParser::NullValueContext *context) = 0;
 
 
 };

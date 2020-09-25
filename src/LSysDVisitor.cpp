@@ -1,8 +1,11 @@
 
 #include "LSysDVisitor.h"
 
+#include "misc.h"
+
 #include <utility>
 // #include <sstream>
+// #include <regex>
 
 
 // ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
@@ -21,7 +24,7 @@
 //     // TreeShapeListener listener;
 //     // tree::ParseTreeWalker::DEFAULT.walk(&listener, tree);
 
-//     Environment* childEnv = new Environment(this->env);
+//     Scope* childEnv = new Scope(this->scope);
 //     childEnv->set("i", 0);
 //     LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
 //     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
@@ -34,61 +37,26 @@
 //     return node;
 // }
 
-LSysDVisitor::LSysDVisitor(std::string filename, std::vector<std::string>* sourceLines, Environment* env):
-        filename(filename), sourceLines(sourceLines), parentTrace(nullptr), axiom(nullptr) {
-    this->env = env ? new Environment(env) : new Environment();
+LSysDVisitor::LSysDVisitor(std::string const& filename, std::vector<std::string> const* sourceLines, Scope * scope, StackTrace const* trace) {
+    this->eh = new ErrorHandler(filename != "-" ? filename : "<stdin>", sourceLines, trace);
+
+    this->currentLSystem = nullptr;
     this->currentTable = nullptr;
     this->parentNode = nullptr;
-    this->taggedRules = new std::map<std::string, Rule<char>*>();
-    this->tables = new std::map<std::string, Table<char>*>();
-    this->tablesList = new std::list<Table<char>*>();
-    this->codingRules = new Table<char>("<default>");
+
+    this->baseScope = scope != nullptr ? new Scope(scope) : nullptr;
+    this->currentScope = nullptr;
+
+    // this->scope = scope ? new Scope(scope) : new Scope();
+    // this->taggedRules = new std::map<std::string, Rule<char>*>();
+    // this->tables = new std::map<std::string, Table<char>*>();
+    // this->codingRules = new Table<char>("<default>");
 }
 
 LSysDVisitor::~LSysDVisitor() {
-    delete this->sourceLines;
-    // delete this->env;
-    // delete this->evaluator;
 }
 
-void LSysDVisitor::error(std::string const& msg, StackTrace* st) {
-    Error* e = new Error(msg, st);
-    this->eh.addError(e);
-}
-
-void LSysDVisitor::error(std::string const& msg, antlr4::ParserRuleContext* ctx) {
-    this->error(msg, this->trace(ctx, this->parentTrace));
-}
-
-void LSysDVisitor::error(std::string const& msg, antlr4::tree::TerminalNode* terminal) {
-    this->error(msg, this->trace(terminal->getSymbol(), terminal->getSymbol(), this->parentTrace));
-}
-
-// void LSysDVisitor::error(string const& msg, antlr4::Token* tokInit, antlr4::Token* tokEnd) {
-//     this->error(msg, this->trace(tokInit, tokEnd));
-// }
-
-StackTrace* LSysDVisitor::trace(antlr4::Token* tokInit, antlr4::Token* tokEnd, StackTrace* parent) {
-    return new StackTrace(tokInit, tokEnd, parent, this->sourceLines, this->filename);
-}
-
-StackTrace* LSysDVisitor::trace(antlr4::ParserRuleContext* ctx, StackTrace* parent) {
-    return new StackTrace(ctx, parent, this->sourceLines, this->filename);
-}
-
-const std::list<Error*>* LSysDVisitor::errors() const {
-    return this->eh.errors();
-}
-
-void LSysDVisitor::dumpErrors() const {
-    for (Error* e : *this->errors()) {
-        std::cerr << e->buildMessage() << std::endl;
-    }
-}
-
-// Environment* LSysDVisitor::getEnvironment() {
-//     return env;
-// }
+ErrorHandler* LSysDVisitor::messages() {return eh;}
 
 // Value LSysDVisitor::eval(LSysDParser::ExpressionContext* ctx) {
 //     return this->evaluator->eval(ctx);
@@ -97,161 +65,116 @@ void LSysDVisitor::dumpErrors() const {
 
 
 antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
-    this->defaultTable = new Table<char>("<default>");
-    (*this->tables)[this->defaultTable->name] = this->defaultTable;
-    // this->tablesList->push_back(t);
-    this->codingRules = new Table<char>("<coding>");
-
-    LSystem<char>* lsys;
-
-    if (ctx->word() != nullptr) {
-        this->axiom = this->visitWord(ctx->word()).as<ParseTreeNode<InstanceNodeContent, char>*>();
-    } else {
-        visitChildren(ctx);
-    }
-
-    if (this->errors()->size() == 0) {
-        lsys = new LSystem<char>();
-
-        if (ctx->name())
-            lsys->name = this->visitName(ctx->name()).as<std::string>();
-        else
-            lsys->name = this->filename;
-        lsys->tables = this->tables;
-        // lsys->tablesList = this->tablesList;
-        lsys->defaultTable = this->defaultTable;
-        lsys->codingRules = this->codingRules;
-        lsys->taggedRules = this->taggedRules;
-        if (this->axiom != nullptr) {
-            lsys->axiom = this->axiom;
+    std::string moduleName;
+    if (eh->fileName() == "-")
+        moduleName = eh->fileName();
+    else {
+        moduleName = getModuleName(eh->fileName());
+        if (moduleName.size() > 0) {
+            // std::regex_replace(moduleName, std::regex("[-]"), "_");
+            // std::regex_replace(moduleName, std::regex("[^a-zA-Z0-9_]"), "");
         } else {
-            this->error("No axiom is defined in the L system");
+            eh->fatalError("The file name must end in .lsd");
+            // moduleName = filename;
         }
-        // if (this->env->has("axiom")) {
-        //     Value v = this->env->get("axiom");
-        //     if (v.isString()) {
-        //         std::string axiom = v.asString();
-        //         lsys->axiom = this->parseInstanceNode(axiom);
-        //     } else
-        //         this->error("axiom must be a string");
-        // }
-        if (this->env->has("table_func")) {
-            Value v = this->env->get("table_func");
-            if (v.isFunction() && v.asFunction()->params()->size() == 1)
-                lsys->tableFunc = v.asFunction();
-            else
-                this->error("table_func property must be a function with one parameter");
+    }
+    module = new Module<char>(moduleName);
+    module->eh = eh; //new ErrorHandler(eh);
+    module->_scope = new Scope(baseScope);
+    module->_evaluator = new LSysDExpressionEvaluator(eh);
+    currentScope = module->_scope;
+    if (ctx->module()) {
+        visitChildren(ctx);
+        if (eh->errors().size() > 0 || module->eh->errors().size() > 0)
+            return static_cast<Module<char>*>(nullptr);
+    } else {
+        currentLSystem = new LSystem<char>(module);
+        currentLSystem->_name = module->_name;
+        currentScope = currentLSystem->_scope;
+        if (ctx->inLsysDefs()) {
+            visitChildren(ctx);
+            if (currentLSystem->_axiom == nullptr)
+                eh->error("No axiom is defined in the L system " + currentLSystem->_name);
+        } else if (ctx->word()) {
+            currentLSystem->_axiom = this->visitWord(ctx->word());
         }
-        if (this->env->has("iterations")) {
-            Value v = this->env->get("iterations");
-            if (v.isInt())
-                lsys->iterations = v.asInt();
-            else
-                this->error("iterations property must be a integer number");
+        if (eh->errors().size() > 0 || module->eh->errors().size() > 0)
+            return static_cast<Module<char>*>(nullptr);
+        currentScope = currentScope->parent();
+        currentLSystem->populateProperties();
+        module->_lsystems[currentLSystem->_name] = currentLSystem;
+        currentLSystem = nullptr;
+    }
+    currentScope = currentScope->parent();
+    
+    if (module->_lsystems.size() == 1)
+        module->_mainLSystem = module->_lsystems.begin()->second;
+    else if (module->_mainLSystem == nullptr) {
+        for (auto ls : module->_lsystems) {
+            if (ls.second->_name == module->_name) {
+                module->_mainLSystem = ls.second;
+                break;
+            }
         }
-        if (this->env->has("ignore")) {
-            Value v = this->env->get("ignore");
-            if (v.isString()) {
-                std::string ignore = v.asString();
-                lsys->ignore = new std::list<char>(ignore.begin(), ignore.end());
-            } else
-                this->error("ignore property must be a string");
-        }
-        if (this->env->has("initial_heading")) {
-            Value v = this->env->get("initial_heading");
-            if (v.isFloat())
-                lsys->initialHeading = v.asFloat();
-            else if (v.isInt())
-                lsys->initialHeading = v.asInt();
-            else
-                this->error("initial_heading property must be a number");
-        }
-        if (this->env->has("rotation")) {
-            Value v = this->env->get("rotation");
-            if (v.isFloat())
-                lsys->rotation = v.asFloat();
-            else if (v.isInt())
-                lsys->rotation = v.asInt();
-            else
-                this->error("rotation property must be a number");
-        }
-        if (this->env->has("line_width")) {
-            Value v = this->env->get("line_width");
-            if (v.isFloat())
-                lsys->lineWidth = v.asFloat();
-            else if (v.isInt())
-                lsys->lineWidth = v.asInt();
-            else
-                this->error("line_width property must be a number");
-        }
-        if (this->env->has("background")) {
-            Value v = this->env->get("background");
-            if (v.isString()) {
-                lsys->background = sanitizeXML(v.asString());
-            } else
-                this->error("background property must be a string");
-        }
-        lsys->env = this->env;
     }
 
-    if (this->errors()->size() > 0) {
-        this->dumpErrors();
-        lsys = nullptr;
-    }
-
-    return lsys;
+    return this->module;
 }
 
-antlrcpp::Any LSysDVisitor::visitName(LSysDParser::NameContext *ctx) {
-    return ctx->ID()->getText();
-}
-
-antlrcpp::Any LSysDVisitor::visitDefinitions(LSysDParser::DefinitionsContext *ctx) {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any LSysDVisitor::visitDefinition(LSysDParser::DefinitionContext *ctx) {
-    // if (ctx->ruleDef()) {
-    //     this->currentTable = this->defaultTable;
-    //     this->visitRuleDef(ctx->ruleDef());
-    //     this->currentTable = nullptr;
-    //     return nullptr;
-    // }
-    return visitChildren(ctx);
+antlrcpp::Any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
+    currentLSystem = new LSystem<char>(module);
+    currentLSystem->_name = ctx->ID()->getText();
+    currentScope = currentLSystem->_scope;
+    // eh->traceDown(eh->trace(ctx->ID(), nullptr, "in LSystem:"));
+    visitChildren(ctx);
+    // eh->traceUp();
+    currentScope = currentScope->parent();
+    currentLSystem->populateProperties();
+    module->_lsystems[currentLSystem->_name] = currentLSystem;
+    currentLSystem = nullptr;
+    return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
-    if (this->axiom == nullptr) {
-        this->axiom = this->visitWord(ctx->word()).as<ParseTreeNode<InstanceNodeContent, char>*>();
+    if (currentLSystem->_axiom == nullptr) {
+        currentLSystem->_axiom = this->visitWord(ctx->word());
     } else {
-        this->error("The axiom is already defined", ctx);
+        eh->error("The axiom is already defined", eh->trace(ctx));
     }
     return nullptr;
 }
 
-antlrcpp::Any LSysDVisitor::visitPropDef(LSysDParser::PropDefContext *ctx) {
+antlrcpp::Any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
-    if (this->env->has(pname))
-        this->error("'" + pname + "' field already defined", ctx->ID());
-    // LSysDParser::ExpressionContext* expr = ctx->expression();
-    Value val = eval(ctx->expression(), this->env);
-    // TODO: Propagar error de eval
-    this->env->set(pname, val);
+    if (currentScope->has(pname))
+        eh->error("'" + pname + "' constant already defined", eh->trace(ctx->ID()));
+    Value val = module->_evaluator->eval(ctx->expression(), currentScope);
+    currentScope->set(pname, val);
     // std::cout << "PROP" << std::endl;
     // std::cout << (val.is<std::string*>()) << std::endl;
     // std::cout << (val2.is<std::string*>()) << std::endl;
-    // std::cout << (this->env->get(pname).is<std::string*>()) << std::endl;
+    // std::cout << (currentScope->get(pname).is<std::string*>()) << std::endl;
     // std::cout << *(val2.as<std::string*>()) << std::endl;
+    return nullptr;
+}
+
+antlrcpp::Any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) {
+    std::string pname = ctx->ID()->getText();
+    if (currentScope->has(pname))
+        eh->error("'" + pname + "' constant already defined", eh->trace(ctx->ID()));
+    Value val = module->_evaluator->eval(ctx->expression(), currentScope);
+    currentScope->set(pname, val);
     return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
     std::string fname = ctx->ID()->getText();
-    if (this->env->has(fname))
-        this->error("'" + fname + "' field already defined", ctx->ID());
+    if (currentScope->has(fname))
+        eh->error("'" + fname + "' field already defined", eh->trace(ctx->ID()));
     // LSysDParser::ExpressionContext* expr = ctx->expression();
     std::list<Parameter*>* params = this->visitParams(ctx->params());
-    this->env->set(fname, new Function(params, ctx->expression(), ctx));
+    currentScope->set(fname, new Function(params, ctx->expression(), ctx));
+    // currentScope->set(fname, new Function(params, ctx->block(), ctx));
     return nullptr;
 }
 
@@ -260,84 +183,64 @@ antlrcpp::Any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
 // }
 
 antlrcpp::Any LSysDVisitor::visitTableBlock(LSysDParser::TableBlockContext *ctx) {
-    this->parentTrace = this->trace(ctx->KWTABLE()->getSymbol(), ctx->ID()->getSymbol(), this->parentTrace);
+    // eh->traceDown(eh->trace(ctx->KWTABLE()->getSymbol(), ctx->ID()->getSymbol(), "in block:"));
     std::string tid = ctx->ID()->getText();
     Table<char>* table = new Table<char>(tid);
-    this->currentTable = table;
-    if (this->tables->find(tid) != this->tables->end())
-        this->error("table with name '" + tid + "' is already defined", ctx->ID());
-    (*this->tables)[tid] = table;
-    this->tablesList->push_back(table);
+    currentTable = table;
+    if (currentLSystem->_tables.find(tid) != currentLSystem->_tables.end())
+        eh->error("table with name '" + tid + "' is already defined", eh->trace(ctx->ID()));
+    currentLSystem->_tables[tid] = table;
+    // module->tablesList->push_back(table);
     this->visitRules(ctx->rules());
     // table->rules = rules;
-    this->currentTable = nullptr;
-    this->parentTrace = nullptr;
+    currentTable = nullptr;
+    // eh->traceUp();
     return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitRulesBlock(LSysDParser::RulesBlockContext *ctx) {
-    this->parentTrace = this->trace(ctx->KWRULES()->getSymbol(), ctx->KWRULES()->getSymbol(), this->parentTrace);
+    // eh->traceDown(eh->trace(ctx->KWRULES()->getSymbol(), ctx->KWRULES()->getSymbol(), "in block:"));
     // this->currentTable = this->defaultTable;
     this->visitRuleDefs(ctx->ruleDefs());
     // this->currentTable = nullptr;
-    this->parentTrace = nullptr;
+    // eh->traceUp();
     return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitProductionRulesBlock(LSysDParser::ProductionRulesBlockContext *ctx) {
-    this->parentTrace = this->trace(ctx->KWPRODUCTION()->getSymbol(), ctx->KWRULES()->getSymbol(), this->parentTrace);
-    this->currentTable = this->defaultTable;
+    // eh->traceDown(eh->trace(ctx->KWPRODUCTION()->getSymbol(), ctx->KWRULES()->getSymbol(), "in block:"));
+    currentTable = currentLSystem->_defaultTable;
     this->visitRuleDefs(ctx->ruleDefs());
-    this->currentTable = nullptr;
-    this->parentTrace = nullptr;
+    currentTable = nullptr;
+    // eh->traceUp();
     return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitCodingRulesBlock(LSysDParser::CodingRulesBlockContext *ctx) {
-    this->parentTrace = this->trace(ctx->KWCODING()->getSymbol(), ctx->KWRULES()->getSymbol(), this->parentTrace);
-    this->currentTable = this->codingRules;
+    // eh->traceDown(eh->trace(ctx->KWCODING()->getSymbol(), ctx->KWRULES()->getSymbol(), "in block:"));
+    currentTable = currentLSystem->_codingRules;
     this->visitRuleDefs(ctx->ruleDefs());
-    this->currentTable = nullptr;
-    this->parentTrace = nullptr;
+    currentTable = nullptr;
+    // eh->traceUp();
     return nullptr;
-}
-
-antlrcpp::Any LSysDVisitor::visitRules(LSysDParser::RulesContext *ctx) {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any LSysDVisitor::visitRuleDefs(LSysDParser::RuleDefsContext *ctx) {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any LSysDVisitor::visitProductionRuleDefs(LSysDParser::ProductionRuleDefsContext *ctx) {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any LSysDVisitor::visitCodingRuleDefs(LSysDParser::CodingRuleDefsContext *ctx) {
-    return visitChildren(ctx);
-}
-
-antlrcpp::Any LSysDVisitor::visitAnyRule(LSysDParser::AnyRuleContext *ctx) {
-    return visitChildren(ctx);
 }
 
 antlrcpp::Any LSysDVisitor::visitProductionRule(LSysDParser::ProductionRuleContext *ctx) {
-    if (ctx->productionRuleDef()) {
-        return this->visitProductionRuleDef(ctx->productionRuleDef());
-    } else {
-        std::string tag = this->visitTag(ctx->tag());
-        if (this->taggedRules->find(tag) != this->taggedRules->end()) {
-            Rule<char>* rule = this->taggedRules->at(tag);
-            if (rule->isProductionRule()) {
-                this->currentTable->addRule(rule);
-                // return rule;
-            } else
-                this->error("production rule reference expected, but a coding rule reference was found", ctx->tag());
-        } else
-            this->error("the tag '" + tag + "' does not point to any existing rule", ctx->tag());
-    }
-    return nullptr;
+    // if (ctx->productionRuleDef()) {
+    return this->visitProductionRuleDef(ctx->productionRuleDef());
+    // } else {
+    //     std::string tag = this->visitTag(ctx->tag());
+    //     if (currentLSystem->_taggedRules.find(tag) != currentLSystem->_taggedRules.end()) {
+    //         Rule<char>* rule = currentLSystem->_taggedRules.at(tag);
+    //         if (rule->isProductionRule()) {
+    //             this->currentTable->addRule(rule);
+    //             // return rule;
+    //         } else
+    //             eh->error("production rule reference expected, but a coding rule reference was found", eh->trace(ctx->tag()));
+    //     } else
+    //         eh->error("the tag '" + tag + "' does not point to any existing rule", eh->trace(ctx->tag()));
+    // }
+    // return nullptr;
 }
 
 antlrcpp::Any LSysDVisitor::visitCodingRule(LSysDParser::CodingRuleContext *ctx) {
@@ -348,59 +251,21 @@ antlrcpp::Any LSysDVisitor::visitRuleDef(LSysDParser::RuleDefContext *ctx) {
     return visitChildren(ctx);
 }
 
-antlrcpp::Any LSysDVisitor::visitProductionRuleDef(LSysDParser::ProductionRuleDefContext *ctx) {
-    if (this->currentTable == this->codingRules)
-        this->error("trying to define a production rule inside a coding rules block", ctx->ARROW());
-    else {
-        ProductionRule<char>* rule = this->defineRule<ProductionRule<char>>(
-            ctx->tagPrefix(), 
-            ctx->weight(), 
-            ctx->lcontext(), 
-            ctx->lside(), 
-            ctx->rcontext(), 
-            ctx->rside()
-        );
-        Table<char>* t = this->currentTable;
-        if (t == nullptr)
-            t = this->defaultTable;
-        t->addRule(reinterpret_cast<Rule<char>*>(rule));
-    }
-    return nullptr;
-}
-
-antlrcpp::Any LSysDVisitor::visitCodingRuleDef(LSysDParser::CodingRuleDefContext *ctx) {
-    if (this->currentTable == this->defaultTable)
-        this->error("trying to define a coding rule inside a production block", ctx->DARROW());
-    else if (this->currentTable && this->currentTable != this->codingRules)
-        this->error("trying to define a coding rule inside a table block", ctx->DARROW());
-    else {
-        CodingRule<char>* rule = this->defineRule<CodingRule<char>>(
-            ctx->tagPrefix(), 
-            ctx->weight(), 
-            ctx->lcontext(), 
-            ctx->lside(), 
-            ctx->rcontext(), 
-            ctx->rside()
-        );
-        this->codingRules->addRule(reinterpret_cast<Rule<char>*>(rule));
-    }
-    return nullptr;
-}
-
 
 template<class R> 
-R* LSysDVisitor::defineRule(LSysDParser::TagPrefixContext* tagCtx, 
+R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx, 
                             LSysDParser::WeightContext* weightCtx, 
                             LSysDParser::LcontextContext* lctxCtx, 
                             LSysDParser::LsideContext* lsideCtx, 
                             LSysDParser::RcontextContext* rctxCtx, 
+                            LSysDParser::CondContext* condCtx, 
                             LSysDParser::RsideContext* rsideCtx) {
-    // Tag:
-    std::string tag;
-    if (tagCtx)
-        tag = this->visitTagPrefix(tagCtx).as<std::string>();
-    else
-        tag = "";
+    // // Tag:
+    // std::string tag;
+    // if (tagCtx)
+    //     tag = this->visitTagPrefix(tagCtx).as<std::string>();
+    // else
+    //     tag = "";
 
     // Weight:
     weight_t weight;
@@ -426,23 +291,71 @@ R* LSysDVisitor::defineRule(LSysDParser::TagPrefixContext* tagCtx,
     else
         rctx = nullptr;
 
+    // Condition:
+    LSysDParser::ExpressionContext* cond;
+    if (condCtx)
+        cond = condCtx->expression();
+    else
+        cond = nullptr;
+
     // Right side:
     ParseTreeNode<RightSideNodeContent, char>* rside = this->visitRside(rsideCtx);
 
     // Assemble rule:
-    R* rule = new R(tag, weight, lctx, lnode, rctx, rside);
+    R* rule = new R(weight, lctx, lnode, rctx, cond, rside);
 
-    if (tag != "")
-        (*this->taggedRules)[tag] = reinterpret_cast<Rule<char>*>(rule);
+    // if (tag != "")
+    //     currentLSystem->_taggedRules[tag] = reinterpret_cast<Rule<char>*>(rule);
 
     return rule;
 }
 
 
+antlrcpp::Any LSysDVisitor::visitProductionRuleDef(LSysDParser::ProductionRuleDefContext *ctx) {
+    if (this->currentTable == currentLSystem->_codingRules)
+        eh->error("trying to define a production rule inside a coding rules block", eh->trace(ctx->ARROW()));
+    else {
+        ProductionRule<char>* rule = defineRule<ProductionRule<char>>(
+            // ctx->tagPrefix(), 
+            ctx->weight(), 
+            ctx->lcontext(), 
+            ctx->lside(), 
+            ctx->rcontext(), 
+            ctx->cond(), 
+            ctx->rside()
+        );
+        Table<char>* t = this->currentTable;
+        if (t == nullptr)
+            t = currentLSystem->_defaultTable;
+        t->addRule(reinterpret_cast<Rule<char>*>(rule));
+    }
+    return nullptr;
+}
+
+antlrcpp::Any LSysDVisitor::visitCodingRuleDef(LSysDParser::CodingRuleDefContext *ctx) {
+    if (this->currentTable == currentLSystem->_defaultTable)
+        eh->error("trying to define a coding rule inside a production block", eh->trace(ctx->DARROW()));
+    else if (this->currentTable && this->currentTable != currentLSystem->_codingRules)
+        eh->error("trying to define a coding rule inside a table block", eh->trace(ctx->DARROW()));
+    else {
+        CodingRule<char>* rule = defineRule<CodingRule<char>>(
+            // ctx->tagPrefix(), 
+            ctx->weight(), 
+            ctx->lcontext(), 
+            ctx->lside(), 
+            ctx->rcontext(), 
+            ctx->cond(), 
+            ctx->rside()
+        );
+        currentLSystem->_codingRules->addRule(reinterpret_cast<Rule<char>*>(rule));
+    }
+    return nullptr;
+}
+
 antlrcpp::Any LSysDVisitor::visitTagPrefix(LSysDParser::TagPrefixContext *ctx) {
     std::string tag = this->visitTag(ctx->tag());
-    if (this->taggedRules->find(tag) != this->taggedRules->end())
-        this->error("tag '" + tag + "' already defined", ctx->tag());
+    if (currentLSystem->_taggedRules.find(tag) != currentLSystem->_taggedRules.end())
+        eh->error("tag '" + tag + "' already defined", eh->trace(ctx->tag()));
     return tag;
 }
 
@@ -457,8 +370,10 @@ antlrcpp::Any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
             weight = static_cast<weight_t>(stoi(ctx->INT()->getText()));
         else {
             weight = Rule<char>::WEIGHT_UNSET;
-            this->error("rule weight must be a decimal number", ctx->INT());
+            eh->error("rule weight must be a decimal number", eh->trace(ctx->INT()));
         }
+    } else if (ctx->FLOAT()) {
+        weight = stof(ctx->INT()->getText());
     } else
         weight = Rule<char>::WEIGHT_ALWAYS;
     return weight;
@@ -470,8 +385,8 @@ antlrcpp::Any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
     this->visitLChar(ctx->lChar());
     this->parentNode = nullptr;
     if (parent->size() != 1)
-        this->error("the left side of the arrow (excluding contexts) must be of length 1", 
-                ctx->lChar()->validLeftChar());
+        eh->error("the left side of the arrow (excluding contexts) must be of length 1", 
+                eh->trace(ctx->lChar()->validLeftChar()));
     return parent->leftmostChild();
 }
 
@@ -513,15 +428,12 @@ antlrcpp::Any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
 
 antlrcpp::Any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
     this->visitValidLeftChar(ctx->validLeftChar());
-    if (ctx->paramsWithCond()) {
-        auto paramsCond = this->visitParamsWithCond(ctx->paramsWithCond())
-            .as<std::pair<std::list<Parameter*>*, LSysDParser::ExpressionContext*>>();
+    if (ctx->params()) {
+        std::list<Parameter *> * params = this->visitParams(ctx->params());
         ParseTreeNode<LeftSideNodeContent, char>* rgt = 
                 reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
                     this->parentNode->rightmostChild());
-        rgt->content()->params = paramsCond.first;
-        if (paramsCond.second != nullptr)
-            rgt->content()->cond = paramsCond.second;
+        rgt->content().params = params;
     }
     return nullptr;
 }
@@ -529,15 +441,12 @@ antlrcpp::Any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
 antlrcpp::Any LSysDVisitor::visitLItem(LSysDParser::LItemContext *ctx) {
     if (ctx->validLeftChar()) {
         this->visitValidLeftChar(ctx->validLeftChar());
-        if (ctx->paramsWithCond()) {
-            std::pair<std::list<Parameter*>*, LSysDParser::ExpressionContext*> paramsCond = 
-                    this->visitParamsWithCond(ctx->paramsWithCond());
+        if (ctx->params()) {
+            std::list<Parameter *> * params = this->visitParams(ctx->params());
             ParseTreeNode<LeftSideNodeContent, char>* rgt = 
                     reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
                         this->parentNode->rightmostChild());
-            rgt->content()->params = paramsCond.first;
-            if (paramsCond.second != nullptr)
-                rgt->content()->cond = paramsCond.second;
+            rgt->content().params = params;
         }
     } else {
         ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>();
@@ -554,16 +463,16 @@ antlrcpp::Any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
     if (ctx->validRightChar()) {
         this->visitValidRightChar(ctx->validRightChar());
         if (ctx->args()) {
-            std::list<LSysDParser::ExpressionContext*>* args = this->visitArgs(ctx->args());
+            std::list<LSysDParser::ExpressionContext *> * args = this->visitArgs(ctx->args());
             ParseTreeNode<NodeContent, char>* rgt = this->parentNode->rightmostChild();
             if (!this->parentNode->isInstance()) {
-                reinterpret_cast<RightSideNodeContent<char>*>(rgt->content())->args = args;
+                reinterpret_cast<RightSideNodeContent<char>*>(&rgt->content())->args = args;
             } else {
                 std::vector<Value>* values = new std::vector<Value>();
                 for (LSysDParser::ExpressionContext* exprctx : *args)
-                    values->push_back(eval(exprctx, this->env));
+                    values->push_back(module->_evaluator->eval(exprctx, currentScope));
                 delete args;
-                reinterpret_cast<InstanceNodeContent<char>*>(rgt->content())->values = values;
+                reinterpret_cast<InstanceNodeContent<char>*>(&rgt->content())->values = values;
             }
         }
     } else {
@@ -595,7 +504,7 @@ antlrcpp::Any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharConte
     // int pos = 0;
     for (char c : s) {
         if (c == '_')
-            this->error("'_' (underscore) character is not valid for the right side of a rule", ctx);
+            eh->error("'_' (underscore) character is not valid for the right side of a rule", eh->trace(ctx));
         ParseTreeNode<NodeContent, char>* node;
         if (!this->parentNode->isInstance())
             node = (new ParseTreeNode<RightSideNodeContent, char>(c))->asGeneric();
@@ -611,18 +520,8 @@ antlrcpp::Any LSysDVisitor::visitValidChar(LSysDParser::ValidCharContext *ctx) {
     return ctx->getText();
 }
 
-antlrcpp::Any LSysDVisitor::visitParamsWithCond(LSysDParser::ParamsWithCondContext *ctx) {
-    std::list<Parameter*>* params = this->visitParams(ctx->params());
-    LSysDParser::ExpressionContext* cond;
-    if (ctx->cond())
-        cond = this->visitCond(ctx->cond());
-    else
-        cond = nullptr;
-    return make_pair(params, cond);
-}
-
 antlrcpp::Any LSysDVisitor::visitParams(LSysDParser::ParamsContext *ctx) {
-    std::list<Parameter*>* params = new std::list<Parameter*>();
+    std::list<Parameter *> * params = new std::list<Parameter *>();
     for (LSysDParser::ParamContext* paramctx : ctx->param())
         params->push_back(this->visitParam(paramctx));
     return params;
@@ -637,7 +536,7 @@ antlrcpp::Any LSysDVisitor::visitCond(LSysDParser::CondContext *ctx) {
 }
 
 antlrcpp::Any LSysDVisitor::visitArgs(LSysDParser::ArgsContext *ctx) {
-    std::list<LSysDParser::ExpressionContext*>* args = new std::list<LSysDParser::ExpressionContext*>();
+    std::list<LSysDParser::ExpressionContext *> * args = new std::list<LSysDParser::ExpressionContext *>();
     for (LSysDParser::ArgContext* argctx : ctx->arg())
         args->push_back(this->visitArg(argctx));
     return args;

@@ -2,12 +2,16 @@
 #pragma once
 
 
+class LSysDVisitor;
+
 #include "LSysDParserBaseVisitor.h"
 #include "LSysDParser.h"
 #include "LSysDLexer.h"
 #include "antlr4-runtime.h"
 #include "LSystem.h"
 #include "ErrorHandler.h"
+#include "Table.h"
+#include "values.h"
 
 #include <string>
 #include <iostream>
@@ -18,66 +22,45 @@
 using namespace lsysgen;
 
 class LSysDVisitor: public LSysDParserBaseVisitor {
-    Environment* env;
-    ParseTreeNode<InstanceNodeContent, char>* axiom;
-    std::map<std::string, Rule<char>*>* taggedRules;
-    Table<char>* codingRules;
-    Table<char>* defaultTable;
-    std::map<std::string, Table<char>*>* tables;
-    std::list<Table<char>*>* tablesList;
+    Module<char> * module;
 
-    Table<char>* currentTable;
-    ParseTreeNode<NodeContent, char>* parentNode;
+    LSystem<char> * currentLSystem;
+    Scope * currentScope;
+    Scope * baseScope;
+    Table<char> * currentTable;
+    ParseTreeNode<NodeContent, char> * parentNode;
 
-    std::vector<std::string>* sourceLines;
-    std::string filename;
-    StackTrace* parentTrace;
-    ErrorHandler eh;
+    ErrorHandler * eh;
 
-    // Environment* getEnvironment();
-    // Value eval(LSysDParser::ExpressionContext* ctx);
-    void error(std::string const& msg, StackTrace* st=nullptr);
-    void error(std::string const& msg, antlr4::ParserRuleContext* ctx);
-    void error(std::string const& msg, antlr4::tree::TerminalNode* terminal);
-    StackTrace* trace(antlr4::Token* tokInit, antlr4::Token* tokEnd=nullptr, StackTrace* parent=nullptr);
-    StackTrace* trace(antlr4::ParserRuleContext* token, StackTrace* parent=nullptr);
+    template<class R> 
+    R * defineRule(// LSysDParser::TagPrefixContext* tagCtx, 
+                            LSysDParser::WeightContext * weightCtx, 
+                            LSysDParser::LcontextContext * lctxCtx, 
+                            LSysDParser::LsideContext * lsideCtx, 
+                            LSysDParser::RcontextContext * rctxCtx, 
+                            LSysDParser::CondContext * condCtx, 
+                            LSysDParser::RsideContext * rsideCtx);
 
-    template<class R> R* defineRule(LSysDParser::TagPrefixContext* tagCtx, 
-                            LSysDParser::WeightContext* weightCtx, 
-                            LSysDParser::LcontextContext* lctxCtx, 
-                            LSysDParser::LsideContext* lsideCtx, 
-                            LSysDParser::RcontextContext* rctxCtx, 
-                            LSysDParser::RsideContext* rsideCtx);
 public:
-    LSysDVisitor(std::string filename, std::vector<std::string>* sourceLines, Environment* env=nullptr);
+    LSysDVisitor(std::string const& filename, std::vector<std::string> const* sourceLines, Scope * scope=nullptr, StackTrace const* trace=nullptr);
 
     ~LSysDVisitor();
 
-    ParseTreeNode<InstanceNodeContent, char>* parseInstanceNode(std::string s);
+    // ParseTreeNode<InstanceNodeContent, char>* parseInstanceNode(std::string s);
 
-    const std::list<Error*>* errors() const;
-
-    void dumpErrors() const;
+    ErrorHandler* messages();
     
     antlrcpp::Any visitMain(LSysDParser::MainContext *ctx) override;
-
-    // antlrcpp::Any visitSep(LSysDParser::SepContext *ctx) override;
-
-    // antlrcpp::Any visitNl(LSysDParser::NlContext *ctx) override;
-
-    antlrcpp::Any visitName(LSysDParser::NameContext *ctx) override;
-
-    antlrcpp::Any visitDefinitions(LSysDParser::DefinitionsContext *ctx) override;
-
-    antlrcpp::Any visitDefinition(LSysDParser::DefinitionContext *ctx) override;
+    
+    antlrcpp::Any visitLsystem(LSysDParser::LsystemContext *ctx) override;
 
     antlrcpp::Any visitAxiomDef(LSysDParser::AxiomDefContext *ctx) override;
 
-    antlrcpp::Any visitPropDef(LSysDParser::PropDefContext *ctx) override;
+    antlrcpp::Any visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) override;
+
+    antlrcpp::Any visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) override;
 
     antlrcpp::Any visitFuncDef(LSysDParser::FuncDefContext *ctx) override;
-
-    // antlrcpp::Any visitConstDef(LSysDParser::ConstDefContext *ctx) override;
 
     antlrcpp::Any visitTableBlock(LSysDParser::TableBlockContext *ctx) override;
 
@@ -86,16 +69,6 @@ public:
     antlrcpp::Any visitProductionRulesBlock(LSysDParser::ProductionRulesBlockContext *ctx) override;
 
     antlrcpp::Any visitCodingRulesBlock(LSysDParser::CodingRulesBlockContext *ctx) override;
-
-    antlrcpp::Any visitRules(LSysDParser::RulesContext *ctx) override;
-
-    antlrcpp::Any visitRuleDefs(LSysDParser::RuleDefsContext *ctx) override;
-
-    antlrcpp::Any visitProductionRuleDefs(LSysDParser::ProductionRuleDefsContext *ctx) override;
-
-    antlrcpp::Any visitCodingRuleDefs(LSysDParser::CodingRuleDefsContext *ctx) override;
-
-    antlrcpp::Any visitAnyRule(LSysDParser::AnyRuleContext *ctx) override;
 
     antlrcpp::Any visitProductionRule(LSysDParser::ProductionRuleContext *ctx) override;
 
@@ -134,8 +107,6 @@ public:
     antlrcpp::Any visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) override;
 
     antlrcpp::Any visitValidChar(LSysDParser::ValidCharContext *ctx) override;
-
-    antlrcpp::Any visitParamsWithCond(LSysDParser::ParamsWithCondContext *ctx) override;
 
     antlrcpp::Any visitParams(LSysDParser::ParamsContext *ctx) override;
 

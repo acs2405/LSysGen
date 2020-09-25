@@ -2,184 +2,58 @@
 #pragma once
 
 
-namespace lsysgen {
+// #include "ParseTreeNode.h"
+// #include "Rule.h"
+// #include "Table.h"
+// #include "values.h"
 
-class Parameter;
-class Function;
-class ValueType;
-class Value;
-class Environment;
-
-}
-
-#include "ParseTreeNode.h"
-#include "Rule.h"
-#include "Table.h"
-
-#include "LSysDParser.h"
-#include "LSysDExpressionEvaluator.h"
+// #include "LSysDParser.h"
+// #include "LSysDExpressionEvaluator.h"
 
 #include <boost/any.hpp>
 
 #include <string>
 #include <iostream>
-#include <map>
-#include <list>
-#include <vector>
+// #include <map>
+// #include <list>
+// #include <vector>
 
 
 namespace lsysgen {
 
-// typedef antlrcpp::Any Any;
+// template<typename Base, typename T>
+// bool instanceof(T const*) {
+//    return std::is_base_of<Base, T>::value;
+// }
 
-class Parameter {
-public:
-	const std::string name;
-	Parameter(std::string const& name);
-	// std::string name() {return _name;}
-};
+// Value eval(LSysDParser::ExpressionContext * expr, Scope * scope);
 
-bool operator==(Parameter const& p1, Parameter const& p2);
+// template<typename T>
+// bool checkLeftContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> * ignore, Scope * paramMapping);
+// template<typename T>
+// bool checkRightContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> * ignore, Scope * paramMapping);
 
+// template<typename T>
+// ParseTreeNode<InstanceNodeContent, T> * evaluateRightNode(const ParseTreeNode<RightSideNodeContent, T> * node, Scope * paramMapping);
 
-class Function {
-	std::list<Parameter*>* _params;
-	LSysDParser::ExpressionContext* expr;
-	antlr4::tree::ParseTree* ctx;
+// template<typename T>
+// ParseTreeNode<InstanceNodeContent, T> * derive(ParseTreeNode<InstanceNodeContent, T> * node, Table<T> * table, std::list<T> * ignore=nullptr, Scope * scope=nullptr);
 
-public:
-	Function(std::list<Parameter*>* params, LSysDParser::ExpressionContext* expr, antlr4::tree::ParseTree* ctx);
-	std::string toString();
-	const std::list<Parameter*>* params() const;
-	Value call(std::list<Value>* args);
-};
+// Scope * mapArgs(const std::vector<Value> * values, const std::list<Parameter *> * params, Scope * paramMapping);
 
+// bool checkCondition(LSysDParser::ExpressionContext * cond, Scope * paramMapping);
 
-class ValueType {
-private:
-	std::string _name;
-
-	ValueType(std::string const& name);
-
-public:
-	std::string const& name() const;
-
-	static const ValueType INT_TYPE;
-	static const ValueType FLOAT_TYPE;
-	static const ValueType BOOL_TYPE;
-	static const ValueType STRING_TYPE;
-	static const ValueType FUNCTION_TYPE;
-	static const ValueType ERROR_TYPE;
-
-	friend bool operator==(ValueType const& p1, ValueType const& p2);
-};
-
-bool operator==(ValueType const& p1, ValueType const& p2);
-
-
-class Value { // : antlrcpp::Any {
-public:
-	static Value const& error();
-
-private:
-	static const Value ERROR;
-	ValueType _type;
-	boost::any _value;
-
-public:
-	// Value(antlrcpp::Any val);
-	Value(ValueType const& type, boost::any value);
-	Value();
-	Value(int value);
-	Value(double value);
-	Value(bool value);
-	Value(std::string value);
-	Value(Function* value);
-
-	ValueType const& type() const;
-	bool is (ValueType const& t) const;
-	bool isInt () const;
-	bool isFloat () const;
-	bool isBool () const;
-	bool isString () const;
-	bool isFunction () const;
-	bool isError () const;
-
-	// bool isTrue () const;
-
-	int asInt () const;
-	double asFloat () const;
-	bool asBool () const;
-	std::string asString () const;
-	Function* asFunction ();
-	Function* asFunction () const;
-
-	template<typename T>
-	T as ();
-	template<typename T>
-	const T as () const;
-
-	std::string toString() const;
-
-	Value& operator=(Value const& p2);
-};
-
-
-// class Error {
-// public:
-// 	Error();
-// };
-
-
-class Environment {
-	std::map<std::string, Value>* mapping;
-public:
-	Environment();
-	Environment(Environment* env);
-	~Environment();
-
-	void set(std::string const& var, Value const& val);
-	Value get(std::string const& var);
-	bool has(std::string const& var) const;
-
-	// Environment* copy();
-	void merge(Environment* env);
-};
-
-template<typename Base, typename T>
-bool instanceof(const T*) {
-   return std::is_base_of<Base, T>::value;
-}
-
-Value eval(LSysDParser::ExpressionContext* expr, Environment* env);
-
-template<typename T>
-bool checkLeftContext(ParseTreeNode<LeftSideNodeContent, T>* contextNode, ParseTreeNode<InstanceNodeContent, T>* instanceNode, std::list<T>* ignore, Environment* paramMapping);
-template<typename T>
-bool checkRightContext(ParseTreeNode<LeftSideNodeContent, T>* contextNode, ParseTreeNode<InstanceNodeContent, T>* instanceNode, std::list<T>* ignore, Environment* paramMapping);
-
-template<typename T>
-ParseTreeNode<InstanceNodeContent, T>* evaluateRightNode(const ParseTreeNode<RightSideNodeContent, T>* node, Environment* paramMapping);
-
-template<typename T>
-ParseTreeNode<InstanceNodeContent, T>* derive(ParseTreeNode<InstanceNodeContent, T>* node, Table<T>* table, std::list<T>* ignore=nullptr, Environment* env=nullptr);
-
-Environment* mapArgs(std::vector<Value>* values, std::list<Parameter*>* params, Environment* paramMapping);
-
-bool checkCondition(LSysDParser::ExpressionContext* cond, Environment* paramMapping);
-
-template<typename T>
-Rule<T>* chooseRule(std::list<Rule<T>*>* rules);
+// template<typename T>
+// Rule<T> * chooseRule(std::list<Rule<T> *> * rules);
 
 std::string strEscape(std::string const& s);
 std::string strUnescape(std::string const& s);
 std::string sanitizeXML(std::string const& s);
 
-void err(std::string const& msg, std::string const& source="", antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);
-void warning(std::string const& msg, std::string const& source="", antlr4::tree::ParseTree* token=nullptr, int len=-1, int pos=-1);
+std::string getModuleName(std::string const& filename);
 
-// std::string anyToString(Value* v);
+// std::string anyToString(Value * v);
 
-extern template ParseTreeNode<InstanceNodeContent, char>* derive(ParseTreeNode<InstanceNodeContent, char>* node, Table<char>* table, std::list<char>* ignore, Environment* env);
+// extern template ParseTreeNode<InstanceNodeContent, char> * derive(ParseTreeNode<InstanceNodeContent, char> * node, Table<char> * table, std::list<char> * ignore, Scope * env);
 
 }

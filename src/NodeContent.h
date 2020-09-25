@@ -21,7 +21,7 @@ class InstanceNodeContent;
 #include "ParseTreeNode.h"
 
 #include "LSysDParser.h"
-#include "misc.h"
+#include "values.h"
 
 #include <string>
 #include <iostream>
@@ -33,91 +33,90 @@ namespace lsysgen {
 
 template<typename T>
 class NodeContent {
-	const T _element;
+    const T _element;
 
 public:
-	NodeContent();
-	NodeContent(T const& element);
-	NodeContent(NodeContent<T>* content);
+    NodeContent();
+    NodeContent(T const& element);
+    NodeContent(NodeContent<T> const& content);
 
 public:
-	virtual ~NodeContent();
+    virtual ~NodeContent();
 
-	T element() const;
-	virtual bool isInstance() const;
-	// bool isVoid() const;
+    T element() const;
+    virtual bool isInstance() const;
+    // bool isVoid() const;
 
-	virtual std::string toString() const;
+    virtual std::string toString() const;
 
-	// virtual NodeContent<T>& operator=(NodeContent<T> const& p2);
+    // virtual NodeContent<T>& operator=(NodeContent<T> const& p2);
 };
 
 template<typename T>
 class LeftSideNodeContent : public NodeContent<T> {
 public:
-	std::list<Parameter*>* params;
-	LSysDParser::ExpressionContext* cond;
+    std::list<Parameter *> * params;
 
-	LeftSideNodeContent();
-	LeftSideNodeContent(T const& element);
-	LeftSideNodeContent(LeftSideNodeContent<T>* content);
+    LeftSideNodeContent();
+    LeftSideNodeContent(T const& element);
+    LeftSideNodeContent(LeftSideNodeContent<T> const& content);
 
-	~LeftSideNodeContent();
+    ~LeftSideNodeContent();
 
-	bool isInstance() const;
+    bool isInstance() const;
 
-	// void setParams(std::list<Parameter*>* params);
-	// void setCond(LSysDParser::ExpressionContext* cond);
+    // void setParams(std::list<Parameter *> * params);
+    // void setCond(LSysDParser::ExpressionContext * cond);
 
-	// LeftSideNodeContent<T> copy() override;
+    // LeftSideNodeContent<T> copy() override;
 
-	std::string toString() const override;
+    std::string toString() const override;
 
-	// LeftSideNodeContent<T>& operator=(LeftSideNodeContent<T> const& p2);
+    // LeftSideNodeContent<T>& operator=(LeftSideNodeContent<T> const& p2);
 };
 
 template<typename T>
 class RightSideNodeContent : public NodeContent<T> {
 public:
-	std::list<LSysDParser::ExpressionContext*>* args;
+    std::list<LSysDParser::ExpressionContext *> * args;
 
-	RightSideNodeContent();
-	RightSideNodeContent(T const& element);
-	RightSideNodeContent(RightSideNodeContent<T>* content);
+    RightSideNodeContent();
+    RightSideNodeContent(T const& element);
+    RightSideNodeContent(RightSideNodeContent<T> const& content);
 
-	~RightSideNodeContent();
+    ~RightSideNodeContent();
 
-	bool isInstance () const;
+    bool isInstance () const;
 
-	// RightSideNodeContent<T>* copy() override;
+    // RightSideNodeContent<T> * copy() override;
 
-	std::string toString() const override;
+    std::string toString() const override;
 
-	// RightSideNodeContent<T>* eval(std::map<Parameter*, antlrcpp::Any*>* paramMapping);
+    // RightSideNodeContent<T> * eval(std::map<Parameter *, antlrcpp::Any *> * paramMapping);
 
-	// RightSideNodeContent<T>& operator=(RightSideNodeContent<T> const& p2);
+    // RightSideNodeContent<T>& operator=(RightSideNodeContent<T> const& p2);
 };
 
 template<typename T>
 class InstanceNodeContent : public NodeContent<T> {
 public:
-	std::vector<Value>* values;
+    std::vector<Value> * values;
 
-	InstanceNodeContent();
-	InstanceNodeContent(T const& element);
-	InstanceNodeContent(InstanceNodeContent<T>* content);
+    InstanceNodeContent();
+    InstanceNodeContent(T const& element);
+    InstanceNodeContent(InstanceNodeContent<T> const& content);
 
-	~InstanceNodeContent();
+    ~InstanceNodeContent();
 
-	bool isInstance() const;
+    bool isInstance() const;
 
-	// InstanceNodeContent<T>* copy() override;
+    // InstanceNodeContent<T> * copy() override;
 
-	std::string toString() const override;
+    std::string toString() const override;
 
-	// InstanceNodeContent<T>* derive(Table<T>* table, std::list<T>* ignore=nullptr, Environment* env=nullptr);
+    // InstanceNodeContent<T> * derive(Table<T> * table, std::list<T> * ignore=nullptr, Environment * env=nullptr);
 
-	// InstanceNodeContent<T>& operator=(InstanceNodeContent<T> const& p2);
+    // InstanceNodeContent<T> & operator=(InstanceNodeContent<T> const& p2);
 };
 
 }

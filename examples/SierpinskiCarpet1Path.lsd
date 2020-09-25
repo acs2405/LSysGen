@@ -3,10 +3,10 @@ lsystem SierpinskiCarpet1Path {
 	
 	axiom PAp
 
-	set iterations = 4
-	set rotation = 90
-	set background = "#aff"
-	set line_width = 0
+	set iterations := 4
+	set rotation := 90
+	set background := "#aff"
+	set line_width := 0
 
 	rules {
 

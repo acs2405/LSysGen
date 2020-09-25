@@ -7,7 +7,7 @@ import sys
 liblsysgen = ctypes.cdll.LoadLibrary('build/liblsysgen.so')
 
 c_lsystem_create = liblsysgen.lsystem_create
-c_lsystem_create.argtypes = (ctypes.c_char_p, ctypes.c_int)
+c_lsystem_create.argtypes = (ctypes.c_char_p,)
 c_lsystem_create.restype = ctypes.c_void_p
 
 c_lsystem_generate = liblsysgen.lsystem_generate
@@ -32,7 +32,9 @@ class LSystem:
 	def __init__(self, filename, iterations=-1):
 		self.filename = filename
 		self.iterations = iterations
-		self.c_lsystem = c_lsystem_create(filename.encode(), iterations)
+		self.c_lsystem = c_lsystem_create(filename.encode())
+	def valid(self):
+		return self.c_lsystem != None
 	def generate(self):
 		c_lsystem_generate(self.c_lsystem)
 	def iterate(self, iterations=1):
@@ -55,14 +57,16 @@ def main():
 		iterations = -1
 
 	lsys = LSystem(sys.argv[1], iterations)
-	lsys.generate()
 
-	print(lsys.result_to_str())
+	if lsys.valid():
+		lsys.generate()
 
-	# lsys.iterate(1)
-	# print(lsys.result_to_str())
+		print(lsys.result_to_str())
 
-	print(lsys.result_to_svg())
+		# lsys.iterate(1)
+		# print(lsys.result_to_str())
+
+		print(lsys.result_to_svg())
 
 if __name__ == '__main__':
 	main()

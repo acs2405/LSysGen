@@ -21,25 +21,25 @@ namespace lsysgen {
 
 template<typename T>
 class Table {
-	std::map<T, std::list<Rule<T>*>*>* _rules;
+    std::map<T, std::list<Rule<T> *> *> _rules;
 
 public:
-	const std::string name;
+    const std::string name;
 
-	Table(std::string const& name);
+    Table(std::string const& name);
 
-	~Table();
+    ~Table();
 
-	int size() const;
+    int size() const;
 
-	void addRule(Rule<T>* r);
+    void addRule(Rule<T> * r);
 
-	const std::list<Rule<T>*>* rulesFor(T c);
+    std::list<Rule<T> *> const* rulesFor(T c) const;
 
-	std::string toString();
+    std::string toString() const;
 };
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const Table<T>& t);
+std::ostream & operator<<(std::ostream & os, Table<T> const& t);
 
 }

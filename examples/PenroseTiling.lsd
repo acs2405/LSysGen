@@ -3,9 +3,9 @@
 
 lsystem PenroseTiling {
 
-	set iterations = 6
-	set initial_heading = 60.0
-	set rotation = 36.0
+	set iterations := 6
+	set initial_heading := 60.0
+	set rotation := 36.0
 
 	axiom [7]++[7]++[7]++[7]++[7]
 

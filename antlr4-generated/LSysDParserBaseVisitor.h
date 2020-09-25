@@ -19,6 +19,34 @@ public:
     return visitChildren(ctx);
   }
 
+  virtual antlrcpp::Any visitModule(LSysDParser::ModuleContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitGlobalDef(LSysDParser::GlobalDefContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitDeclaration(LSysDParser::DeclarationContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitLsystem(LSysDParser::LsystemContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
   virtual antlrcpp::Any visitSep(LSysDParser::SepContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -27,15 +55,39 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitName(LSysDParser::NameContext *ctx) override {
+  virtual antlrcpp::Any visitInLsysDefs(LSysDParser::InLsysDefsContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitDefinitions(LSysDParser::DefinitionsContext *ctx) override {
+  virtual antlrcpp::Any visitInLsysDef(LSysDParser::InLsysDefContext *ctx) override {
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitDefinition(LSysDParser::DefinitionContext *ctx) override {
+  virtual antlrcpp::Any visitBlockOrOneStatement(LSysDParser::BlockOrOneStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitBlock(LSysDParser::BlockContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitOneStatement(LSysDParser::OneStatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitOneStmtNeedsSep(LSysDParser::OneStmtNeedsSepContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitOneStmtEndsInBlock(LSysDParser::OneStmtEndsInBlockContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitStatement(LSysDParser::StatementContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitAssignment(LSysDParser::AssignmentContext *ctx) override {
     return visitChildren(ctx);
   }
 
@@ -167,10 +219,6 @@ public:
     return visitChildren(ctx);
   }
 
-  virtual antlrcpp::Any visitParamsWithCond(LSysDParser::ParamsWithCondContext *ctx) override {
-    return visitChildren(ctx);
-  }
-
   virtual antlrcpp::Any visitParams(LSysDParser::ParamsContext *ctx) override {
     return visitChildren(ctx);
   }
@@ -260,6 +308,10 @@ public:
   }
 
   virtual antlrcpp::Any visitFalseValue(LSysDParser::FalseValueContext *ctx) override {
+    return visitChildren(ctx);
+  }
+
+  virtual antlrcpp::Any visitNullValue(LSysDParser::NullValueContext *ctx) override {
     return visitChildren(ctx);
   }
 

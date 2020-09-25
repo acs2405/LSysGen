@@ -14,6 +14,7 @@ class codingRule;
 }
 
 #include "ParseTreeNode.h"
+#include "values.h"
 
 #include <string>
 #include <iostream>
@@ -24,71 +25,76 @@ typedef double weight_t;
 
 template<typename T>
 class Rule {
-public:
-	static const weight_t WEIGHT_ALWAYS;
-	static const weight_t WEIGHT_UNSET;
+    LSysDParser::ExpressionContext * _cond;
 
-	const std::string tag;
-	const weight_t weight;
-	const ParseTreeNode<LeftSideNodeContent, T>* lctx;
-	const ParseTreeNode<LeftSideNodeContent, T>* lside;
-	const ParseTreeNode<LeftSideNodeContent, T>* rctx;
-	const ParseTreeNode<RightSideNodeContent, T>* rside;
+public:
+    static weight_t const WEIGHT_ALWAYS;
+    static weight_t const WEIGHT_UNSET;
+
+    // const std::string tag;
+    weight_t const weight;
+    ParseTreeNode<LeftSideNodeContent, T> const* lctx;
+    ParseTreeNode<LeftSideNodeContent, T> const* lside;
+    ParseTreeNode<LeftSideNodeContent, T> const* rctx;
+    ParseTreeNode<RightSideNodeContent, T> const* rside;
 
 protected:
-	Rule(std::string const& tag, 
-		weight_t const weight, 
-		ParseTreeNode<LeftSideNodeContent, T>* const lctx, 
-		ParseTreeNode<LeftSideNodeContent, T>* const lside, 
-		ParseTreeNode<LeftSideNodeContent, T>* const rctx, 
-		ParseTreeNode<RightSideNodeContent, T>* const rside);
+    Rule(// std::string const& tag, 
+        weight_t weight, 
+        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
+        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
+        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        LSysDParser::ExpressionContext * cond,
+        ParseTreeNode<RightSideNodeContent, T> const* rside);
 
-	std::string toStringBase(std::string arrow);
+    std::string toStringBase(std::string arrow) const;
 
 public:
-	~Rule();
+    ~Rule();
 
-	char leftChar() const;
-	std::list<Parameter*>* params();
-	LSysDParser::ExpressionContext* cond();
+    char leftChar() const;
+    std::list<Parameter *> const* params() const;
+    LSysDParser::ExpressionContext * cond();
 
-	virtual bool isProductionRule() const;
+    virtual bool isProductionRule() const;
 
-	virtual std::string toString();
+    virtual std::string toString() const;
 
 };
 
 template<typename T>
 class ProductionRule : Rule<T> {
 public:
-	ProductionRule(std::string const& tag, 
-		weight_t const weight, 
-		ParseTreeNode<LeftSideNodeContent, T>* const lctx, 
-		ParseTreeNode<LeftSideNodeContent, T>* const lside, 
-		ParseTreeNode<LeftSideNodeContent, T>* const rctx, 
-		ParseTreeNode<RightSideNodeContent, T>* const rside);
+    ProductionRule(// std::string const& tag, 
+        weight_t const weight, 
+        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
+        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
+        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        LSysDParser::ExpressionContext * cond, 
+        ParseTreeNode<RightSideNodeContent, T> const* rside);
 
-	bool isProductionRule() const;
+    bool isProductionRule() const;
 
-	std::string toString() override;
+    std::string toString() const override;
 };
 
 template<typename T>
 class CodingRule : Rule<T> {
 public:
-	CodingRule(std::string const& tag, 
-		weight_t const weight, 
-		ParseTreeNode<LeftSideNodeContent, T>* const lctx, 
-		ParseTreeNode<LeftSideNodeContent, T>* const lside, 
-		ParseTreeNode<LeftSideNodeContent, T>* const rctx, 
-		ParseTreeNode<RightSideNodeContent, T>* const rside);
+    CodingRule(// std::string const& tag, 
+        weight_t const weight, 
+        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
+        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
+        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        LSysDParser::ExpressionContext * cond, 
+        ParseTreeNode<RightSideNodeContent, T> const* rside);
 
-	bool isProductionRule() const;
+    bool isProductionRule() const;
 
-	std::string toString() override;
+    std::string toString() const override;
 };
 
 template<typename T>
-std::ostream& operator<<(std::ostream& os, const Rule<T>& r);
+std::ostream & operator<<(std::ostream & os, Rule<T> const& r);
 
 }
