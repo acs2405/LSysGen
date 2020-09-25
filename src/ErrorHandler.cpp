@@ -9,12 +9,13 @@
 namespace lsysgen {
 
 ErrorHandler::ErrorHandler(std::string const& filename, std::vector<std::string> const* sourceLines, StackTrace const* st): 
-        _filename(filename), _sourceLines(sourceLines), _parentTrace(st), 
-        _messages(), _errors(), _warnings(), _notices(), _failed(false) {}
+        _filename(filename != "-" ? filename : "<stdin>"), _sourceLines(sourceLines), 
+        _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
+        _stdin(filename == "-") {}
 
 ErrorHandler::ErrorHandler(ErrorHandler const& eh): 
         _filename(eh._filename), _sourceLines(eh._sourceLines), _parentTrace(eh._parentTrace), 
-        _messages(), _errors(), _warnings(), _notices(), _failed(false) {}
+        _messages(), _errors(), _warnings(), _notices(), _failed(false), _stdin(eh._stdin) {}
 
 ErrorHandler::~ErrorHandler() {
     _messages.clear();
@@ -99,6 +100,7 @@ void ErrorHandler::traceUp() {
 StackTrace const* ErrorHandler::currentTrace() const {return _parentTrace;}
 
 bool ErrorHandler::failed () const {return _failed;}
+bool ErrorHandler::stdin() const {return _stdin;}
 
 std::list<Message const*> const& ErrorHandler::messages() const {return _messages;}
 std::list<Message const*> const& ErrorHandler::errors() const {return _errors;}

@@ -399,7 +399,7 @@ std::string node2svg(
             stack->push_back(std::make_pair(state, node));
         }
     }
-    if (inPath) {
+    if (inPath && drawn) {
         element += "\"/>\n";
         svgContent += element;
     }

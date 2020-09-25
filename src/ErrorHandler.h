@@ -29,6 +29,7 @@ class ErrorHandler {
     std::list<Message const*> _notices;
 
     bool _failed;
+    bool _stdin;
 
     std::string const _filename;
     std::vector<std::string> const* _sourceLines;
@@ -61,6 +62,7 @@ public:
     StackTrace const* currentTrace() const;
 
     bool failed() const;
+    bool stdin() const;
 
     std::list<Message const*> const& messages() const;
     std::list<Message const*> const& errors() const;

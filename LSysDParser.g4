@@ -10,7 +10,7 @@ options { tokenVocab=LSysDLexer; language=Cpp; }
 main
   : module EOF
   | inLsysDefs EOF
-  | nl? word nl? EOF
+//   | nl? word nl? EOF
   ;
 
 module

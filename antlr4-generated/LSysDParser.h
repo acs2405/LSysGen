@@ -123,9 +123,6 @@ public:
     ModuleContext *module();
     antlr4::tree::TerminalNode *EOF();
     InLsysDefsContext *inLsysDefs();
-    WordContext *word();
-    std::vector<NlContext *> nl();
-    NlContext* nl(size_t i);
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;
    

@@ -38,7 +38,7 @@
 // }
 
 LSysDVisitor::LSysDVisitor(std::string const& filename, std::vector<std::string> const* sourceLines, Scope * scope, StackTrace const* trace) {
-    this->eh = new ErrorHandler(filename != "-" ? filename : "<stdin>", sourceLines, trace);
+    this->eh = new ErrorHandler(filename, sourceLines, trace);
 
     this->currentLSystem = nullptr;
     this->currentTable = nullptr;
@@ -67,7 +67,7 @@ ErrorHandler* LSysDVisitor::messages() {return eh;}
 
 antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     std::string moduleName;
-    if (eh->fileName() == "-")
+    if (eh->stdin())
         moduleName = eh->fileName();
     else {
         moduleName = getModuleName(eh->fileName());
@@ -75,7 +75,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             // std::regex_replace(moduleName, std::regex("[-]"), "_");
             // std::regex_replace(moduleName, std::regex("[^a-zA-Z0-9_]"), "");
         } else {
-            eh->fatalError("The input file name must end in .lsd");
+            eh->error("The input file name must end in .lsd");
             return static_cast<Module<char> *>(nullptr);
         }
     }
@@ -96,8 +96,8 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             visitChildren(ctx);
             if (currentLSystem->_axiom == nullptr)
                 eh->error("No axiom is defined in the L system " + currentLSystem->_name);
-        } else if (ctx->word()) {
-            currentLSystem->_axiom = this->visitWord(ctx->word());
+        // } else if (ctx->word()) {
+        //     currentLSystem->_axiom = this->visitWord(ctx->word());
         }
         if (eh->failed() || module->eh->failed())
             return static_cast<Module<char> *>(nullptr);
@@ -118,7 +118,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             }
         }
         if (module->_mainLSystem == nullptr) {
-            eh->error("No main L system could be chosen in " + module->_filename + 
+            eh->error("No main L system could be chosen in " + eh->fileName() + 
                     ". Try including only one L system or calling one after the file name");
             return static_cast<Module<char> *>(nullptr);
         }
