@@ -46,14 +46,14 @@ void LSystem<T>::populateProperties() {
         if (v.isFunction() && v.asFunction()->params()->size() == 1)
             this->_tableFunc = v.asFunction();
         else if (!v.isError())
-            eh->fatalError("table_func property must be a function with one parameter");
+            eh->error("table_func property must be a function with one parameter");
     }
     if (_scope->has("iterations")) {
         Value v = _scope->get("iterations");
         if (v.isInt())
             this->_iterations = v.asInt();
         else if (!v.isError())
-            eh->fatalError("iterations property must be a integer number");
+            eh->error("iterations property must be a integer number");
     }
     if (_scope->has("ignore")) {
         Value v = _scope->get("ignore");
@@ -61,7 +61,7 @@ void LSystem<T>::populateProperties() {
             std::string ignore = v.asString();
             this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
         } else if (!v.isError())
-            eh->fatalError("ignore property must be a string");
+            eh->error("ignore property must be a string");
     }
     if (_scope->has("initial_heading")) {
         Value v = _scope->get("initial_heading");
@@ -70,7 +70,7 @@ void LSystem<T>::populateProperties() {
         else if (v.isInt())
             this->initialHeading = v.asInt();
         else if (!v.isError())
-            eh->fatalError("initial_heading property must be a number");
+            eh->error("initial_heading property must be a number");
     }
     if (_scope->has("rotation")) {
         Value v = _scope->get("rotation");
@@ -79,7 +79,7 @@ void LSystem<T>::populateProperties() {
         else if (v.isInt())
             this->rotation = v.asInt();
         else if (!v.isError())
-            eh->fatalError("rotation property must be a number");
+            eh->error("rotation property must be a number");
     }
     if (_scope->has("line_width")) {
         Value v = _scope->get("line_width");
@@ -88,14 +88,14 @@ void LSystem<T>::populateProperties() {
         else if (v.isInt())
             this->lineWidth = v.asInt();
         else if (!v.isError())
-            eh->fatalError("line_width property must be a number");
+            eh->error("line_width property must be a number");
     }
     if (_scope->has("background")) {
         Value v = _scope->get("background");
         if (v.isString()) {
             this->background = sanitizeXML(v.asString());
         } else if (!v.isError())
-            eh->fatalError("background property must be a string");
+            eh->error("background property must be a string");
     }
 }
 

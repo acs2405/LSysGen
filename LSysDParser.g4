@@ -41,7 +41,7 @@ constDeclaration
   ;
 
 lsystem
-  : KWLSYS ID nl? LBRACE inLsysDefs RBRACE
+  : KWMAIN? KWLSYS ID nl? LBRACE inLsysDefs RBRACE
   ;
 
 sep

@@ -180,20 +180,28 @@ StackTrace::StackTrace(StackTrace const& st):
 
 StackTrace::~StackTrace() {}
 
-std::string StackTrace::getLine(std::string const& format) const {
+std::string StackTrace::getLine() const {
+    if (this->getLineNumber() <= _sourceLines->size())
+        return (*_sourceLines)[this->getLineNumber() - 1];
+    else
+        return "";
+}
+
+std::string StackTrace::getMessageLine(std::string const& format) const {
     // std::cout << "HERE!" << std::endl;
     int n = this->getColNumber();
     int len = this->getLength();
-    std::regex tab ("\t");
+    std::regex retab ("\t");
     std::string normalFormat = "\u001b[0m";
-    std::string line = (*this->_sourceLines)[this->_tokInit->getLine() - 1];
-    line = std::regex_replace(line, tab, " ");
-    line = line.substr(0, n) + format + line.substr(n, len+1) + normalFormat + line.substr(n+len+1);
+    std::string line = this->getLine();
+    line = std::regex_replace(line, retab, " ");
+    line = line.substr(0, n) + format + line.substr(n, len+1) + normalFormat + (line.size() > 0 ? line.substr(n+len+1) : "");
     return line;
 }
-std::string StackTrace::getMark(std::string const& format) const {
+std::string StackTrace::getMessageMark(std::string const& format) const {
+    std::string line = this->getLine();
     int n = this->getColNumber();
-    int len = this->getLength();
+    int len = std::max(0, std::min((int)this->getLength(), (int)line.size() - n));
     std::string padBefore(n, ' ');
     std::string mark(len, '~');
     std::string normalFormat = "\u001b[0m";
@@ -218,8 +226,8 @@ std::string StackTrace::getTraceString(int msgType, std::string const& text) con
     ss << ":" << this->getLineNumber();
     ss << ":" << this->getColNumber();
     ss << ":\u001b[0m " << (text.size() > 0 ? text : _text) << std::endl;
-    ss << lino   << this->getLine("\u001b[1m" + color) << std::endl;
-    ss << linosp << this->getMark("\u001b[1m" + color) << std::endl;
+    ss << lino   << this->getMessageLine("\u001b[1m" + color) << std::endl;
+    ss << linosp << this->getMessageMark("\u001b[1m" + color) << std::endl;
     if (_parent != nullptr)
         ss << _parent->getTraceString(Message::TYPE_NOTICE);
     return ss.str();
@@ -244,10 +252,7 @@ std::string StackTrace::getTraceString(int msgType, std::string const& text) con
 // }
 int StackTrace::getLineNumber() const {return _tokInit->getLine();}
 int StackTrace::getColNumber() const {return _tokInit->getCharPositionInLine();}
-int StackTrace::getLength() const {
-    return _tokEnd->getStopIndex() - _tokInit->getStartIndex();
-    // return this->getEndCol() - this->getColNumber();
-}
+int StackTrace::getLength() const {return _tokEnd->getStopIndex() - _tokInit->getStartIndex();}
 int StackTrace::getEndCol() const {return this->getColNumber() + this->getLength();
     // std::cerr << (*_sourceLines)[this->getLineNumber()] << std::endl;
     // std::cerr << _tokInit->getCharPositionInLine() << ", " << (*_sourceLines)[this->getLineNumber()].size() << std::endl;

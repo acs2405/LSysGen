@@ -1,8 +1,28 @@
 
+main lsystem VicsekH {
+
+	axiom PAp
+
+	set iterations := 4
+	set rotation := 90
+	set background := "#fca"
+	set line_width := 0
+
+	rules {
+
+		A -> Af(3)A+f(3)-A-f(6)+A+f(3)-f(3)Ag(6)
+
+		f(l) -> f(3*l)
+		g(l) -> g(3*l)
+
+		A => fF+F-F+F+F-F+F+F-F+F+F-F+g
+	}
+
+}
+
 lsystem Vicsek {
 	
 	axiom A
-	#axiom PAp
 
 	set iterations := 4
 	set rotation := 90
@@ -12,13 +32,11 @@ lsystem Vicsek {
 	rules {
 
 		A -> Af(2)Af(1)+f(2)Af(1)+f(2)A+f(1)Af(2)+g(1)
-		#A -> Af(3)A+f(3)-A-f(6)+A+f(3)-f(3)Ag(6)
 
 		f(l) -> f(3*l)
 		g(l) -> g(3*l)
 
 		A => PF+F+F+F+p
-		#A => fF+F-F+F+F-F+F+F-F+F+F-F+g
 	}
 
 }

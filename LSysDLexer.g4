@@ -107,6 +107,7 @@ KWIN: 'in';
 //KWINF: 'inf';
 //KWLAMBDA: 'lambda';
 KWLSYS: 'lsystem';
+KWMAIN: 'main';
 //KWNAN: 'nan';
 KWNOT: 'not';
 KWNULL: 'null';

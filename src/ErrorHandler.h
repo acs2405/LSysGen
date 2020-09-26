@@ -121,12 +121,13 @@ public:
     StackTrace(StackTrace const& st);
 	~StackTrace();
 
-    int getLineNumber() const;
-    std::string getLine(std::string const& format="") const;
-    std::string getMark(std::string const& format="") const;
+    std::string getLine() const;
+    std::string getMessageLine(std::string const& format="") const;
+    std::string getMessageMark(std::string const& format="") const;
     std::string getTraceString(int msgType=0, std::string const& text="") const;
     // std::string getCallTraceString(int msgType=0) const;
 
+    int getLineNumber() const;
     int getColNumber() const;
     int getLength() const;
     int getEndCol() const;

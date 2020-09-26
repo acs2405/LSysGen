@@ -20,11 +20,11 @@ public:
     AND = 35, OR = 36, NOT = 37, KWAS = 38, KWELSE = 39, KWEVENTSPEC = 40, 
     KWFALSE = 41, KWFOR = 42, KWFROM = 43, KWIF = 44, KWIMPORT = 45, KWIN = 46, 
     KWNONE = 47, KWTRUE = 48, KWAND = 49, KWAXIOM = 50, KWCODING = 51, KWDO = 52, 
-    KWFUNCTION = 53, KWLSYS = 54, KWNOT = 55, KWNULL = 56, KWOR = 57, KWPRODUCTION = 58, 
-    KWRETURN = 59, KWRULES = 60, KWSET = 61, KWTABLE = 62, KWTHEN = 63, 
-    KWVAR = 64, KWWHILE = 65, QM = 66, XM = 67, DARROW = 68, FDIV = 69, 
-    DOLLARID = 70, RULECHAR = 71, WS = 72, COMMENTBLQ = 73, COMMENTLIN = 74, 
-    LINE_JOINING = 75, NEW_LINE = 76, ERRORCHAR = 77
+    KWFUNCTION = 53, KWLSYS = 54, KWMAIN = 55, KWNOT = 56, KWNULL = 57, 
+    KWOR = 58, KWPRODUCTION = 59, KWRETURN = 60, KWRULES = 61, KWSET = 62, 
+    KWTABLE = 63, KWTHEN = 64, KWVAR = 65, KWWHILE = 66, QM = 67, XM = 68, 
+    DARROW = 69, FDIV = 70, DOLLARID = 71, RULECHAR = 72, WS = 73, COMMENTBLQ = 74, 
+    COMMENTLIN = 75, LINE_JOINING = 76, NEW_LINE = 77, ERRORCHAR = 78
   };
 
   enum {
@@ -223,6 +223,7 @@ public:
     antlr4::tree::TerminalNode *LBRACE();
     InLsysDefsContext *inLsysDefs();
     antlr4::tree::TerminalNode *RBRACE();
+    antlr4::tree::TerminalNode *KWMAIN();
     NlContext *nl();
 
     virtual antlrcpp::Any accept(antlr4::tree::ParseTreeVisitor *visitor) override;

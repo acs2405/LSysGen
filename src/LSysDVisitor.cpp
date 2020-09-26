@@ -75,7 +75,7 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             // std::regex_replace(moduleName, std::regex("[-]"), "_");
             // std::regex_replace(moduleName, std::regex("[^a-zA-Z0-9_]"), "");
         } else {
-            eh->error("The input file name must end in .lsd");
+            eh->error("The input file name must end in .lsd", eh->trace(ctx->stop));
             return static_cast<Module<char> *>(nullptr);
         }
     }
@@ -95,32 +95,39 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         if (ctx->inLsysDefs()) {
             visitChildren(ctx);
             if (currentLSystem->_axiom == nullptr)
-                eh->error("No axiom is defined in the L system " + currentLSystem->_name);
+                eh->error("No axiom is defined in the L system in file " + eh->fileName(), eh->trace(ctx->stop));
         // } else if (ctx->word()) {
         //     currentLSystem->_axiom = this->visitWord(ctx->word());
         }
         if (eh->failed() || module->eh->failed())
             return static_cast<Module<char> *>(nullptr);
         currentScope = currentScope->parent();
+        eh->traceDown(eh->trace(ctx->stop));
         currentLSystem->populateProperties();
+        eh->traceUp();
         module->_lsystems[currentLSystem->_name] = currentLSystem;
         currentLSystem = nullptr;
     }
     currentScope = currentScope->parent();
     
-    if (module->_lsystems.size() == 1)
-        module->_mainLSystem = module->_lsystems.begin()->second;
-    else if (module->_mainLSystem == nullptr) {
-        for (auto ls : module->_lsystems) {
-            if (ls.second->_name == module->_name) {
-                module->_mainLSystem = ls.second;
-                break;
+    if (module->_mainLSystem == nullptr) {
+        if (module->_lsystems.size() == 1) {
+            module->_mainLSystem = module->_lsystems.begin()->second;
+            if (ctx->module())
+                eh->warning("You should mark one L system as main", eh->trace(ctx->stop));
+        } else {
+            for (auto ls : module->_lsystems) {
+                if (ls.second->_name == module->_name) {
+                    module->_mainLSystem = ls.second;
+                    break;
+                }
             }
-        }
-        if (module->_mainLSystem == nullptr) {
-            eh->error("No main L system could be chosen in " + eh->fileName() + 
-                    ". Try including only one L system or calling one after the file name");
-            return static_cast<Module<char> *>(nullptr);
+            if (module->_mainLSystem == nullptr) {
+                eh->error("No L system marked as main in " + eh->fileName(), eh->trace(ctx->stop));
+                return static_cast<Module<char> *>(nullptr);
+            } else {
+                eh->warning("You should mark one L system as main", eh->trace(ctx->stop));
+            }
         }
     }
 
@@ -130,13 +137,25 @@ antlrcpp::Any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
 antlrcpp::Any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
     currentLSystem = new LSystem<char>(module);
     currentLSystem->_name = ctx->ID()->getText();
+    if (module->_lsystems.find(currentLSystem->_name) != module->_lsystems.end())
+        eh->error("L system " + currentLSystem->_name + " is already defined", eh->trace(ctx->ID()));
     currentScope = currentLSystem->_scope;
     // eh->traceDown(eh->trace(ctx->ID(), nullptr, "in LSystem:"));
     visitChildren(ctx);
+    if (currentLSystem->_axiom == nullptr)
+        eh->error("No axiom is defined in the L system " + currentLSystem->_name, eh->trace(ctx->ID()));
     // eh->traceUp();
     currentScope = currentScope->parent();
-    currentLSystem->populateProperties();
+    eh->traceDown(eh->trace(ctx->ID()));
+    if (!eh->failed())
+        currentLSystem->populateProperties();
+    eh->traceUp();
     module->_lsystems[currentLSystem->_name] = currentLSystem;
+    if (ctx->KWMAIN()) {
+        if (module->_mainLSystem != nullptr)
+            eh->error("Only one LSystem must be marked as main", eh->trace(ctx->KWMAIN()));
+        module->_mainLSystem = currentLSystem;
+    }
     currentLSystem = nullptr;
     return nullptr;
 }
