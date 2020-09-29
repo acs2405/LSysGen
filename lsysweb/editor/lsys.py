@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 
 import ctypes
 import sys
@@ -10,7 +10,7 @@ class OutputGrabber(object):
     """
     Class used to grab standard output or another stream.
     """
-    escape_char = "\b"
+    escape_char = b"\b"
 
     def __init__(self, stream=None, threaded=False):
         self.origstream = stream
@@ -18,7 +18,7 @@ class OutputGrabber(object):
         if self.origstream is None:
             self.origstream = sys.stdout
         self.origstreamfd = self.origstream.fileno()
-        self.capturedtext = ""
+        self.capturedtext = b""
         # Create a pipe so the stream can be captured:
         self.pipe_out, self.pipe_in = os.pipe()
 
@@ -33,7 +33,7 @@ class OutputGrabber(object):
         """
         Start capturing the stream data.
         """
-        self.capturedtext = ""
+        self.capturedtext = b""
         # Save a copy of the stream:
         self.streamfd = os.dup(self.origstreamfd)
         # Replace the original stream with our write pipe:
@@ -50,7 +50,7 @@ class OutputGrabber(object):
         Stop capturing the stream data and save the text in `capturedtext`.
         """
         # Print the escape character to make the readOutput method stop:
-        self.origstream.write(self.escape_char)
+        self.origstream.write(self.escape_char.decode())
         # Flush the stream to make sure all our data goes in before
         # the escape character:
         self.origstream.flush()
@@ -80,7 +80,7 @@ class OutputGrabber(object):
             self.capturedtext += char
 
 
-liblsysgen = ctypes.cdll.LoadLibrary('build/liblsysgen.so')
+liblsysgen = ctypes.cdll.LoadLibrary(os.path.dirname(os.path.realpath(__file__)) + '/../../build/liblsysgen.so')
 
 c_lsystem_create = liblsysgen.lsystem_create
 c_lsystem_create.argtypes = (ctypes.c_char_p,)
@@ -113,7 +113,7 @@ class LSystem:
         out.start()
         self.c_lsystem = c_lsystem_create(filename.encode())
         out.stop()
-        self.errors = out.capturedtext
+        self.errors = out.capturedtext.decode()
     def valid(self):
         return self.c_lsystem != None
     def generate(self):
@@ -121,13 +121,13 @@ class LSystem:
         out.start()
         c_lsystem_generate(self.c_lsystem)
         out.stop()
-        self.errors += out.capturedtext
+        self.errors += out.capturedtext.decode()
     def iterate(self, iterations=1):
         out = OutputGrabber(sys.stderr)
         out.start()
         c_lsystem_iterate(self.c_lsystem, iterations)
         out.stop()
-        self.errors += out.capturedtext
+        self.errors += out.capturedtext.decode()
     def dumpErrors(self):
         errs = self.errors
         self.errors = ''
@@ -143,31 +143,3 @@ class LSystem:
         os.close(stderr_pipe[0])
         os.dup2(stderr_save, stderr_fileno)
         os.close(stderr_save)
-
-def main():
-    if len(sys.argv) <= 1 or len(sys.argv) > 3:
-        print("Usage: ex.py LSD_FILE [N_ITERATIONS]")
-        exit(1)
-
-    if len(sys.argv) == 3:
-        iterations = int(sys.argv[2])
-    else:
-        iterations = -1
-
-    lsys = LSystem(sys.argv[1], iterations)
-
-    print(lsys.dumpErrors())
-
-    if lsys.valid():
-        lsys.generate()
-
-        print(lsys.result_to_str())
-
-        # lsys.iterate(1)
-        # print(lsys.result_to_str())
-
-        print(lsys.result_to_svg())
-
-if __name__ == '__main__':
-    main()
-

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <title>L-system editor</title>
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <h1>L-system editor</h1>
+            <form id="editor" action="{% url 'editor:run' %}" method="post">
+                <div class="form-group">
+                    {% csrf_token %}
+                    <textarea name="lsdCode" id="lsdCode" class="form-control" placeholder="LSD code here" rows="18">{{ code }}</textarea>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Run" class="btn btn-primary" />
+                </div>
+            </form>
+            <div id="errors" class="alert alert-dark alert-dismissible fade show" role="alert">
+                <pre><samp>{{ errors }}</samp></pre>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-sm">
+                    <pre id="str-result" style="max-height: 500px;white-space:pre-wrap;word-wrap:break-word;" class="">{{ str_result }}</pre>
+                </div>
+                <div class="col-sm">
+                    <div id="svg-result" class="">{{ svg_result | safe }}</div>
+                </div>
+            </div>
+            <!--
+            {% if latest_question_list %}
+                <ul>
+                {% for question in latest_question_list %}
+                    <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No polls are available.</p>
+            {% endif %}
+            -->
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    </body>
+</html>
