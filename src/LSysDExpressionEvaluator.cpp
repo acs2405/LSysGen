@@ -32,7 +32,7 @@ ErrorHandler * LSysDExpressionEvaluator::messages() {return eh;}
 
 Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope* scope) {
     this->scope = scope;
-    Value ret = this->visit(expr);
+    Value ret = this->visit(expr).as<Value>();
     this->scope = nullptr;
     return ret;
 }
@@ -53,8 +53,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitIdExpr(LSysDParser::IdExprContext *
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitAritBinaryExpr(LSysDParser::AritBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]);
-    Value op2 = this->visit(ctx->expression()[1]);
+    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
+    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->ADD()) {
@@ -87,8 +87,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitAritBinaryExpr(LSysDParser::AritBin
 // }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitLogicBinaryExpr(LSysDParser::LogicBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]);
-    Value op2 = this->visit(ctx->expression()[1]);
+    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
+    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->AND()) {
@@ -101,8 +101,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitLogicBinaryExpr(LSysDParser::LogicB
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]);
-    Value op2 = this->visit(ctx->expression()[1]);
+    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
+    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->EQ()) {
@@ -123,8 +123,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinar
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) {
-    std::list<Value>* args = this->visitArguments(ctx->arguments());
-    Value vf = this->visit(ctx->expression());
+    std::list<Value> * args = this->visitArguments(ctx->arguments()).as<std::list<Value> *>();
+    Value vf = this->visit(ctx->expression()).as<Value>();
     if (vf.isFunction()) {
         eh->traceDown(eh->trace(ctx, ctx, "called by:"));
         Value ret = vf.asFunction()->call(args, scope, new LSysDExpressionEvaluator(*this));
@@ -141,8 +141,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::Funct
 // }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitBitBinaryExpr(LSysDParser::BitBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]);
-    Value op2 = this->visit(ctx->expression()[1]);
+    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
+    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->BITAND()) {
@@ -165,7 +165,7 @@ antlrcpp::Any LSysDExpressionEvaluator::visitBitBinaryExpr(LSysDParser::BitBinar
 // }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitAritUnaryExpr(LSysDParser::AritUnaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression());
+    Value op1 = this->visit(ctx->expression()).as<Value>();
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->ADD()) {
@@ -178,7 +178,7 @@ antlrcpp::Any LSysDExpressionEvaluator::visitAritUnaryExpr(LSysDParser::AritUnar
 }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitLogicUnaryExpr(LSysDParser::LogicUnaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression());
+    Value op1 = this->visit(ctx->expression()).as<Value>();
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->NOT()) {
@@ -203,10 +203,10 @@ antlrcpp::Any LSysDExpressionEvaluator::visitParenthesizedExpr(LSysDParser::Pare
 // }
 
 antlrcpp::Any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprContext *ctx) {
-    Value cond = this->visit(ctx->expression()[0]);
+    Value cond = this->visit(ctx->expression()[0]).as<Value>();
     Value res = Value::error();
     if (cond.isBool())
-        res = this->visit(ctx->expression()[cond.asBool() ? 1 : 2]);
+        res = this->visit(ctx->expression()[cond.asBool() ? 1 : 2]).as<Value>();
     else
         eh->fatalError("the condition expression (of type " + cond.type()->name() + ") must be a boolean", eh->trace(ctx->expression()[0]));
     return res;
@@ -214,8 +214,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprC
 
 antlrcpp::Any LSysDExpressionEvaluator::visitArguments(LSysDParser::ArgumentsContext *ctx) {
     std::list<Value>* args = new std::list<Value>();
-    for (LSysDParser::ArgumentContext* argctx : ctx->argument())
-        args->push_back(this->visitArgument(argctx));
+    for (LSysDParser::ArgumentContext * argctx : ctx->argument())
+        args->push_back(this->visitArgument(argctx).as<Value>());
     return args;
 }
 

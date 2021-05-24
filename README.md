@@ -34,10 +34,10 @@ Dragon curve (Dragon.lsd, 10 iterations)
 
 #### Ubuntu/Debian
 
-This program uses Boost libraries. To install boost:
+This program uses Boost and other required libraries. To install them:
 
 ```
-sudo apt install libboost1.67-dev
+sudo apt install libboost1.67-dev pkg-config uuid-dev
 ```
 
 Then, in LSysGen folder, run:

@@ -162,7 +162,7 @@ antlrcpp::Any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
 
 antlrcpp::Any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
     if (currentLSystem->_axiom == nullptr) {
-        currentLSystem->_axiom = this->visitWord(ctx->word());
+        currentLSystem->_axiom = this->visitWord(ctx->word()).as<ParseTreeNode<InstanceNodeContent, char> *>();
     } else {
         eh->error("The axiom is already defined", eh->trace(ctx));
     }
@@ -197,7 +197,7 @@ antlrcpp::Any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
     if (currentScope->has(fname))
         eh->error("'" + fname + "' symbol is already defined", eh->trace(ctx->ID()));
     // LSysDParser::ExpressionContext* expr = ctx->expression();
-    std::list<Parameter*>* params = this->visitParams(ctx->params());
+    std::list<Parameter*>* params = this->visitParams(ctx->params()).as<std::list<Parameter *> *>();
     currentScope->set(fname, new Function(params, ctx->expression(), ctx));
     // currentScope->set(fname, new Function(params, ctx->block(), ctx));
     return nullptr;
@@ -295,24 +295,25 @@ R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx,
     // Weight:
     weight_t weight;
     if (weightCtx)
-        weight = this->visitWeight(weightCtx);
+        weight = this->visitWeight(weightCtx).as<weight_t>();
     else
         weight = Rule<char>::WEIGHT_UNSET;
 
     // Left context:
     ParseTreeNode<LeftSideNodeContent, char>* lctx;
     if (lctxCtx)
-        lctx = this->visitLcontext(lctxCtx);
+        lctx = this->visitLcontext(lctxCtx).as<ParseTreeNode<LeftSideNodeContent, char> *>();
     else
         lctx = nullptr;
 
     // Left char:
-    ParseTreeNode<LeftSideNodeContent, char>* lnode = this->visitLside(lsideCtx);
+    ParseTreeNode<LeftSideNodeContent, char>* lnode = this->visitLside(lsideCtx)
+            .as<ParseTreeNode<LeftSideNodeContent, char> *>();
 
     // Right context:
     ParseTreeNode<LeftSideNodeContent, char>* rctx;
     if (rctxCtx)
-        rctx = this->visitRcontext(rctxCtx);
+        rctx = this->visitRcontext(rctxCtx).as<ParseTreeNode<LeftSideNodeContent, char> *>();
     else
         rctx = nullptr;
 
@@ -324,7 +325,8 @@ R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx,
         cond = nullptr;
 
     // Right side:
-    ParseTreeNode<RightSideNodeContent, char>* rside = this->visitRside(rsideCtx);
+    ParseTreeNode<RightSideNodeContent, char>* rside = this->visitRside(rsideCtx)
+            .as<ParseTreeNode<RightSideNodeContent, char> *>();
 
     // Assemble rule:
     R* rule = new R(weight, lctx, lnode, rctx, cond, rside);
@@ -378,7 +380,7 @@ antlrcpp::Any LSysDVisitor::visitCodingRuleDef(LSysDParser::CodingRuleDefContext
 }
 
 antlrcpp::Any LSysDVisitor::visitTagPrefix(LSysDParser::TagPrefixContext *ctx) {
-    std::string tag = this->visitTag(ctx->tag());
+    std::string tag = this->visitTag(ctx->tag()).as<std::string>();
     if (currentLSystem->_taggedRules.find(tag) != currentLSystem->_taggedRules.end())
         eh->error("tag '" + tag + "' is already defined", eh->trace(ctx->tag()));
     return tag;
@@ -454,7 +456,7 @@ antlrcpp::Any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
 antlrcpp::Any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
     this->visitValidLeftChar(ctx->validLeftChar());
     if (ctx->params()) {
-        std::list<Parameter *> * params = this->visitParams(ctx->params());
+        std::list<Parameter *> * params = this->visitParams(ctx->params()).as<std::list<Parameter *> *>();
         ParseTreeNode<LeftSideNodeContent, char>* rgt = 
                 reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
                     this->parentNode->rightmostChild());
@@ -467,7 +469,7 @@ antlrcpp::Any LSysDVisitor::visitLItem(LSysDParser::LItemContext *ctx) {
     if (ctx->validLeftChar()) {
         this->visitValidLeftChar(ctx->validLeftChar());
         if (ctx->params()) {
-            std::list<Parameter *> * params = this->visitParams(ctx->params());
+            std::list<Parameter *> * params = this->visitParams(ctx->params()).as<std::list<Parameter *> *>();
             ParseTreeNode<LeftSideNodeContent, char>* rgt = 
                     reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
                         this->parentNode->rightmostChild());
@@ -488,7 +490,8 @@ antlrcpp::Any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
     if (ctx->validRightChar()) {
         this->visitValidRightChar(ctx->validRightChar());
         if (ctx->args()) {
-            std::list<LSysDParser::ExpressionContext *> * args = this->visitArgs(ctx->args());
+            std::list<LSysDParser::ExpressionContext *> * args = this->visitArgs(ctx->args())
+                    .as<std::list<LSysDParser::ExpressionContext *> *>();
             ParseTreeNode<NodeContent, char>* rgt = this->parentNode->rightmostChild();
             if (!this->parentNode->isInstance()) {
                 reinterpret_cast<RightSideNodeContent<char>*>(&rgt->content())->args = args;
@@ -516,7 +519,7 @@ antlrcpp::Any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
 }
 
 antlrcpp::Any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) {
-    std::string s = this->visitValidChar(ctx->validChar());
+    std::string s = this->visitValidChar(ctx->validChar()).as<std::string>();
     for (char c : s) {
         ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>(c);
         this->parentNode->addChild(node->asGeneric());
@@ -525,7 +528,7 @@ antlrcpp::Any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext
 }
 
 antlrcpp::Any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) {
-    std::string s = this->visitValidChar(ctx->validChar());
+    std::string s = this->visitValidChar(ctx->validChar()).as<std::string>();
     // int pos = 0;
     for (char c : s) {
         if (c == '_')
@@ -548,7 +551,7 @@ antlrcpp::Any LSysDVisitor::visitValidChar(LSysDParser::ValidCharContext *ctx) {
 antlrcpp::Any LSysDVisitor::visitParams(LSysDParser::ParamsContext *ctx) {
     std::list<Parameter *> * params = new std::list<Parameter *>();
     for (LSysDParser::ParamContext* paramctx : ctx->param())
-        params->push_back(this->visitParam(paramctx));
+        params->push_back(this->visitParam(paramctx).as<Parameter *>());
     return params;
 }
 
@@ -563,7 +566,7 @@ antlrcpp::Any LSysDVisitor::visitCond(LSysDParser::CondContext *ctx) {
 antlrcpp::Any LSysDVisitor::visitArgs(LSysDParser::ArgsContext *ctx) {
     std::list<LSysDParser::ExpressionContext *> * args = new std::list<LSysDParser::ExpressionContext *>();
     for (LSysDParser::ArgContext* argctx : ctx->arg())
-        args->push_back(this->visitArg(argctx));
+        args->push_back(this->visitArg(argctx).as<LSysDParser::ExpressionContext *>());
     return args;
 }
 
