@@ -4,6 +4,8 @@
 
 #include "misc.h"
 
+#include <iomanip>
+
 
 namespace lsysgen {
 
@@ -61,7 +63,7 @@ ValueType const ValueType::ERROR_TYPE("error");
 
 
 
-Value::Value(ValueType const* type, boost::any const& value): _type(type), _value(value) {}
+Value::Value(ValueType const* type, std::any const& value): _type(type), _value(value) {}
 Value::Value(): _type(&ValueType::ERROR_TYPE), _value(antlrcpp::Any()) {}
 Value::Value(int value): _type(&ValueType::INT_TYPE), _value(value) {}
 Value::Value(double value): _type(&ValueType::FLOAT_TYPE), _value(value) {}
@@ -102,11 +104,11 @@ Function* Value::asFunction () const {return this->as<Function*>();}
 
 template<typename T>
 T Value::as () {
-    return boost::any_cast<T>(this->_value);
+    return std::any_cast<T>(this->_value);
 }
 template<typename T>
 const T Value::as () const {
-    return boost::any_cast<T>(this->_value);
+    return std::any_cast<T>(this->_value);
     // return this->_value.as<T>();
 }
 

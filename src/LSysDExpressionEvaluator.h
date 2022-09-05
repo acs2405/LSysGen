@@ -35,83 +35,83 @@ public:
     Value eval(LSysDParser::ExpressionContext* expr, Scope* scope);
 
 private:
-    antlrcpp::Any visitConstExpr(LSysDParser::ConstExprContext *ctx) override;
+    std::any visitConstExpr(LSysDParser::ConstExprContext *ctx) override;
 
-    antlrcpp::Any visitIdExpr(LSysDParser::IdExprContext *ctx) override;
+    std::any visitIdExpr(LSysDParser::IdExprContext *ctx) override;
 
-    antlrcpp::Any visitAritBinaryExpr(LSysDParser::AritBinaryExprContext *ctx) override;
+    std::any visitAritBinaryExpr(LSysDParser::AritBinaryExprContext *ctx) override;
 
-    // antlrcpp::Any visitFunctionDefExpr(LSysDParser::FunctionDefExprContext *ctx) override;
+    // std::any visitFunctionDefExpr(LSysDParser::FunctionDefExprContext *ctx) override;
 
-    // antlrcpp::Any visitIndexExpr(LSysDParser::IndexExprContext *ctx) override;
+    // std::any visitIndexExpr(LSysDParser::IndexExprContext *ctx) override;
 
-    // antlrcpp::Any visitSetDefExpr(LSysDParser::SetDefExprContext *ctx) override;
+    // std::any visitSetDefExpr(LSysDParser::SetDefExprContext *ctx) override;
 
-    antlrcpp::Any visitLogicBinaryExpr(LSysDParser::LogicBinaryExprContext *ctx) override;
+    std::any visitLogicBinaryExpr(LSysDParser::LogicBinaryExprContext *ctx) override;
 
-    antlrcpp::Any visitCmpBinaryExpr(LSysDParser::CmpBinaryExprContext *ctx) override;
+    std::any visitCmpBinaryExpr(LSysDParser::CmpBinaryExprContext *ctx) override;
 
-    antlrcpp::Any visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) override;
+    std::any visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) override;
 
-    // antlrcpp::Any visitTupleDefExpr(LSysDParser::TupleDefExprContext *ctx) override;
+    // std::any visitTupleDefExpr(LSysDParser::TupleDefExprContext *ctx) override;
 
-    antlrcpp::Any visitBitBinaryExpr(LSysDParser::BitBinaryExprContext *ctx) override;
+    std::any visitBitBinaryExpr(LSysDParser::BitBinaryExprContext *ctx) override;
 
-    // antlrcpp::Any visitListDefExpr(LSysDParser::ListDefExprContext *ctx) override;
+    // std::any visitListDefExpr(LSysDParser::ListDefExprContext *ctx) override;
 
-    // antlrcpp::Any visitMapDefExpr(LSysDParser::MapDefExprContext *ctx) override;
+    // std::any visitMapDefExpr(LSysDParser::MapDefExprContext *ctx) override;
 
-    antlrcpp::Any visitAritUnaryExpr(LSysDParser::AritUnaryExprContext *ctx) override;
+    std::any visitAritUnaryExpr(LSysDParser::AritUnaryExprContext *ctx) override;
 
-    antlrcpp::Any visitLogicUnaryExpr(LSysDParser::LogicUnaryExprContext *ctx) override;
+    std::any visitLogicUnaryExpr(LSysDParser::LogicUnaryExprContext *ctx) override;
 
-    antlrcpp::Any visitParenthesizedExpr(LSysDParser::ParenthesizedExprContext *ctx) override;
+    std::any visitParenthesizedExpr(LSysDParser::ParenthesizedExprContext *ctx) override;
 
-    // antlrcpp::Any visitPropertyAccessorExpr(LSysDParser::PropertyAccessorExprContext *ctx) override;
+    // std::any visitPropertyAccessorExpr(LSysDParser::PropertyAccessorExprContext *ctx) override;
 
-    // antlrcpp::Any visitInExpr(LSysDParser::InExprContext *ctx) override;
+    // std::any visitInExpr(LSysDParser::InExprContext *ctx) override;
 
-    antlrcpp::Any visitIfElseExpr(LSysDParser::IfElseExprContext *ctx) override;
+    std::any visitIfElseExpr(LSysDParser::IfElseExprContext *ctx) override;
 
-    antlrcpp::Any visitArguments(LSysDParser::ArgumentsContext *ctx) override;
+    std::any visitArguments(LSysDParser::ArgumentsContext *ctx) override;
 
-    antlrcpp::Any visitArgument(LSysDParser::ArgumentContext *ctx) override;
+    std::any visitArgument(LSysDParser::ArgumentContext *ctx) override;
 
-    // antlrcpp::Any visitIndexes(LSysDParser::IndexesContext *ctx) override;
+    // std::any visitIndexes(LSysDParser::IndexesContext *ctx) override;
 
-    // antlrcpp::Any visitIndex(LSysDParser::IndexContext *ctx) override;
+    // std::any visitIndex(LSysDParser::IndexContext *ctx) override;
 
-    // antlrcpp::Any visitFormalParameters(LSysDParser::FormalParametersContext *ctx) override;
+    // std::any visitFormalParameters(LSysDParser::FormalParametersContext *ctx) override;
 
-    // antlrcpp::Any visitFormalParameter(LSysDParser::FormalParameterContext *ctx) override;
+    // std::any visitFormalParameter(LSysDParser::FormalParameterContext *ctx) override;
 
-    // antlrcpp::Any visitIteratordef(LSysDParser::IteratordefContext *ctx) override;
+    // std::any visitIteratordef(LSysDParser::IteratordefContext *ctx) override;
 
-    // antlrcpp::Any visitListdef(LSysDParser::ListdefContext *ctx) override;
+    // std::any visitListdef(LSysDParser::ListdefContext *ctx) override;
 
-    // antlrcpp::Any visitTupledef(LSysDParser::TupledefContext *ctx) override;
+    // std::any visitTupledef(LSysDParser::TupledefContext *ctx) override;
 
-    // antlrcpp::Any visitSetdef(LSysDParser::SetdefContext *ctx) override;
+    // std::any visitSetdef(LSysDParser::SetdefContext *ctx) override;
 
-    // antlrcpp::Any visitMapdef(LSysDParser::MapdefContext *ctx) override;
+    // std::any visitMapdef(LSysDParser::MapdefContext *ctx) override;
 
-    // antlrcpp::Any visitMapiteratordef(LSysDParser::MapiteratordefContext *ctx) override;
+    // std::any visitMapiteratordef(LSysDParser::MapiteratordefContext *ctx) override;
 
-    // antlrcpp::Any visitMapitem(LSysDParser::MapitemContext *ctx) override;
+    // std::any visitMapitem(LSysDParser::MapitemContext *ctx) override;
 
-    // antlrcpp::Any visitFunctiondef(LSysDParser::FunctiondefContext *ctx) override;
+    // std::any visitFunctiondef(LSysDParser::FunctiondefContext *ctx) override;
 
-    // antlrcpp::Any visitSource(LSysDParser::SourceContext *ctx) override;
+    // std::any visitSource(LSysDParser::SourceContext *ctx) override;
 
-    antlrcpp::Any visitIntConstant(LSysDParser::IntConstantContext *ctx) override;
+    std::any visitIntConstant(LSysDParser::IntConstantContext *ctx) override;
 
-    antlrcpp::Any visitFloatConstant(LSysDParser::FloatConstantContext *ctx) override;
+    std::any visitFloatConstant(LSysDParser::FloatConstantContext *ctx) override;
 
-    antlrcpp::Any visitStringConstant(LSysDParser::StringConstantContext *ctx) override;
+    std::any visitStringConstant(LSysDParser::StringConstantContext *ctx) override;
 
-    antlrcpp::Any visitTrueValue(LSysDParser::TrueValueContext *ctx) override;
+    std::any visitTrueValue(LSysDParser::TrueValueContext *ctx) override;
 
-    antlrcpp::Any visitFalseValue(LSysDParser::FalseValueContext *ctx) override;
+    std::any visitFalseValue(LSysDParser::FalseValueContext *ctx) override;
 
-    antlrcpp::Any visitNullValue(LSysDParser::NullValueContext *ctx) override;
+    std::any visitNullValue(LSysDParser::NullValueContext *ctx) override;
 };

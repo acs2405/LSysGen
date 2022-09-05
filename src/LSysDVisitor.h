@@ -50,71 +50,71 @@ public:
 
     ErrorHandler* messages();
     
-    antlrcpp::Any visitMain(LSysDParser::MainContext *ctx) override;
+    std::any visitMain(LSysDParser::MainContext *ctx) override;
     
-    antlrcpp::Any visitLsystem(LSysDParser::LsystemContext *ctx) override;
+    std::any visitLsystem(LSysDParser::LsystemContext *ctx) override;
 
-    antlrcpp::Any visitAxiomDef(LSysDParser::AxiomDefContext *ctx) override;
+    std::any visitAxiomDef(LSysDParser::AxiomDefContext *ctx) override;
 
-    antlrcpp::Any visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) override;
+    std::any visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) override;
 
-    antlrcpp::Any visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) override;
+    std::any visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) override;
 
-    antlrcpp::Any visitFuncDef(LSysDParser::FuncDefContext *ctx) override;
+    std::any visitFuncDef(LSysDParser::FuncDefContext *ctx) override;
 
-    antlrcpp::Any visitTableBlock(LSysDParser::TableBlockContext *ctx) override;
+    std::any visitTableBlock(LSysDParser::TableBlockContext *ctx) override;
 
-    antlrcpp::Any visitRulesBlock(LSysDParser::RulesBlockContext *ctx) override;
+    std::any visitRulesBlock(LSysDParser::RulesBlockContext *ctx) override;
 
-    antlrcpp::Any visitProductionRulesBlock(LSysDParser::ProductionRulesBlockContext *ctx) override;
+    std::any visitProductionRulesBlock(LSysDParser::ProductionRulesBlockContext *ctx) override;
 
-    antlrcpp::Any visitCodingRulesBlock(LSysDParser::CodingRulesBlockContext *ctx) override;
+    std::any visitCodingRulesBlock(LSysDParser::CodingRulesBlockContext *ctx) override;
 
-    antlrcpp::Any visitProductionRule(LSysDParser::ProductionRuleContext *ctx) override;
+    std::any visitProductionRule(LSysDParser::ProductionRuleContext *ctx) override;
 
-    antlrcpp::Any visitCodingRule(LSysDParser::CodingRuleContext *ctx) override;
+    std::any visitCodingRule(LSysDParser::CodingRuleContext *ctx) override;
 
-    antlrcpp::Any visitRuleDef(LSysDParser::RuleDefContext *ctx) override;
+    std::any visitRuleDef(LSysDParser::RuleDefContext *ctx) override;
 
-    antlrcpp::Any visitProductionRuleDef(LSysDParser::ProductionRuleDefContext *ctx) override;
+    std::any visitProductionRuleDef(LSysDParser::ProductionRuleDefContext *ctx) override;
 
-    antlrcpp::Any visitCodingRuleDef(LSysDParser::CodingRuleDefContext *ctx) override;
+    std::any visitCodingRuleDef(LSysDParser::CodingRuleDefContext *ctx) override;
 
-    antlrcpp::Any visitTagPrefix(LSysDParser::TagPrefixContext *ctx) override;
+    std::any visitTagPrefix(LSysDParser::TagPrefixContext *ctx) override;
 
-    antlrcpp::Any visitTag(LSysDParser::TagContext *ctx) override;
+    std::any visitTag(LSysDParser::TagContext *ctx) override;
 
-    antlrcpp::Any visitWeight(LSysDParser::WeightContext *ctx) override;
+    std::any visitWeight(LSysDParser::WeightContext *ctx) override;
 
-    antlrcpp::Any visitLside(LSysDParser::LsideContext *ctx) override;
+    std::any visitLside(LSysDParser::LsideContext *ctx) override;
 
-    antlrcpp::Any visitLcontext(LSysDParser::LcontextContext *ctx) override;
+    std::any visitLcontext(LSysDParser::LcontextContext *ctx) override;
 
-    antlrcpp::Any visitRcontext(LSysDParser::RcontextContext *ctx) override;
+    std::any visitRcontext(LSysDParser::RcontextContext *ctx) override;
 
-    antlrcpp::Any visitRside(LSysDParser::RsideContext *ctx) override;
+    std::any visitRside(LSysDParser::RsideContext *ctx) override;
 
-    antlrcpp::Any visitWord(LSysDParser::WordContext *ctx) override;
+    std::any visitWord(LSysDParser::WordContext *ctx) override;
 
-    antlrcpp::Any visitLChar(LSysDParser::LCharContext *ctx) override;
+    std::any visitLChar(LSysDParser::LCharContext *ctx) override;
 
-    antlrcpp::Any visitLItem(LSysDParser::LItemContext *ctx) override;
+    std::any visitLItem(LSysDParser::LItemContext *ctx) override;
 
-    antlrcpp::Any visitRItem(LSysDParser::RItemContext *ctx) override;
+    std::any visitRItem(LSysDParser::RItemContext *ctx) override;
 
-    antlrcpp::Any visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) override;
+    std::any visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) override;
 
-    antlrcpp::Any visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) override;
+    std::any visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) override;
 
-    antlrcpp::Any visitValidChar(LSysDParser::ValidCharContext *ctx) override;
+    std::any visitValidChar(LSysDParser::ValidCharContext *ctx) override;
 
-    antlrcpp::Any visitParams(LSysDParser::ParamsContext *ctx) override;
+    std::any visitParams(LSysDParser::ParamsContext *ctx) override;
 
-    antlrcpp::Any visitParam(LSysDParser::ParamContext *ctx) override;
+    std::any visitParam(LSysDParser::ParamContext *ctx) override;
 
-    antlrcpp::Any visitCond(LSysDParser::CondContext *ctx) override;
+    std::any visitCond(LSysDParser::CondContext *ctx) override;
 
-    antlrcpp::Any visitArgs(LSysDParser::ArgsContext *ctx) override;
+    std::any visitArgs(LSysDParser::ArgsContext *ctx) override;
 
-    antlrcpp::Any visitArg(LSysDParser::ArgContext *ctx) override;
+    std::any visitArg(LSysDParser::ArgContext *ctx) override;
 };

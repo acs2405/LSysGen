@@ -2,7 +2,7 @@
 
 This project implements an interpreter in C++ of L-Systems descriptor files (`*.lsd`) writen in a custom specific purpose language LSysDescriptor, LSysD or just LSD (see `Syntax and semantics`).
 
-The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image of it (see `2D Display interpretation`).
+The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image SVG of it (see `2D Display interpretation`).
 
 An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).
 
@@ -34,13 +34,13 @@ Dragon curve (Dragon.lsd, 10 iterations)
 
 #### Ubuntu/Debian
 
-This program uses Boost and other required libraries. To install them:
+This program uses `ANTLR 4.11.1`, `CMake (>=3.15)` and other required libraries, like Java Runtime Environment to compile the grammar with the ANTLR jar file. ANTLR4 will be installed and linked with the `make` command automatically. To install our dependencies:
 
 ```
-sudo apt install libboost1.67-dev pkg-config uuid-dev
+sudo apt install cmake uuid-dev default-jre
 ```
 
-Then, in LSysGen folder, run:
+Then, in our `LSysGen` folder, run:
 
 ```
 mkdir build && cd build
@@ -48,9 +48,14 @@ cmake ..
 make
 ```
 
-If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output, `lsys2svg` that prints and SVG image of the L system and, only if OpenGL and GLUT libraries are found in your system, `lsys2d` that shows a 2D representation of the generated output in a new window.
+If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output and `lsys2svg` that prints and SVG image of the 2D representation of the L system.
 
+<!--
 (*Optional*) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
+
+```
+sudo apt install default-jre
+```
 
 ```
 java -jar <ANTLR4-JAR> -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
@@ -61,10 +66,11 @@ where `<ANTLR4-JAR>` is a jar file that contains the ANTLR 4 parser generator. O
 ```
 antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
+-->
 
 ### Execution
 
-There are two executables in this project: `lsys` and `lsys2d`. They work with the same inputs, but `lsys` prints the result and `lsys2d` shows a 2D representation of the result in a new window.
+There are two executables in this project: `lsys` and `lsys2svg`. They work with the same inputs, but `lsys` prints the result and `lsys2svg` shows a 2D representation of the result in a SVG file (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser).
 
 There is also a Python module, `lsys.py`, that fetches the generated shared library and serves as a Python wrapper of the library (through its class `LSystem` that is able to print the L system and also its SVG representation).
 
@@ -73,7 +79,6 @@ To execute any of the above mentioned programs, go to `build/` and run either of
 ```
 ./lsys FILE [N_ITERATIONS]
 ./lsys2svg FILE [N_ITERATIONS]
-./lsys2d FILE [N_ITERATIONS]
 ```
 
 The python script is also runnable and prints the resulting L system string and the SVG image:
@@ -110,7 +115,7 @@ To define an L system with an axiom and the rules that transform it, I have crea
 In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:
 
 ```
-echo "n(255,0,0)F+F+PF+F+F+Fp+F+F" | ./build/lsys2d - > images/test.svg
+echo "axiom n(255,0,0)F+F+PF+F+F+Fp+F+F" | ./build/lsys2svg - > images/test.svg
 ```
 
 But this is not the main case. If we want to *generate* the L system, we create an LSD document for it.
@@ -140,10 +145,10 @@ lsystem SierpinskiTriangle {
 
     axiom F-G-G
 
-    set iterations = 6
-    set initial_heading = 0
-    set rotation = -120
-    set background = "#ffbb00"
+    set iterations := 6
+    set initial_heading := 0
+    set rotation := -120
+    set background := "#ffbb00"
 
     rules {
         F -> F-G+F+G-F
@@ -179,7 +184,7 @@ Every line followed by the character `#` is a comment and will be ignored by the
 
 ```
 # Hey I'm a comment
-set notAComment = 3 #aComment
+set notAComment := 3 #aComment
 ```
 
 ### Axiom
@@ -319,13 +324,13 @@ matches the `a` of `baca`, `b+ca`, `bbca`, etc.
 If you plan to use tables, you need to write the line:
 
 ```
-set table_func(i) = <expr>
+set table_func(i) := <expr>
 ```
 
 where `<expr>` is the expression of the function that decides which table will be used for the `i`-th iteration. For example:
 
 ```
-set table_func(i) =  if i % 5 != 1 then "t1" else "t2"
+set table_func(i) :=  if i % 5 != 1 then "t1" else "t2"
 ```
 
 Table names cannot be numbers. The code that defines a table is:
@@ -390,24 +395,24 @@ The syntax of the coding rules is the same than production rules', but using dou
 We have seen the `iterations` property and the `table_func` function to choose which table to choose each iteration. We can define any property. These are predefined properties used by the L system generator:
 
 ```
-set iterations = 8          # (defaults 0) This line sets the number of iterations that the system will be executing
-set ignore = ""             # (optional, defaults "") This property sets the characters that must be ignored as context (see contexts in rules)
+set iterations := 8          # (defaults 0) This line sets the number of iterations that the system will be executing
+set ignore := ""             # (optional, defaults "") This property sets the characters that must be ignored as context (see contexts in rules)
 ```
 
 And these are the properties used by the 2D interpreter:
 
 ```
-set initial_heading = 90    # (optional, defaults 0) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
-set rotation = 30           # (optional, defaults 12) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
-set line_width = 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
-set background = "#FFBB00"  # (optional, defaults "transparent") This property sets the background color of the SVG
+set initial_heading := 90    # (optional, defaults 0) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
+set rotation := 30           # (optional, defaults 12) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width := 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set background := "#FFBB00"  # (optional, defaults "transparent") This property sets the background color of the SVG
 ```
 
 You can also define any other property you want, and use them in the expressions of parametric rules.
 
 ## 2D Display interpretation
 
-The program `lsys2d` draws vector graphics after the resulting string and `lsys2svg` creates an SVG image file from the same result (without opening a window).
+The program `lsys2svg` creates an SVG image file after the resulting string.
 
 The special characters that 2D interpretation uses are:
 
@@ -467,7 +472,6 @@ inkscape -o test.png -w 1000 -b white test.svg
 ## Next steps
 
 - Manage pointers (destructors and deletes)
-- Get rid of boost dependency?
 - Capture all LSD semantic errors and expression evaluation errors
 - Debug
 - Compile in windows?

@@ -32,17 +32,17 @@ ErrorHandler * LSysDExpressionEvaluator::messages() {return eh;}
 
 Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope* scope) {
     this->scope = scope;
-    Value ret = this->visit(expr).as<Value>();
+    Value ret = std::any_cast<Value>(this->visit(expr));
     this->scope = nullptr;
     return ret;
 }
 
 
-antlrcpp::Any LSysDExpressionEvaluator::visitConstExpr(LSysDParser::ConstExprContext *ctx) {
+std::any LSysDExpressionEvaluator::visitConstExpr(LSysDParser::ConstExprContext *ctx) {
     return this->visit(ctx->constant());
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitIdExpr(LSysDParser::IdExprContext *ctx) {
+std::any LSysDExpressionEvaluator::visitIdExpr(LSysDParser::IdExprContext *ctx) {
     std::string name = ctx->ID()->getText();
     if (this->scope->has(name)) {
         return Value(this->scope->get(name));
@@ -52,9 +52,9 @@ antlrcpp::Any LSysDExpressionEvaluator::visitIdExpr(LSysDParser::IdExprContext *
     }
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitAritBinaryExpr(LSysDParser::AritBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
-    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
+std::any LSysDExpressionEvaluator::visitAritBinaryExpr(LSysDParser::AritBinaryExprContext *ctx) {
+    Value op1 = std::any_cast<Value>(this->visit(ctx->expression()[0]));
+    Value op2 = std::any_cast<Value>(this->visit(ctx->expression()[1]));
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->ADD()) {
@@ -74,21 +74,21 @@ antlrcpp::Any LSysDExpressionEvaluator::visitAritBinaryExpr(LSysDParser::AritBin
     return res;
 }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitFunctionDefExpr(LSysDParser::FunctionDefExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitFunctionDefExpr(LSysDParser::FunctionDefExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitIndexExpr(LSysDParser::IndexExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitIndexExpr(LSysDParser::IndexExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitSetDefExpr(LSysDParser::SetDefExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitSetDefExpr(LSysDParser::SetDefExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitLogicBinaryExpr(LSysDParser::LogicBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
-    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
+std::any LSysDExpressionEvaluator::visitLogicBinaryExpr(LSysDParser::LogicBinaryExprContext *ctx) {
+    Value op1 = std::any_cast<Value>(this->visit(ctx->expression()[0]));
+    Value op2 = std::any_cast<Value>(this->visit(ctx->expression()[1]));
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->AND()) {
@@ -100,9 +100,9 @@ antlrcpp::Any LSysDExpressionEvaluator::visitLogicBinaryExpr(LSysDParser::LogicB
     return res;
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
-    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
+std::any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinaryExprContext *ctx) {
+    Value op1 = std::any_cast<Value>(this->visit(ctx->expression()[0]));
+    Value op2 = std::any_cast<Value>(this->visit(ctx->expression()[1]));
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->EQ()) {
@@ -122,9 +122,9 @@ antlrcpp::Any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinar
     return res;
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) {
-    std::list<Value> * args = this->visitArguments(ctx->arguments()).as<std::list<Value> *>();
-    Value vf = this->visit(ctx->expression()).as<Value>();
+std::any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) {
+    std::list<Value> * args = std::any_cast<std::list<Value> *>(this->visitArguments(ctx->arguments()));
+    Value vf = std::any_cast<Value>(this->visit(ctx->expression()));
     if (vf.isFunction()) {
         eh->traceDown(eh->trace(ctx, ctx, "called by:"));
         Value ret = vf.asFunction()->call(args, scope, new LSysDExpressionEvaluator(*this));
@@ -136,13 +136,13 @@ antlrcpp::Any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::Funct
     return Value::error();
 }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitTupleDefExpr(LSysDParser::TupleDefExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitTupleDefExpr(LSysDParser::TupleDefExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitBitBinaryExpr(LSysDParser::BitBinaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()[0]).as<Value>();
-    Value op2 = this->visit(ctx->expression()[1]).as<Value>();
+std::any LSysDExpressionEvaluator::visitBitBinaryExpr(LSysDParser::BitBinaryExprContext *ctx) {
+    Value op1 = std::any_cast<Value>(this->visit(ctx->expression()[0]));
+    Value op2 = std::any_cast<Value>(this->visit(ctx->expression()[1]));
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->BITAND()) {
@@ -156,16 +156,16 @@ antlrcpp::Any LSysDExpressionEvaluator::visitBitBinaryExpr(LSysDParser::BitBinar
     return res;
 }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitListDefExpr(LSysDParser::ListDefExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitListDefExpr(LSysDParser::ListDefExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitMapDefExpr(LSysDParser::MapDefExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitMapDefExpr(LSysDParser::MapDefExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitAritUnaryExpr(LSysDParser::AritUnaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()).as<Value>();
+std::any LSysDExpressionEvaluator::visitAritUnaryExpr(LSysDParser::AritUnaryExprContext *ctx) {
+    Value op1 = std::any_cast<Value>(this->visit(ctx->expression()));
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->ADD()) {
@@ -177,8 +177,8 @@ antlrcpp::Any LSysDExpressionEvaluator::visitAritUnaryExpr(LSysDParser::AritUnar
     return res;
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitLogicUnaryExpr(LSysDParser::LogicUnaryExprContext *ctx) {
-    Value op1 = this->visit(ctx->expression()).as<Value>();
+std::any LSysDExpressionEvaluator::visitLogicUnaryExpr(LSysDParser::LogicUnaryExprContext *ctx) {
+    Value op1 = std::any_cast<Value>(this->visit(ctx->expression()));
     Value res = Value::error();
     eh->traceDown(eh->trace(ctx->op));
     if (ctx->NOT()) {
@@ -190,92 +190,92 @@ antlrcpp::Any LSysDExpressionEvaluator::visitLogicUnaryExpr(LSysDParser::LogicUn
     return res;
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitParenthesizedExpr(LSysDParser::ParenthesizedExprContext *ctx) {
+std::any LSysDExpressionEvaluator::visitParenthesizedExpr(LSysDParser::ParenthesizedExprContext *ctx) {
     return this->visit(ctx->expression());
 }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitPropertyAccessorExpr(LSysDParser::PropertyAccessorExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitPropertyAccessorExpr(LSysDParser::PropertyAccessorExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitInExpr(LSysDParser::InExprContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitInExpr(LSysDParser::InExprContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprContext *ctx) {
-    Value cond = this->visit(ctx->expression()[0]).as<Value>();
+std::any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprContext *ctx) {
+    Value cond = std::any_cast<Value>(this->visit(ctx->expression()[0]));
     Value res = Value::error();
     if (cond.isBool())
-        res = this->visit(ctx->expression()[cond.asBool() ? 1 : 2]).as<Value>();
+        res = std::any_cast<Value>(this->visit(ctx->expression()[cond.asBool() ? 1 : 2]));
     else
         eh->fatalError("the condition expression (of type " + cond.type()->name() + ") must be a boolean", eh->trace(ctx->expression()[0]));
     return res;
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitArguments(LSysDParser::ArgumentsContext *ctx) {
+std::any LSysDExpressionEvaluator::visitArguments(LSysDParser::ArgumentsContext *ctx) {
     std::list<Value>* args = new std::list<Value>();
     for (LSysDParser::ArgumentContext * argctx : ctx->argument())
-        args->push_back(this->visitArgument(argctx).as<Value>());
+        args->push_back(std::any_cast<Value>(this->visitArgument(argctx)));
     return args;
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitArgument(LSysDParser::ArgumentContext *ctx) {
+std::any LSysDExpressionEvaluator::visitArgument(LSysDParser::ArgumentContext *ctx) {
     return this->visit(ctx->expression());
 }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitIndexes(LSysDParser::IndexesContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitIndexes(LSysDParser::IndexesContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitIndex(LSysDParser::IndexContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitIndex(LSysDParser::IndexContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitFormalParameters(LSysDParser::FormalParametersContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitFormalParameters(LSysDParser::FormalParametersContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitFormalParameter(LSysDParser::FormalParameterContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitFormalParameter(LSysDParser::FormalParameterContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitIteratordef(LSysDParser::IteratordefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitIteratordef(LSysDParser::IteratordefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitListdef(LSysDParser::ListdefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitListdef(LSysDParser::ListdefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitTupledef(LSysDParser::TupledefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitTupledef(LSysDParser::TupledefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitSetdef(LSysDParser::SetdefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitSetdef(LSysDParser::SetdefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitMapdef(LSysDParser::MapdefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitMapdef(LSysDParser::MapdefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitMapiteratordef(LSysDParser::MapiteratordefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitMapiteratordef(LSysDParser::MapiteratordefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitMapitem(LSysDParser::MapitemContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitMapitem(LSysDParser::MapitemContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitFunctiondef(LSysDParser::FunctiondefContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitFunctiondef(LSysDParser::FunctiondefContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-// antlrcpp::Any LSysDExpressionEvaluator::visitSource(LSysDParser::SourceContext *ctx) {
+// std::any LSysDExpressionEvaluator::visitSource(LSysDParser::SourceContext *ctx) {
 //     return visitChildren(ctx);
 // }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitIntConstant(LSysDParser::IntConstantContext *ctx) {
+std::any LSysDExpressionEvaluator::visitIntConstant(LSysDParser::IntConstantContext *ctx) {
     int i;
     if (ctx->INT()->getText().find('x') == std::string::npos) {
         i = std::stoi(ctx->INT()->getText());
@@ -286,24 +286,24 @@ antlrcpp::Any LSysDExpressionEvaluator::visitIntConstant(LSysDParser::IntConstan
     return Value(i);
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitFloatConstant(LSysDParser::FloatConstantContext *ctx) {
+std::any LSysDExpressionEvaluator::visitFloatConstant(LSysDParser::FloatConstantContext *ctx) {
     double f = stod(ctx->FLOAT()->getText());
     return Value(f);
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitStringConstant(LSysDParser::StringConstantContext *ctx) {
+std::any LSysDExpressionEvaluator::visitStringConstant(LSysDParser::StringConstantContext *ctx) {
     std::string s = ctx->STRING()->getText();
     return Value(strUnescape(s.substr(1, s.size()-2)));
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitTrueValue(LSysDParser::TrueValueContext *ctx) {
+std::any LSysDExpressionEvaluator::visitTrueValue(LSysDParser::TrueValueContext *ctx) {
     return Value(true);
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitFalseValue(LSysDParser::FalseValueContext *ctx) {
+std::any LSysDExpressionEvaluator::visitFalseValue(LSysDParser::FalseValueContext *ctx) {
     return Value(false);
 }
 
-antlrcpp::Any LSysDExpressionEvaluator::visitNullValue(LSysDParser::NullValueContext *ctx) {
+std::any LSysDExpressionEvaluator::visitNullValue(LSysDParser::NullValueContext *ctx) {
     return Value(nullptr);
 }

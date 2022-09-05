@@ -1,93 +1,60 @@
-cmake_minimum_required(VERSION 3.7)
+# minimum required CMAKE version
+CMAKE_MINIMUM_REQUIRED(VERSION 3.7 FATAL_ERROR)
 
 project("LSysGen")
 
-# specify the C++ standard
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# compiler must be 17
+set(CMAKE_CXX_STANDARD 17)
+
+# required if linking to static library
+add_definitions(-DANTLR4CPP_STATIC)
 
 # using /MD flag for antlr4_runtime (for Visual C++ compilers only)
 set(ANTLR4_WITH_STATIC_CRT OFF)
 
-# required if linking to static library
-# add_definitions(-DANTLR4CPP_STATIC)
-
-# set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# # To use PKG_CHECK_MODULES to find some optional packages
-# find_package(PkgConfig)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+  # set(CMAKE_BUILD_TYPE Debug)
+endif()
 
 
-find_package(Boost REQUIRED)
+# Specify the version of the antlr4 library needed for this project.
+# By default the latest version of antlr4 will be used.  You can specify a
+# specific, stable version by setting a repository tag value or a link
+# to a zip file containing the libary source.
+set(ANTLR4_TAG 4.11.1)
+# set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.11.1.zip)
 
+# add external build for antlrcpp
 include(ExternalAntlr4Cpp)
-
+# add antrl4cpp artifacts to project environment
 include_directories(${ANTLR4_INCLUDE_DIRS})
 
-find_package(ANTLR)
-if(ANTLR_FOUND)
-  antlr_target(LSysDLexer LSysDLexer.g4 LEXER)
-  antlr_target(LSysDParser LSysDParser.g4 PARSER
-               DEPENDS_ANTLR LSysDLexer
-               COMPILE_FLAGS -lib ${ANTLR_LSysDLexer_OUTPUT_DIR})
+# set variable pointing to the antlr tool that supports C++
+# this is not required if the jar file can be found under PATH environment
+set(ANTLR_EXECUTABLE ${PROJECT_SOURCE_DIR}/antlr-4.11.1-complete.jar)
+# add macros to generate ANTLR Cpp code from grammar
+find_package(ANTLR REQUIRED)
 
-  # include generated files in project environment
-  include_directories(${ANTLR_LSysDLexer_OUTPUT_DIR})
-  include_directories(${ANTLR_LSysDParser_OUTPUT_DIR})
-else()
-  set(ANTLR_LSysDLexer_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/antlr4-generated)
-  set(ANTLR_LSysDParser_OUTPUT_DIR ${PROJECT_SOURCE_DIR}/antlr4-generated)
+# Call macro to add lexer and grammar to your build dependencies.
+antlr_target(LSysDLexer LSysDLexer.g4 LEXER)
+             # PACKAGE antlrcpptest)
+antlr_target(LSysDParser LSysDParser.g4 PARSER VISITOR
+             # PACKAGE antlrcpptest
+             DEPENDS_ANTLR LSysDLexer
+             COMPILE_FLAGS -lib ${ANTLR_LSysDLexer_OUTPUT_DIR})
 
-  set(ANTLR_LSysDLexer_CXX_OUTPUTS
-    ${PROJECT_SOURCE_DIR}/antlr4-generated/LSysDLexer.cpp 
-    )
-  set(ANTLR_LSysDParser_CXX_OUTPUTS
-    ${PROJECT_SOURCE_DIR}/antlr4-generated/LSysDParser.cpp
-    ${PROJECT_SOURCE_DIR}/antlr4-generated/LSysDParserBaseVisitor.cpp   
-    ${PROJECT_SOURCE_DIR}/antlr4-generated/LSysDParserVisitor.cpp
-    )
-endif()
+# include generated files in project environment
+include_directories(${ANTLR_LSysDLexer_OUTPUT_DIR})
+include_directories(${ANTLR_LSysDParser_OUTPUT_DIR})
 
-# cmake_policy(SET CMP0072 NEW)
-# find_package(OpenGL)
-# find_package(GLUT)
-# if(OpenGL_FOUND AND GLUT_FOUND)
-#   # cmake_policy(SET CMP0072 NEW)
-
-#   # find_package(OpenGL REQUIRED)
-#   # find_package(GLUT REQUIRED)
-
-#   # add_compile_definitions(LSYSGEN_WINDOW)
-#   set(LSYSGEN_GRAPHICS True)
-
-#   include_directories(${OPENGL_INCLUDE_DIRS})
-#   include_directories(${GLUT_INCLUDE_DIRS})
-# else()
-#   # add_compile_definitions(LSYSGEN_JUST_PRINT)
-#   # add_compile_definitions(LSYSGEN_INTERACTIVE)
-#   set(LSYSGEN_GRAPHICS False)
-# endif()
-
-# Add CIMG Flags to Compilation Flags
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CIMG_CFLAGS}")
-
-# CMake commands for this specific project start here
-
-# to disable some warnings for CImg
-if (NOT WIN32)
-  set(CMAKE_CXX_FLAGS "-Wdeprecated -Wno-attributes" )
-endif()
-
-if (APPLE)
-  set(CMAKE_CXX_FLAGS "-Wdeprecated -std=c++17" )
-  include_directories(/usr/local/Cellar/boost/1.73.0/include)
-endif()
-
-if (MSVC)
-  set(CMAKE_CXX_FLAGS "/EHsc /wd4127 /wd4311 /wd4312 /wd4512 /wd4571 /wd4640 /wd4706 /wd4710 /wd4800 /wd4804 /wd4820 /wd4996")
-endif()
+# # add generated grammar to demo binary target
+# add_executable(demo main.cpp
+#                ${ANTLR_LSysDLexer_CXX_OUTPUTS}
+#                ${ANTLR_LSysDParser_CXX_OUTPUTS})
+# target_link_libraries(demo antlr4_static)
 
 # Debug:
 # SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Og")
@@ -95,34 +62,10 @@ endif()
 # Optimized:
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
-
-foreach( src_file ${ANTLR_LSysDLexer_CXX_OUTPUTS} ${ANTLR_LSysDParser_CXX_OUTPUTS} )
-      set_source_files_properties(
-          ${src_file}
-          PROPERTIES
-          GENERATED TRUE
-          )
-endforeach( src_file ${ANTLR_LSysDLexer_CXX_OUTPUTS} ${ANTLR_LSysDParser_CXX_OUTPUTS} )
-
-# set(ANTLR4_JAR "java -jar ${PROJECT_SOURCE_DIR}/antlr-4.8-complete.jar")
-
-# add_custom_target(GenerateParser DEPENDS ${lsysgen_GENERATED_SRC})
-# add_custom_command(OUTPUT ${lsysgen_GENERATED_SRC}
-#     # COMMAND 
-#     # ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/demo/generated/
-#     COMMAND
-#     # "${Java_JAVA_EXECUTABLE}" -jar ${ANTLR_JAR_LOCATION}
-#     # -Werror
-#     "${ANTLR4_JAR}" -o "${PROJECT_SOURCE_DIR}/antlr4-runtime/" "${PROJECT_SOURCE_DIR}/LSysDParser.g4" "${PROJECT_SOURCE_DIR}/LSysDLexer.g4" -Dlanguage=Cpp -no-listener -visitor
-#     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-#     DEPENDS ${PROJECT_SOURCE_DIR}/LSysDLexer.g4 ${PROJECT_SOURCE_DIR}/LSysDParser.g4
-#     )
-
-
 include_directories(
-  ${PROJECT_SOURCE_DIR}/antlr4-generated/
+  # ${PROJECT_SOURCE_DIR}/antlr4-generated/
   ${PROJECT_SOURCE_DIR}/src/
-  ${PROJECT_SOURCE_DIR}/
+  # ${PROJECT_SOURCE_DIR}/
   )
 
 set(lsysgen_SRC_COMMON 
@@ -165,8 +108,14 @@ add_library(lsysgen SHARED
   ${ANTLR_LSysDParser_CXX_OUTPUTS}
   )
 
+# This lines prevent std::runtime_error with message "unknown error -1".
+# (See https://github.com/antlr/antlr4/issues/3708 and/or https://stackoverflow.com/q/51584960)
+find_package(Threads REQUIRED)
+target_link_libraries(lsysgen Threads::Threads)
+
+
 target_link_libraries(lsysgen antlr4_shared)
-target_link_libraries(lsysgen ${SYSTEM_LIBS})
+# target_link_libraries(lsysgen ${SYSTEM_LIBS})
 
 
 
@@ -181,26 +130,6 @@ target_link_libraries( lsys lsysgen )
 
 add_executable(lsys2svg ${lsysgen_SVG_SRC})
 target_link_libraries( lsys2svg lsysgen )
-
-
-if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-  set (flags_1 "-Wno-overloaded-virtual")
-else()
-  set (flags_1 "-MP /wd4251")
-endif()
-
-foreach( src_file ${lsysgen_SRC} )
-      set_source_files_properties(
-          ${src_file}
-          PROPERTIES
-          COMPILE_FLAGS "${COMPILE_FLAGS} ${flags_1}"
-          )
-endforeach( src_file ${lsysgen_SRC} )
-
-if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")  
-  # see https://github.com/antlr/antlr4/issues/1874
-  target_compile_options(lsysgen PUBLIC "$<$<CONFIG:DEBUG>:/MT>")
-endif()
 
 # if(WIN32)
 # endif()
@@ -219,3 +148,103 @@ endif()
 #         ${resource_file}
 #         $<TARGET_FILE_DIR:lsysgen>)
 # endforeach( resource_file ${lsysgen_RESOURCES} )
+
+
+
+
+
+
+
+
+
+
+# =============================================
+# ************ NOT NEEDED ANYMORE: ************
+# =============================================
+
+
+# # cmake_policy(SET CMP0072 NEW)
+# # find_package(OpenGL)
+# # find_package(GLUT)
+# # if(OpenGL_FOUND AND GLUT_FOUND)
+# #   # cmake_policy(SET CMP0072 NEW)
+
+# #   # find_package(OpenGL REQUIRED)
+# #   # find_package(GLUT REQUIRED)
+
+# #   # add_compile_definitions(LSYSGEN_WINDOW)
+# #   set(LSYSGEN_GRAPHICS True)
+
+# #   include_directories(${OPENGL_INCLUDE_DIRS})
+# #   include_directories(${GLUT_INCLUDE_DIRS})
+# # else()
+# #   # add_compile_definitions(LSYSGEN_JUST_PRINT)
+# #   # add_compile_definitions(LSYSGEN_INTERACTIVE)
+# #   set(LSYSGEN_GRAPHICS False)
+# # endif()
+
+# # Add CIMG Flags to Compilation Flags
+# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CIMG_CFLAGS}")
+
+# # CMake commands for this specific project start here
+
+# # to disable some warnings for CImg
+# if (NOT WIN32)
+#   set(CMAKE_CXX_FLAGS "-Wdeprecated -Wno-attributes" )
+# endif()
+
+# if (APPLE)
+#   set(CMAKE_CXX_FLAGS "-Wdeprecated -std=c++17" )
+#   #include_directories(/usr/local/Cellar/boost/1.73.0/include)
+# endif()
+
+# if (MSVC)
+#   set(CMAKE_CXX_FLAGS "/EHsc /wd4127 /wd4311 /wd4312 /wd4512 /wd4571 /wd4640 /wd4706 /wd4710 /wd4800 /wd4804 /wd4820 /wd4996")
+# endif()
+
+
+
+
+# foreach( src_file ${ANTLR_LSysDLexer_CXX_OUTPUTS} ${ANTLR_LSysDParser_CXX_OUTPUTS} )
+#       set_source_files_properties(
+#           ${src_file}
+#           PROPERTIES
+#           GENERATED TRUE
+#           )
+# endforeach( src_file ${ANTLR_LSysDLexer_CXX_OUTPUTS} ${ANTLR_LSysDParser_CXX_OUTPUTS} )
+
+# # set(ANTLR4_JAR "java -jar ${PROJECT_SOURCE_DIR}/antlr-4.8-complete.jar")
+
+# # add_custom_target(GenerateParser DEPENDS ${lsysgen_GENERATED_SRC})
+# # add_custom_command(OUTPUT ${lsysgen_GENERATED_SRC}
+# #     # COMMAND 
+# #     # ${CMAKE_COMMAND} -E make_directory ${PROJECT_SOURCE_DIR}/demo/generated/
+# #     COMMAND
+# #     # "${Java_JAVA_EXECUTABLE}" -jar ${ANTLR_JAR_LOCATION}
+# #     # -Werror
+# #     "${ANTLR4_JAR}" -o "${PROJECT_SOURCE_DIR}/antlr4-runtime/" "${PROJECT_SOURCE_DIR}/LSysDParser.g4" "${PROJECT_SOURCE_DIR}/LSysDLexer.g4" -Dlanguage=Cpp -no-listener -visitor
+# #     WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+# #     DEPENDS ${PROJECT_SOURCE_DIR}/LSysDLexer.g4 ${PROJECT_SOURCE_DIR}/LSysDParser.g4
+# #     )
+
+
+
+
+# if (NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+#   set (flags_1 "-Wno-overloaded-virtual")
+# else()
+#   set (flags_1 "-MP /wd4251")
+# endif()
+
+# foreach( src_file ${lsysgen_SRC} )
+#       set_source_files_properties(
+#           ${src_file}
+#           PROPERTIES
+#           COMPILE_FLAGS "${COMPILE_FLAGS} ${flags_1}"
+#           )
+# endforeach( src_file ${lsysgen_SRC} )
+
+# if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")  
+#   # see https://github.com/antlr/antlr4/issues/1874
+#   target_compile_options(lsysgen PUBLIC "$<$<CONFIG:DEBUG>:/MT>")
+# endif()

@@ -108,7 +108,7 @@ lsysgen::LSystem<char>* parseLSystemFromStream(std::istream& stream, std::string
         lines->push_back(line);
 
     LSysDVisitor visitor(file, lines);
-    lsysgen::Module<char>* module = visitor.visit(tree).as<lsysgen::Module<char> *>();
+    lsysgen::Module<char>* module = std::any_cast<lsysgen::Module<char> *>(visitor.visit(tree));
 
     if (visitor.messages()->failed()) {
         visitor.messages()->dump();

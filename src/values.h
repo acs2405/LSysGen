@@ -12,8 +12,6 @@ class Scope;
 
 }
 
-#include <boost/any.hpp>
-
 #include <string>
 #include <iostream>
 #include <map>
@@ -82,11 +80,11 @@ private:
     static Value const NIL;
 
     ValueType const* _type;
-    boost::any _value;
+    std::any _value;
 
 public:
-    // Value(antlrcpp::Any val);
-    Value(ValueType const* type, boost::any const& value);
+    // Value(std::any val);
+    Value(ValueType const* type, std::any const& value);
     Value();
     Value(int value);
     Value(double value);
