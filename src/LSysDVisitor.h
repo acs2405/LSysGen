@@ -60,6 +60,8 @@ public:
 
     std::any visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) override;
 
+    std::any visitAssignment(LSysDParser::AssignmentContext *ctx) override;
+
     std::any visitFuncDef(LSysDParser::FuncDefContext *ctx) override;
 
     std::any visitTableBlock(LSysDParser::TableBlockContext *ctx) override;

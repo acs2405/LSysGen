@@ -33,7 +33,7 @@ declaration
   ;
 
 varDeclaration
-  : KWVAR ID (ASSIGN expression)
+  : KWVAR ID (ASSIGN expression)?
   ;
 
 constDeclaration

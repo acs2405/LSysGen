@@ -207,7 +207,7 @@ std::any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprContex
     Value res = Value::error();
     if (cond.isBool())
         res = std::any_cast<Value>(this->visit(ctx->expression()[cond.asBool() ? 1 : 2]));
-    else
+    else if (!cond.isError())
         eh->fatalError("the condition expression (of type " + cond.type()->name() + ") must be a boolean", eh->trace(ctx->expression()[0]));
     return res;
 }

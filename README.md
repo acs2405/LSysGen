@@ -8,6 +8,34 @@ An L-System has a set of rules and an axiom, that changes every character on eac
 
 ## Examples (generated with the program)
 
+```
+lsystem DragonCurve {
+
+    axiom FX
+
+    set iterations := 10
+    set initial_heading := 0
+    set background := "#fff"
+    set rotation := 90
+
+    rules {
+
+        X -> X+YF+
+        Y -> -FX-Y
+
+    }
+
+}
+```
+
+Executing the program with this file (`./build/lsys2svg examples/DragonCurve.lsd`) generates:
+
+![Dragon curve](./images/Dragon-10.svg)
+
+Dragon curve (Dragon.lsd, 10 iterations)
+
+### Other examples
+
 ![Some parametric random plant](./images/B2-20-1.svg)
 
 Some parametric random plant (B2.lsd, 20 iterations)
@@ -24,17 +52,13 @@ Broccoli (Broccoli.lsd, 7 iterations)
 
 Cantor set (ParametricCantorSet.lsd, 8 iterations)
 
-![Dragon curve](./images/Dragon-10.svg)
-
-Dragon curve (Dragon.lsd, 10 iterations)
-
 ## The program
 
 ### Compilation
 
 #### Ubuntu/Debian
 
-This program uses `ANTLR 4.11.1`, `CMake (>=3.15)` and other required libraries, like Java Runtime Environment to compile the grammar with the ANTLR jar file. ANTLR4 will be installed and linked with the `make` command automatically. To install our dependencies:
+This program uses `ANTLR 4.11.1`, `CMake (>=3.15)` and other required libraries, like Java Runtime Environment to compile the grammar with the ANTLR jar file. ANTLR4 will later be installed and linked with the `make` command automatically. To install our dependencies:
 
 ```
 sudo apt install cmake uuid-dev default-jre
@@ -48,7 +72,7 @@ cmake ..
 make
 ```
 
-If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output and `lsys2svg` that prints and SVG image of the 2D representation of the L system.
+If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output and `lsys2svg` that prints an SVG image of the 2D representation of the L system.
 
 <!--
 (*Optional*) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
@@ -88,11 +112,11 @@ The python script is also runnable and prints the resulting L system string and 
 python lsys.py FILE [N_ITERATIONS]
 ```
 
-`FILE` is a file `*.lsd` (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `FILE` will be used instead. Examples:
+`FILE` is a `*.lsd` file (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `FILE` will be used instead. Examples:
 
 ```
-echo "set axiom='a';a->b;b->ab;" | ./lsys - 12
-echo "set axiom='a';set iterations=12;a->b;b->ab;" | ./lsys -
+echo "axiom a; a->b; b->ab;" | ./lsys - 12
+echo "axiom a; set iterations:=12; a->b; b->ab;" | ./lsys -
 ./lsys ../examples/b2.lsd 20
 ```
 
@@ -201,10 +225,10 @@ Semicolons at the end of each definition are only required if you wish to write 
 
 ### Number of iterations
 
-This is the number of times that rules will be applied to generate the L system. We just have to define the property `iterations` as a non-negative integer:
+This is the number of times that rules will be applied to generate the L system. We just have to define the `iterations` constant as a non-negative integer:
 
 ```
-set iterations = 6
+set iterations := 6
 ```
 
 ### Production rules
@@ -266,11 +290,11 @@ In this example, with an axiom `aaba`, the system would replace the first and la
 
 As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with `!` weight are available for some character, the first one will be always applied.
 
-For parametric l-systems, you can just add parameters to any character in the left or right. The char to be replaced can define its parameters' names and even define a condition (optional). The right side can specify arguments for its characters. For example:
+For parametric l-systems, you can just add parameters to any character in the left or right. The char to be replaced can define its parameters' names and a condition can be set for the rule to be executed (optional). The right side can specify arguments for its characters. For example:
 
 ```
 a(x, y) -> b(x, y-1)
-b(x, y | y >= 0) -> a(x+1, y)c(y)
+b(x, y): y >= 0 -> a(x+1, y)c(y)
 ```
 
 Expressions in the right side or condition can use parameters of that rule, global constants and a special variable `i` that equals the number of the current iterations (`0` in axiom, `1` in first iteration, `2` in second, etc.)
@@ -278,7 +302,7 @@ Expressions in the right side or condition can use parameters of that rule, glob
 Any character in the left and right contexts can also define their parameter names and their conditions. Char's condition can reference both context sides' params, but contexts' conditions can only reference char's params and params defined before them. The right side of the rule can reference all the params defined in the left side of the rule. For example:
 
 ```
-c(x)d(y|x==y and y<z) < a(z, w) > d(y_|y_>z)c(x_|y_==x_) -> a(max(y, y_), w)
+c(x)d(y) < a(z, w) > d(y_)c(x_): x<=y and y<z and y_>z and y_=y -> a(max(y, y_), w)
 ```
 
 Bracketed IL-systems (context-sensitive l-systems with branches) have a special treatment for brackets. They are not treated as characters in the left side, so they cannot be replaced. When asking for a character in a left context:
@@ -388,27 +412,39 @@ production rules {
 u => [+F]     # Valid
 ```
     
-The syntax of the coding rules is the same than production rules', but using double arrow (`=>`). They also work similarly. Note that coding rules don't belong to tables, but they are global.
+The syntax of the coding rules is the same than production rules', but using double arrow (`=>`). They also work similarly. Note that coding rules can't belong to tables, but they are global.
 
-### Properties
+### Variables and constants
 
-We have seen the `iterations` property and the `table_func` function to choose which table to choose each iteration. We can define any property. These are predefined properties used by the L system generator:
+We have seen the `iterations` constant and the `table_func` function to choose which table to choose each iteration. We can define any function, variable or constant inside our L system.
+
+```
+set double(x) = 2*x       # double is a function that takes 1 argument
+set SQRT_2 := 1.414       # SQRT_2 is a constant
+var x := double(SQRT_2)   # x is a variable
+var y                     # y is also a variable
+x := x + 1                # OK
+y := "Hello"              # OK
+SQRT_2 := 3.1             # ERROR: you can't change the value of a constant
+```
+
+These are special constant names used by the L system generator:
 
 ```
 set iterations := 8          # (defaults 0) This line sets the number of iterations that the system will be executing
-set ignore := ""             # (optional, defaults "") This property sets the characters that must be ignored as context (see contexts in rules)
+set ignore := ""             # (optional, defaults "") This constant sets the characters that must be ignored as context (see contexts in rules)
 ```
 
-And these are the properties used by the 2D interpreter:
+These other constant names are used by the 2D interpreter and do not have any meaning outside the 2D interpreter:
 
 ```
-set initial_heading := 90    # (optional, defaults 0) This property sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
-set rotation := 30           # (optional, defaults 12) This property sets the angle rotation in degrees that is used in rotations (- and + chars)
-set line_width := 0.02       # (optional, defaults 0.1) This property sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
-set background := "#FFBB00"  # (optional, defaults "transparent") This property sets the background color of the SVG
+set initial_heading := 90    # (optional, defaults 0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
+set rotation := 30           # (optional, defaults 12) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width := 0.02       # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set background := "#FFBB00"  # (optional, defaults "transparent") This constant sets the background color of the SVG
 ```
 
-You can also define any other property you want, and use them in the expressions of parametric rules.
+You can also define any other variable or constant you want, and use them in the expressions of parametric rules.
 
 ## 2D Display interpretation
 
@@ -428,7 +464,7 @@ The special characters that 2D interpretation uses are:
 - `+` rotates counterclockwise.
 - `-` rotates clockwise.
 
-`+` and `-` can accept one parameter that specifies the rotation angle (in degrees). Default angle is defined by the user in the property `rotation`.
+`+` and `-` can accept one parameter that specifies the rotation angle (in degrees). Default angle is defined by the user in the `rotation` constant.
 
 - `[` pushes a state / creates a branch.
 - `]` pops a state / closes the branch.
@@ -439,8 +475,8 @@ The state is a position, heading, color and line width configuration. When closi
 - `n` works as `c` but only with pen color.
 - `l` works as `c` but only with fill color.
 
-- `w()` or `w(wid)` changes the line width of the following lines to `wid` or to the value of the property `line_width` by default.
-`w(wid)` works as the property `line_width` but it affects anly the following lines instead of being global.
+- `w()` or `w(wid)` changes the line width of the following lines to `wid` or to the value of the `line_width` constant by default.
+`w(wid)` works as the `line_width` constant but it affects anly the following lines instead of being global.
 
 Color and line width changes won't be visible while filling, so they are not recommended under filling.
 

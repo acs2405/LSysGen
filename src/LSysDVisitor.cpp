@@ -172,9 +172,9 @@ std::any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
 std::any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
     if (currentScope->has(pname))
-        eh->error("'" + pname + "' symbol is already defined", eh->trace(ctx->ID()));
+        eh->error("'" + pname + "' is already defined", eh->trace(ctx->ID()));
     Value val = module->_evaluator->eval(ctx->expression(), currentScope);
-    currentScope->set(pname, val);
+    currentScope->set(pname, val); // TODO: must know it's a constant
     // std::cout << "PROP" << std::endl;
     // std::cout << (val.is<std::string*>()) << std::endl;
     // std::cout << (val2.is<std::string*>()) << std::endl;
@@ -186,7 +186,20 @@ std::any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContex
 std::any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
     if (currentScope->has(pname))
-        eh->error("'" + pname + "' symbol is already defined", eh->trace(ctx->ID()));
+        eh->error("'" + pname + "' is already defined", eh->trace(ctx->ID()));
+    Value val = Value::null();
+    if (ctx->expression())
+        val = module->_evaluator->eval(ctx->expression(), currentScope);
+    currentScope->set(pname, val); // TODO: must know it's a variable
+    return nullptr;
+}
+
+std::any LSysDVisitor::visitAssignment(LSysDParser::AssignmentContext *ctx) {
+    std::string pname = ctx->ID()->getText();
+    if (!currentScope->has(pname))
+        eh->error("'" + pname + "' is not defined", eh->trace(ctx->ID()));
+    // else if (pname is a constant)
+    //     eh->error("'" + pname + "' is a constant and cannot be re-assigned", eh->trace(ctx->ID()));
     Value val = module->_evaluator->eval(ctx->expression(), currentScope);
     currentScope->set(pname, val);
     return nullptr;
@@ -195,7 +208,7 @@ std::any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationContext *c
 std::any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
     std::string fname = ctx->ID()->getText();
     if (currentScope->has(fname))
-        eh->error("'" + fname + "' symbol is already defined", eh->trace(ctx->ID()));
+        eh->error("'" + fname + "' is already defined", eh->trace(ctx->ID()));
     // LSysDParser::ExpressionContext* expr = ctx->expression();
     std::list<Parameter*>* params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));
     currentScope->set(fname, new Function(params, ctx->expression(), ctx));
