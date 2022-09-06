@@ -62,7 +62,7 @@ public:
     StackTrace const* currentTrace() const;
 
     bool failed() const;
-    bool stdin() const;
+    bool fromStdin() const;
 
     std::list<Message const*> const& messages() const;
     std::list<Message const*> const& errors() const;

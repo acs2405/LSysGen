@@ -15,9 +15,29 @@
 // #include <map>
 // #include <list>
 // #include <vector>
+#include <cstdint>
+#include <random>
+
+#ifndef M_PI
+#define M_PI = 3.14159265358979323846;
+#endif
 
 
 namespace lsysgen {
+
+class Random {
+    std::mt19937 gen;
+
+public:
+	Random();
+	~Random();
+	
+    void seed(std::uint_fast32_t seed);
+    std::uint_fast32_t rand();
+    double randFloat();
+
+    static std::uint_fast32_t randomSeed();
+};
 
 // template<typename Base, typename T>
 // bool instanceof(T const*) {

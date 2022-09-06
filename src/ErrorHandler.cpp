@@ -100,7 +100,7 @@ void ErrorHandler::traceUp() {
 StackTrace const* ErrorHandler::currentTrace() const {return _parentTrace;}
 
 bool ErrorHandler::failed () const {return _failed;}
-bool ErrorHandler::stdin() const {return _stdin;}
+bool ErrorHandler::fromStdin() const {return _stdin;}
 
 std::list<Message const*> const& ErrorHandler::messages() const {return _messages;}
 std::list<Message const*> const& ErrorHandler::errors() const {return _errors;}

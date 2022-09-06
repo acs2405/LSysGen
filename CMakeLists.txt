@@ -24,8 +24,14 @@ endif()
 # By default the latest version of antlr4 will be used.  You can specify a
 # specific, stable version by setting a repository tag value or a link
 # to a zip file containing the libary source.
-set(ANTLR4_TAG 4.11.1)
-# set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.11.1.zip)
+# set(ANTLR4_TAG 4.11.1)
+set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.11.1.zip)
+
+#find_package(git REQUIRED)
+if(WIN32)
+  # Required java 11
+  set(Java_JAVA_EXECUTABLE java)
+endif()
 
 # add external build for antlrcpp
 include(ExternalAntlr4Cpp)
@@ -102,7 +108,13 @@ set(lsysgen_SRC ${lsysgen_SRC_COMMON} ${lsysgen_JP_SRC} ${lsysgen_SVG_SRC})
 
 
 
-add_library(lsysgen SHARED 
+# add_library(lsysgen_shared SHARED 
+#   ${lsysgen_SRC_COMMON} 
+#   ${ANTLR_LSysDLexer_CXX_OUTPUTS} 
+#   ${ANTLR_LSysDParser_CXX_OUTPUTS}
+#   )
+
+add_library(lsysgen_static STATIC 
   ${lsysgen_SRC_COMMON} 
   ${ANTLR_LSysDLexer_CXX_OUTPUTS} 
   ${ANTLR_LSysDParser_CXX_OUTPUTS}
@@ -111,25 +123,25 @@ add_library(lsysgen SHARED
 # This lines prevent std::runtime_error with message "unknown error -1".
 # (See https://github.com/antlr/antlr4/issues/3708 and/or https://stackoverflow.com/q/51584960)
 find_package(Threads REQUIRED)
-target_link_libraries(lsysgen Threads::Threads)
+target_link_libraries(lsysgen_static Threads::Threads)
 
-
-target_link_libraries(lsysgen antlr4_shared)
+# antlr4_shared or antlr4_static
+target_link_libraries(lsysgen_static antlr4_static)
 # target_link_libraries(lsysgen ${SYSTEM_LIBS})
 
 
 
 # if (LSYSGEN_GRAPHICS)
 #   add_executable(lsys2d ${lsysgen_2D_SRC})
-#   target_link_libraries(lsys2d lsysgen)
+#   target_link_libraries(lsys2d lsysgen_static)
 #   target_link_libraries(lsys2d ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 # endif()
 
 add_executable(lsys ${lsysgen_JP_SRC})
-target_link_libraries( lsys lsysgen )
+target_link_libraries( lsys lsysgen_static )
 
 add_executable(lsys2svg ${lsysgen_SVG_SRC})
-target_link_libraries( lsys2svg lsysgen )
+target_link_libraries( lsys2svg lsysgen_static )
 
 # if(WIN32)
 # endif()

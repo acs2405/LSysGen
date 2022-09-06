@@ -43,6 +43,7 @@ LSysDVisitor::LSysDVisitor(std::string const& filename, std::vector<std::string>
     this->currentLSystem = nullptr;
     this->currentTable = nullptr;
     this->parentNode = nullptr;
+    this->module = nullptr;
 
     this->baseScope = scope != nullptr ? new Scope(scope) : nullptr;
     this->currentScope = nullptr;
@@ -67,7 +68,7 @@ ErrorHandler* LSysDVisitor::messages() {return eh;}
 
 std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     std::string moduleName;
-    if (eh->stdin())
+    if (eh->fromStdin())
         moduleName = eh->fileName();
     else {
         moduleName = getModuleName(eh->fileName());
@@ -86,7 +87,7 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     currentScope = module->_scope;
     if (ctx->module()) {
         visitChildren(ctx);
-        if (eh->failed() > 0 || module->eh->failed())
+        if (eh->failed() || module->eh->failed())
             return static_cast<Module<char> *>(nullptr);
     } else {
         currentLSystem = new LSystem<char>(module);

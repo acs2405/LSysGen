@@ -10,7 +10,7 @@ namespace lsysgen {
 
 template<typename T>
 LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), eh(module->messages()), 
-        derivator(eh, module->evaluator()), _tableFunc(nullptr), _axiom(nullptr), 
+        derivator(eh, module->evaluator(), new Random()), _tableFunc(nullptr), _axiom(nullptr), 
         _iterations(0), _ignore(), initialHeading(0.0), rotation(NAN), lineWidth(NAN), 
         background(), _current(-1), _lastWord(nullptr), _encodedProgression() {
     this->_scope = new Scope(module->scope());
@@ -62,6 +62,21 @@ void LSystem<T>::populateProperties() {
             this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
         } else if (!v.isError())
             eh->error("ignore property must be a string");
+    }
+    if (_scope->has("seed")) {
+        Value v = _scope->get("seed");
+        if (v.isInt()) {
+            // this->_seed = v.asInt();
+            std::uint_fast32_t seed;
+            if (v.asInt() >= 0)
+                seed = static_cast<std::uint_fast32_t>(v.asInt());
+            else
+                seed = Random::randomSeed();
+            this->derivator.random()->seed(seed);
+        } else if (!v.isError())
+            eh->error("seed property must be a integer number");
+    } else {
+        this->derivator.random()->seed(Random::randomSeed());
     }
     if (_scope->has("initial_heading")) {
         Value v = _scope->get("initial_heading");

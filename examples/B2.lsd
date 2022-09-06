@@ -5,6 +5,7 @@ lsystem B2 {
 	
 	set iterations := 20
 	set ignore := "F+-cQ"
+	# set seed := 10 # You can specify a seed for a non-deterministic L-System
 	set initial_heading := 90
 	set rotation := 12.5
 	set line_width := .1

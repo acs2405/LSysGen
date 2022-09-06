@@ -15,6 +15,7 @@ class Derivator;
 #include "Rule.h"
 #include "values.h"
 #include "ErrorHandler.h"
+#include "misc.h"
 
 #include <string>
 #include <list>
@@ -26,6 +27,7 @@ template<typename T>
 class Derivator {
 	ErrorHandler * eh;
     LSysDExpressionEvaluator * evaluator;
+    Random * _random;
 
     bool checkSideContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, bool rightSide, std::list<T> const* ignore, Scope * paramMapping);
     bool checkLeftContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping);
@@ -35,11 +37,13 @@ class Derivator {
     Rule<T> const* chooseRule(std::list<Rule<T> *> const& rules);
 
 public:
-	Derivator(ErrorHandler * eh, LSysDExpressionEvaluator * ee);
+	Derivator(ErrorHandler * eh, LSysDExpressionEvaluator * ee, Random * rnd);
 
 	~Derivator();
 
     ParseTreeNode<InstanceNodeContent, T> * derive(ParseTreeNode<InstanceNodeContent, T> const* node, Table<T> const* table, std::list<T> const* ignore=nullptr, Scope * scope=nullptr);
+
+    Random * random();
 };
 
 }

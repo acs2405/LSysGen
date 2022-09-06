@@ -32,7 +32,7 @@ Executing the program with this file (`./build/lsys2svg examples/DragonCurve.lsd
 
 ![Dragon curve](./images/Dragon-10.svg)
 
-Dragon curve (Dragon.lsd, 10 iterations)
+Dragon curve (DragonCurve.lsd, 10 iterations)
 
 ### Other examples
 
@@ -432,7 +432,8 @@ These are special constant names used by the L system generator:
 
 ```
 set iterations := 8          # (defaults 0) This line sets the number of iterations that the system will be executing
-set ignore := ""             # (optional, defaults "") This constant sets the characters that must be ignored as context (see contexts in rules)
+set ignore := "fF-+"         # (optional, defaults "") This constant sets the characters that must be ignored as context (see contexts in rules)
+set seed := 6902             # (optional, defaults -1) You can specify a seed for a non-deterministic L-System. If a negative seed is defined, the program sets a random seed.
 ```
 
 These other constant names are used by the 2D interpreter and do not have any meaning outside the 2D interpreter:
@@ -507,6 +508,7 @@ inkscape -o test.png -w 1000 -b white test.svg
 
 ## Next steps
 
+- Specify constants in execution parameters
 - Manage pointers (destructors and deletes)
 - Capture all LSD semantic errors and expression evaluation errors
 - Debug

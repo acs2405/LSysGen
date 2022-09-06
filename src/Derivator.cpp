@@ -2,16 +2,14 @@
 #include "Derivator.h"
 
 #include <cmath>
-#include <cstdlib>
-#include <chrono>
 #include <iostream>
 
 
 namespace lsysgen {
 
 template<typename T>
-Derivator<T>::Derivator(ErrorHandler * eh, LSysDExpressionEvaluator * ee): 
-		eh(eh), evaluator(ee) {}
+Derivator<T>::Derivator(ErrorHandler * eh, LSysDExpressionEvaluator * ee, Random * rnd): 
+		eh(eh), evaluator(ee), _random(rnd) {}
 
 template<typename T>
 Derivator<T>::~Derivator() {}
@@ -187,11 +185,7 @@ Rule<T> const* Derivator<T>::chooseRule(std::list<Rule<T> *> const& rules) {
         if (r->weight < 0)
             return r;
     }
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    auto duration = now.time_since_epoch();
-    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-    double rnd = (double)rand() / RAND_MAX;
-    srand(rand() + millis);
+    double rnd = this->_random->randFloat();
     double choice = total * rnd;
     double current = 0.0;
     for (Rule<T> const* r : rules) {
@@ -202,6 +196,9 @@ Rule<T> const* Derivator<T>::chooseRule(std::list<Rule<T> *> const& rules) {
     eh->error("No rule can be chosen in chooseRule()");
     return nullptr;
 }
+
+template<typename T>
+Random * Derivator<T>::random() {return this->_random;}
 
 
 

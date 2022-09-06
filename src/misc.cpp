@@ -4,9 +4,33 @@
 #include <regex>
 // #include <utility>
 // #include <sstream>
+#include <chrono>
 
 
 namespace lsysgen {
+
+Random::Random(): gen() {}
+
+Random::~Random() {}
+
+void Random::seed(std::uint_fast32_t seed) {
+    this->gen.seed(seed);
+}
+
+std::uint_fast32_t Random::randomSeed() {
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    return static_cast<std::uint_fast32_t>(millis);
+}
+
+std::uint_fast32_t Random::rand() {
+    return this->gen();
+}
+
+double Random::randFloat() {
+    return static_cast<double>(this->rand()) / this->gen.max();
+}
 
 // template<typename Base, typename T>
 // bool instanceof(T const*) {
