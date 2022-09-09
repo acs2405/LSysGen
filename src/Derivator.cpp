@@ -162,6 +162,8 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(ParseTre
 template<typename T>
 Scope * Derivator<T>::mapArgs(std::vector<Value> const* values, std::list<Parameter *> const* params, Scope * paramMapping) {
     if (params != nullptr) {
+        if (values == nullptr && params->size() == 0)
+            return paramMapping;
         if (values == nullptr || params->size() != values->size())
             return nullptr;
         std::list<Parameter *>::const_iterator param;
