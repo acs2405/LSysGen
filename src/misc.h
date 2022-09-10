@@ -11,6 +11,7 @@
 // #include "LSysDExpressionEvaluator.h"
 
 #include <string>
+#include <string_view>
 #include <iostream>
 // #include <map>
 // #include <list>
@@ -69,6 +70,11 @@ std::string strUnescape(std::string const& s);
 std::string sanitizeXML(std::string const& s);
 
 std::string getModuleName(std::string const& filename);
+
+bool terminalSupportsColors();
+
+void readFromFile(char const* fileName, std::string & content);
+void writeToFile(char const* outputFile, std::string_view output);
 
 // std::string anyToString(Value * v);
 

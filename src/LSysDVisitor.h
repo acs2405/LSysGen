@@ -12,8 +12,10 @@ class LSysDVisitor;
 #include "ErrorHandler.h"
 #include "Table.h"
 #include "values.h"
+#include "Settings.h"
 
 #include <string>
+#include <string_view>
 #include <iostream>
 #include <map>
 #include <list>
@@ -31,6 +33,7 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
     ParseTreeNode<NodeContent, char> * parentNode;
 
     ErrorHandler * eh;
+    Settings const settings;
 
     template<class R> 
     R * defineRule(// LSysDParser::TagPrefixContext* tagCtx, 
@@ -40,17 +43,30 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
                             LSysDParser::RcontextContext * rctxCtx, 
                             LSysDParser::CondContext * condCtx, 
                             LSysDParser::RsideContext * rsideCtx);
+    void setMainLSystem();
 
 public:
-    LSysDVisitor(std::string const& filename, std::vector<std::string> const* sourceLines, Scope * scope=nullptr, StackTrace const* trace=nullptr);
+    LSysDVisitor(Settings const& settings, std::vector<std::string> const* sourceLines=nullptr, 
+            Scope * scope=nullptr, StackTrace const* trace=nullptr);
 
     ~LSysDVisitor();
 
     // ParseTreeNode<InstanceNodeContent, char>* parseInstanceNode(std::string s);
 
     ErrorHandler* messages();
+
+    LSystem<char> * createLSystem(std::string_view name);
+    void finishLSystem();
+    // void setAxiom(lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> * axiom);
+
+    std::any visit(antlr4::tree::ParseTree *tree) override;
+
+    std::any visit(antlr4::tree::ParseTree *tree, std::vector<std::string> const* sourceLines, 
+            StackTrace const* trace=nullptr);
     
     std::any visitMain(LSysDParser::MainContext *ctx) override;
+    
+    std::any visitMainWord(LSysDParser::MainWordContext *ctx) override;
     
     std::any visitLsystem(LSysDParser::LsystemContext *ctx) override;
 

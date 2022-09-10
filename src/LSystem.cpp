@@ -9,15 +9,18 @@
 namespace lsysgen {
 
 template<typename T>
-LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), eh(module->messages()), 
-        derivator(eh, module->evaluator(), new Random()), _tableFunc(nullptr), _axiom(nullptr), 
-        _iterations(0), _ignore(), initialHeading(0.0), rotation(NAN), lineWidth(NAN), 
-        background(), _current(-1), _lastWord(nullptr), _encodedProgression() {
+LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), _settings2D(), 
+        eh(module->messages()), derivator(eh, module->evaluator(), new Random()), _tables(), 
+        _tableFunc(nullptr), _axiom(nullptr), _iterations(Settings::DEFAULT_ITERATIONS), 
+        _ignore(), _current(-1), _lastWord(nullptr), _encodedProgression() {
     this->_scope = new Scope(module->scope());
 
     this->_defaultTable = new Table<char>("<default>");
     this->_tables[this->_defaultTable->name] = this->_defaultTable;
     this->_codingRules = new Table<char>("<coding>");
+
+    // this->_settings = settings != nullptr ? settings : Settings::DEFAULT; // o new Settings();
+    // this->_module = module != nullptr ? module : new Module();
 }
 
 template<typename T>
@@ -34,13 +37,33 @@ LSystem<T>::~LSystem() {
     // for (ParseTreeNode<InstanceNodeContent, T> * n : _encodedProgression)
     //     delete n;
     delete _scope;
+    // if (_settings != Settings::DEFAULT)
+    //     delete _settings;
+}
+
+template<typename T>
+void LSystem<T>::setAxiom(ParseTreeNode<InstanceNodeContent, T> * axiom) {
+    this->_axiom = axiom;
 }
 
 template<typename T>
 ErrorHandler * LSystem<T>::messages() {return this->eh;}
 
 template<typename T>
-void LSystem<T>::populateProperties() {
+ErrorHandler const* LSystem<T>::messages() const {return this->eh;}
+
+// template<typename T>
+// Settings const* LSystem<T>::settings() const {return this->_settings;}
+
+template<typename T>
+Settings2D const& LSystem<T>::settings2D() const {return this->_settings2D;}
+
+template<typename T>
+int LSystem<T>::iterations() const {return this->_iterations;}
+
+template<typename T>
+void LSystem<T>::populateProperties(Settings const& settings) {
+    // table_func
     if (_scope->has("table_func")) {
         Value v = _scope->get("table_func");
         if (v.isFunction() && v.asFunction()->params()->size() == 1)
@@ -48,69 +71,107 @@ void LSystem<T>::populateProperties() {
         else if (!v.isError())
             eh->error("table_func property must be a function with one parameter");
     }
-    if (_scope->has("iterations")) {
+    // iterations
+    if (settings.iterations.isset()) {
+        this->_iterations = settings.iterations.get();
+    } else if (_scope->has("iterations")) {
         Value v = _scope->get("iterations");
-        if (v.isInt())
+        if (v.isInt()) {
             this->_iterations = v.asInt();
-        else if (!v.isError())
+        } else if (!v.isError())
             eh->error("iterations property must be a integer number");
     }
-    if (_scope->has("ignore")) {
+    // ignore
+    std::string_view ignore;
+    if (settings.ignore.isset()) {
+        ignore = settings.ignore.get();
+    } else if (_scope->has("ignore")) {
         Value v = _scope->get("ignore");
         if (v.isString()) {
-            std::string ignore = v.asString();
-            this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
+            ignore = v.asString();
         } else if (!v.isError())
             eh->error("ignore property must be a string");
     }
-    if (_scope->has("seed")) {
+    this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
+    // seed
+    std::uint_fast32_t seed;
+    if (settings.seed.isset() || !_scope->has("seed")) {
+        if (settings.seed.get() < 0)
+            seed = Random::randomSeed();
+        else
+            seed = static_cast<std::uint_fast32_t>(settings.seed.get());
+    } else {
         Value v = _scope->get("seed");
         if (v.isInt()) {
-            // this->_seed = v.asInt();
-            std::uint_fast32_t seed;
-            if (v.asInt() >= 0)
-                seed = static_cast<std::uint_fast32_t>(v.asInt());
-            else
+            if (v.asInt() < 0)
                 seed = Random::randomSeed();
-            this->derivator.random()->seed(seed);
+            else
+                seed = static_cast<std::uint_fast32_t>(v.asInt());
         } else if (!v.isError())
             eh->error("seed property must be a integer number");
-    } else {
-        this->derivator.random()->seed(Random::randomSeed());
     }
-    if (_scope->has("initial_heading")) {
+    this->derivator.random()->seed(seed);
+    // 2D settings:
+    this->_settings2D = settings.settings2D;
+    // initial_heading
+    if (!settings.settings2D.heading.isset() && _scope->has("initial_heading")) {
         Value v = _scope->get("initial_heading");
-        if (v.isFloat())
-            this->initialHeading = v.asFloat();
-        else if (v.isInt())
-            this->initialHeading = v.asInt();
-        else if (!v.isError())
+        if (v.isFloat()) {
+            this->_settings2D.heading.set(v.asFloat());
+        } else if (v.isInt()) {
+            this->_settings2D.heading.set(v.asInt());
+        } else if (!v.isError())
             eh->error("initial_heading property must be a number");
     }
-    if (_scope->has("rotation")) {
+    // rotation
+    if (!settings.settings2D.rotation.isset() && _scope->has("rotation")) {
         Value v = _scope->get("rotation");
         if (v.isFloat())
-            this->rotation = v.asFloat();
+            this->_settings2D.rotation.set(v.asFloat());
         else if (v.isInt())
-            this->rotation = v.asInt();
+            this->_settings2D.rotation.set(v.asInt());
         else if (!v.isError())
             eh->error("rotation property must be a number");
     }
-    if (_scope->has("line_width")) {
+    // line_width
+    if (!settings.settings2D.lineWidth.isset() && _scope->has("line_width")) {
         Value v = _scope->get("line_width");
         if (v.isFloat())
-            this->lineWidth = v.asFloat();
+            this->_settings2D.lineWidth.set(v.asFloat());
         else if (v.isInt())
-            this->lineWidth = v.asInt();
+            this->_settings2D.lineWidth.set(v.asInt());
         else if (!v.isError())
             eh->error("line_width property must be a number");
     }
-    if (_scope->has("background")) {
+    // background
+    if (settings.settings2D.background.isset()) {
+        this->_settings2D.background.set(sanitizeXML(this->_settings2D.background.get()));
+    } else if (_scope->has("background")) {
         Value v = _scope->get("background");
         if (v.isString()) {
-            this->background = sanitizeXML(v.asString());
+            this->_settings2D.background.set(sanitizeXML(v.asString()));
         } else if (!v.isError())
             eh->error("background property must be a string");
+    }
+    // line_color
+    if (settings.settings2D.lineColor.isset()) {
+        this->_settings2D.lineColor.set(sanitizeXML(this->_settings2D.lineColor.get()));
+    } else if (_scope->has("line_color")) {
+        Value v = _scope->get("line_color");
+        if (v.isString()) {
+            this->_settings2D.lineColor.set(sanitizeXML(v.asString()));
+        } else if (!v.isError())
+            eh->error("line-color property must be a string");
+    }
+    // fill_color
+    if (settings.settings2D.fillColor.isset()) {
+        this->_settings2D.fillColor.set(sanitizeXML(this->_settings2D.fillColor.get()));
+    } else if (_scope->has("fill_color")) {
+        Value v = _scope->get("fill_color");
+        if (v.isString()) {
+            this->_settings2D.fillColor.set(sanitizeXML(v.asString()));
+        } else if (!v.isError())
+            eh->error("fill-color property must be a string");
     }
 }
 
@@ -180,24 +241,6 @@ void LSystem<T>::iterate(int iterations) {
 }
 
 template<typename T>
-ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
-    if (_encodedProgression.size() > 0)
-        return this->_encodedProgression.at(this->_current);
-    else
-        return nullptr;
-}
-
-template<typename T>
-int LSystem<T>::iteration() const {
-    return this->_current;
-}
-
-template<typename T>
-std::string const& LSystem<T>::name() const {
-    return this->_name;
-}
-
-template<typename T>
 Table<T> * LSystem<T>::getTable(int i) {
     if (this->_tableFunc == nullptr)
         return this->_defaultTable;
@@ -216,6 +259,29 @@ Table<T> * LSystem<T>::getTable(int i) {
     //     return this->tablesList[tableIndex];
     eh->fatalError("Error in table function: no table '" + tableIndex + "' found");
     return nullptr;
+}
+
+template<typename T>
+ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
+    if (_encodedProgression.size() > 0)
+        return this->_encodedProgression.at(this->_current);
+    else
+        return nullptr;
+}
+
+template<typename T>
+int LSystem<T>::iteration() const {
+    return this->_current;
+}
+
+template<typename T>
+std::string const& LSystem<T>::name() const {
+    return this->_name;
+}
+
+template<typename T>
+Module<T> * LSystem<T>::module() {
+    return this->_module;
 }
 
 

@@ -28,8 +28,10 @@ struct Color {
     float a;
 
     Color(float r, float g, float b, float a=1.0);
+    Color(std::string const& color);
     Color();
 
+    void parse(std::string const& s);
     std::string toString() const;
 };
 
@@ -92,11 +94,6 @@ public:
 //  Shape2D();
 //  Shape2D(int mode);
 // };
-
-const double DEFAULT_INITIAL_HEADING = 0.0;
-const double DEFAULT_ROTATION = 12.0;
-// const double DEFAULT_LINE_LENGTH = 10.0;
-const double DEFAULT_LINE_WIDTH = 0.1;
 
 std::string node2svg(
         lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* parent, 

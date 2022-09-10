@@ -18,6 +18,7 @@ class LSystem;
 #include "ErrorHandler.h"
 #include "LSysDVisitor.h"
 #include "Derivator.h"
+#include "Settings.h"
 
 #include <string>
 #include <map>
@@ -45,6 +46,8 @@ class LSystem {
 
     ParseTreeNode<InstanceNodeContent, T> * _axiom;
     int _iterations;
+    // Settings const* _settings;
+    Settings2D _settings2D;
     std::list<T> * _ignore;
     Function * _tableFunc;
 
@@ -54,29 +57,37 @@ class LSystem {
     ErrorHandler * eh;
     Derivator<T> derivator;
 
-    void populateProperties();
+    void populateProperties(Settings const& settings);
 
-public:
-    double initialHeading;
-    double rotation;
-    // double lineLength;
-    double lineWidth;
-    std::string background;
+// public:
+//     double initialHeading;
+//     double rotation;
+//     // double lineLength;
+//     double lineWidth;
+//     std::string background;
 
 public:
     LSystem(Module<T> * module);
 
     ~LSystem();
 
+    void setAxiom(ParseTreeNode<InstanceNodeContent, T> * axiom);
+
     ErrorHandler * messages();
+    ErrorHandler const* messages() const;
+    // Settings const* settings() const;
+    Settings2D const& settings2D() const;
+    int iterations() const;
 
     void prepare();
     void iterate();
     void iterate(int iterations);
+    Table<T> * getTable(int i);
+
     ParseTreeNode<InstanceNodeContent, T> * current();
     int iteration() const;
     std::string const& name() const;
-    Table<T> * getTable(int i);
+    Module<T> * module();
 };
 
 }

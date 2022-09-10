@@ -5,6 +5,8 @@
 // #include <utility>
 // #include <sstream>
 #include <chrono>
+#include <list>
+#include <fstream>
 
 
 namespace lsysgen {
@@ -75,6 +77,38 @@ std::string getModuleName(std::string const& filename) {
         return sm[1];
     else
         return "";
+}
+
+bool terminalSupportsColors() {
+    const std::string env_term = std::getenv("TERM");
+    if(env_term.size() > 0) {
+        const std::list<std::string> terms {"xterm",  "xterm-256", "xterm-256color",
+                                         "vt100",  "color",     "ansi",
+                                         "cygwin", "linux"};
+        return std::find(terms.begin(), terms.end(), env_term) != terms.end();
+    }
+    return false;
+}
+
+void readFromFile(char const* fileName, std::string & content) {
+    std::ifstream file(fileName, std::ios::in);
+    if (file.fail()) {
+        std::cerr << "File '" << fileName << "' does not exist." << std::endl;
+        exit(1);
+    }
+    content.assign((std::istreambuf_iterator<char>(file)),
+                     std::istreambuf_iterator<char>());
+    file.close();
+}
+
+void writeToFile(char const* fileName, std::string_view content) {
+    std::ofstream file(fileName, std::ios::out);
+    if (file.fail()) {
+        std::cerr << "File '" << fileName << "' is not writable." << std::endl;
+        exit(1);
+    }
+    file << content << std::endl;
+    file.close();
 }
     
 }

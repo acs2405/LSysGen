@@ -3,13 +3,11 @@
 
 
 #include <cmath>
+#include <regex>
 // #include <format>
 
 using namespace lsysgen;
 
-
-// DEFAULT_INITIAL_HEADING = 0;
-// DEFAULT_ROTATION = 12;
 
 Point2D::Point2D(float x, float y): x(x), y(y) {};
 Point2D::Point2D(): x(0), y(0) {};
@@ -22,7 +20,39 @@ std::string Point2D::toString() const {
 }
 
 Color::Color(float r, float g, float b, float a): r(r), g(g), b(b), a(a) {}
+Color::Color(std::string const& color): Color() {this->parse(color);}
 Color::Color(): r(0.0), g(0.0), b(0.0), a(1.0) {}
+
+std::regex const colorHexRegex ("^ *#([0-9a-fA-F]+) *$");
+std::regex const colorRgbRegex ("^ *(rgba?) *\\( *([0-9]+) *, *([0-9]+) *, *([0-9]+) *(?:, *([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+) *)?\\) *$");
+
+void Color::parse(std::string const& s) {
+    // std::cout << s << std::endl;
+    std::smatch m;
+    if (std::regex_match(s, m, colorHexRegex)) {
+        if (m[1].str().size() == 3 || m[1].str().size() == 4 || 
+                m[1].str().size() == 6 || m[1].str().size() == 8) {
+            // std::cout << m[1] << std::endl;
+            int n = m[1].str().size() == 3 || m[1].str().size() == 4 ? 1 : 2;
+            double max = n == 1 ? 15.0 : 255.0;
+            r = std::stoi(m[1].str().substr(0*n, n), 0, 16) / max;
+            g = std::stoi(m[1].str().substr(1*n, n), 0, 16) / max;
+            b = std::stoi(m[1].str().substr(2*n, n), 0, 16) / max;
+            if (m[1].str().size() == 4*n)
+                a = std::stoi(m[1].str().substr(3*n, n), 0, 16) / max;
+        }
+    } else if (std::regex_match(s, m, colorRgbRegex)) {
+        // std::cout << m.length(5) << std::endl;
+        if (m[1] == "rgb" && m.length(5) == 0 || m[1] == "rgba" && m.length(5) > 0) {
+            r = std::max(0, std::min(std::stoi(m[2]), 255)) / 255.0;
+            g = std::max(0, std::min(std::stoi(m[3]), 255)) / 255.0;
+            b = std::max(0, std::min(std::stoi(m[4]), 255)) / 255.0;
+            if (m[1] == "rgba")
+                a = std::max(0.0, std::min(std::stod(m[5]), 1.0));
+        }
+    }
+    // std::cout << toString() << std::endl;
+}
 
 std::string Color::toString() const {
     char buf[50];
@@ -47,9 +77,11 @@ std::string node2svg(
         LSystem<char>* lsystem) {
     State2D initialState;
     Bounds2D bounds;
-    initialState.dir = lsystem ? lsystem->initialHeading : DEFAULT_INITIAL_HEADING;
-    float globalLineWidth = lsystem && !std::isnan(lsystem->lineWidth) ? lsystem->lineWidth : DEFAULT_LINE_WIDTH;
-    initialState.lineWidth = globalLineWidth;
+    // TODO: isNaN(rotation y linewidth) ???
+    initialState.dir = lsystem ? lsystem->settings2D().heading.get() : Settings2D::DEFAULT_HEADING;
+    initialState.lineWidth = lsystem ? lsystem->settings2D().lineWidth.get() : Settings2D::DEFAULT_LINE_WIDTH;
+    initialState.penColor = Color(lsystem ? lsystem->settings2D().lineColor.get() : Settings2D::DEFAULT_LINE_COLOR);
+    initialState.fillColor = Color(lsystem ? lsystem->settings2D().fillColor.get() : Settings2D::DEFAULT_FILL_COLOR);
     std::string svgContent = node2svg(parent, initialState, bounds, lsystem);
     float marginProportion = 0.05;
     float boundsWidth = bounds.p1.x - bounds.p0.x,
@@ -63,8 +95,8 @@ std::string node2svg(
     std::string svg = "<svg width=\"" + std::to_string(desiredWidth);
     svg += "\" height=\"" + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
-    if (lsystem && lsystem->background.size() > 0)
-        svg += "<rect width=\"100%\" height=\"100%\" fill=\"" + lsystem->background + "\" />\n";
+    if (lsystem && lsystem->settings2D().background.isset())
+        svg += "<rect width=\"100%\" height=\"100%\" fill=\"" + lsystem->settings2D().background.get() + "\" />\n";
     svg += "<g transform=\"";
     // svg += "translate(" + std::to_string(margin); // when margin was absolute
     // svg += "," + std::to_string(margin) + ") ";
@@ -97,7 +129,7 @@ std::string node2svg(
     // bool fill = false;
     // std::list<Point2D>* fillList = new std::list<Point2D>();
     bool draw = false, fill = false, drawn = false;
-    float globalLineWidth = lsystem && !std::isnan(lsystem->lineWidth) ? lsystem->lineWidth : DEFAULT_LINE_WIDTH;
+    float globalLineWidth = lsystem ? lsystem->settings2D().lineWidth.get() : Settings2D::DEFAULT_LINE_WIDTH;
     // float lineWidth = globalLineWidth;
     std::string element = "";
     char curve = 0;
@@ -152,7 +184,7 @@ std::string node2svg(
             } else if (node->element() == '+' || node->element() == '-') {
                 double sign = node->element() == '+' ? 1.0 : -1.0;
                 if (values == nullptr || values->size() == 0) {
-                    state.dir += sign*(lsystem && !std::isnan(lsystem->rotation) ? lsystem->rotation : DEFAULT_ROTATION);
+                    state.dir += sign*(lsystem ? lsystem->settings2D().rotation.get() : Settings2D::DEFAULT_ROTATION);
                 } else if(values->size() == 1) {
                     v[0] = values->front();
                     if (v[0].isInt())
@@ -202,13 +234,13 @@ std::string node2svg(
                     } else {
                         // TODO error
                     }
-                    if (node->element() == 'c' || node->element() == 'n') {
+                    if (values->size() >= 3 && (node->element() == 'c' || node->element() == 'n')) {
                         state.penColor.r = r;
                         state.penColor.g = g;
                         state.penColor.b = b;
                         state.penColor.a = a;
                     }
-                    if (node->element() == 'c' || node->element() == 'l' || node->element() == 'P') {
+                    if (values->size() >= 3 && (node->element() == 'c' || node->element() == 'l' || node->element() == 'P')) {
                         state.fillColor.r = r;
                         state.fillColor.g = g;
                         state.fillColor.b = b;

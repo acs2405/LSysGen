@@ -9,7 +9,7 @@
 
 namespace lsysgen {
 
-Parameter::Parameter(std::string const& name): name(name) {}
+Parameter::Parameter(std::string_view const name): name(static_cast<std::string>(name)) {}
 
 bool operator==(Parameter const& p1, Parameter const& p2) {return p1.name == p2.name;}
 
@@ -49,7 +49,7 @@ Value Function::call(std::list<Value> * args, Scope * scope, LSysDExpressionEval
 
 
 
-ValueType::ValueType(std::string const& name): _name(name) {}
+ValueType::ValueType(std::string_view const name): _name(static_cast<std::string>(name)) {}
 
 std::string const& ValueType::name() const {return this->_name;}
 
@@ -68,7 +68,7 @@ Value::Value(): _type(&ValueType::ERROR_TYPE), _value(antlrcpp::Any()) {}
 Value::Value(int value): _type(&ValueType::INT_TYPE), _value(value) {}
 Value::Value(double value): _type(&ValueType::FLOAT_TYPE), _value(value) {}
 Value::Value(bool value): _type(&ValueType::BOOL_TYPE), _value(value) {}
-Value::Value(std::string const& value): _type(&ValueType::STRING_TYPE), _value(value) {}
+Value::Value(std::string_view const value): _type(&ValueType::STRING_TYPE), _value(static_cast<std::string>(value)) {}
 Value::Value(Function* value): _type(&ValueType::FUNCTION_TYPE), _value(value) {}
 Value::Value(std::nullptr_t value): _type(&ValueType::NULL_TYPE), _value(value) {}
 
@@ -155,13 +155,14 @@ Scope::~Scope() {
     // delete this->mapping;
 }
 
-Scope * Scope::parent() {return this->_parent;}
+Scope * Scope::parent()  {return this->_parent;}
+Scope const* Scope::parent() const {return this->_parent;}
 
 void Scope::set(std::string const& var, Value const& val) {
     mapping[var] =  val;
 }
 
-Value const& Scope::get(std::string const& var) {
+Value const& Scope::get(std::string const& var) const {
     if (mapping.find(var) != mapping.end()) {
         return mapping.find(var)->second;
     } else if (_parent != nullptr) {

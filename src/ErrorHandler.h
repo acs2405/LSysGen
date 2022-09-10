@@ -15,6 +15,7 @@ class StackTrace;
 #include "ParserRuleContext.h"
 
 #include <string>
+#include <string_view>
 #include <iostream>
 #include <list>
 #include <vector>
@@ -23,6 +24,19 @@ class StackTrace;
 namespace lsysgen {
 
 class ErrorHandler {
+// public:
+//     typedef enum {
+//         NOTICE = 1,
+//         WARNING = 2,
+//         ERROR = 3,
+//         FATAL_ERROR = 4,
+//         BG = 16
+//         BOLD = 32
+//     } Format;
+
+//     static std::string format(int format, std::string_view content);
+
+private:
     std::list<Message const*> _messages;
     std::list<Message const*> _errors;
     std::list<Message const*> _warnings;
@@ -35,26 +49,26 @@ class ErrorHandler {
     std::vector<std::string> const* _sourceLines;
     StackTrace const* _parentTrace;
 
-    Message * createMessage(std::string const& msg, int msgType=0, StackTrace const* st=nullptr) const;
+    Message * createMessage(std::string_view const msg, int msgType=0, StackTrace const* st=nullptr) const;
     void addMessage(Message const* msg);
 
 public:
-    ErrorHandler(std::string const& filename, std::vector<std::string> const* sourceLines, StackTrace const* st=nullptr);
+    ErrorHandler(std::string_view const filename, std::vector<std::string> const* sourceLines, StackTrace const* st=nullptr);
     ErrorHandler(ErrorHandler const& eh);
     ~ErrorHandler();
 
-    void fatalError(std::string const& msg, StackTrace const* st=nullptr);
-    void error(std::string const& msg, StackTrace const* st=nullptr);
-    void warning(std::string const& msg, StackTrace const* st=nullptr);
-    void notice(std::string const& msg, StackTrace const* st=nullptr);
-    // void error(std::string const& msg, antlr4::ParserRuleContext* ctx);
-    // void error(std::string const& msg, antlr4::tree::TerminalNode* terminal);
+    void fatalError(std::string_view const msg, StackTrace const* st=nullptr);
+    void error(std::string_view const msg, StackTrace const* st=nullptr);
+    void warning(std::string_view const msg, StackTrace const* st=nullptr);
+    void notice(std::string_view const msg, StackTrace const* st=nullptr);
+    // void error(std::string_view const msg, antlr4::ParserRuleContext* ctx);
+    // void error(std::string_view const msg, antlr4::tree::TerminalNode* terminal);
 
     void dump();
 
-    StackTrace * trace(antlr4::Token const* tokInit, antlr4::Token const* tokEnd=nullptr, std::string const& text="");
-    StackTrace * trace(antlr4::tree::TerminalNode * t1, antlr4::tree::TerminalNode * t2=nullptr, std::string const& text="");
-    StackTrace * trace(antlr4::ParserRuleContext const* ctx1, antlr4::ParserRuleContext const* ctx2=nullptr, std::string const& text="");
+    StackTrace * trace(antlr4::Token const* tokInit, antlr4::Token const* tokEnd=nullptr, std::string_view const text="");
+    StackTrace * trace(antlr4::tree::TerminalNode * t1, antlr4::tree::TerminalNode * t2=nullptr, std::string_view const text="");
+    StackTrace * trace(antlr4::ParserRuleContext const* ctx1, antlr4::ParserRuleContext const* ctx2=nullptr, std::string_view const text="");
 
     void traceDown(StackTrace const* st);
     void traceUp();
@@ -85,7 +99,7 @@ private:
 	StackTrace const* _trace;
 
 public:
-	Message(int type, std::string const& msg, StackTrace const* trace);
+	Message(int type, std::string_view const msg, StackTrace const* trace);
 	~Message();
 
     bool isFatalError() const;
@@ -112,19 +126,19 @@ class StackTrace {
     std::string const _filename;
 
 public:
-    StackTrace(std::string const& text, 
+    StackTrace(std::string_view const text, 
             antlr4::Token const* tokInit, 
             antlr4::Token const* tokEnd, 
             StackTrace const* parent, 
             std::vector<std::string> const* sourceLines, 
-            std::string const& filename);
+            std::string_view const filename);
     StackTrace(StackTrace const& st);
 	~StackTrace();
 
     std::string getLine() const;
     std::string getMessageLine(std::string const& format="") const;
     std::string getMessageMark(std::string const& format="") const;
-    std::string getTraceString(int msgType=0, std::string const& text="") const;
+    std::string getTraceString(int msgType=0, std::string_view const text="") const;
     // std::string getCallTraceString(int msgType=0) const;
 
     int getLineNumber() const;

@@ -13,6 +13,14 @@ main
 //   | nl? word nl? EOF
   ;
 
+mainWord
+  : NEW_LINE* word NEW_LINE* EOF
+  ;
+
+mainRuleDefs
+  : ruleDefs EOF
+  ;
+
 module
   : /*imports*/ globalDefs
   ;

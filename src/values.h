@@ -13,6 +13,7 @@ class Scope;
 }
 
 #include <string>
+#include <string_view>
 #include <iostream>
 #include <map>
 #include <list>
@@ -29,7 +30,7 @@ class Parameter {
 public:
     std::string const name;
 
-    Parameter(std::string const& name);
+    Parameter(std::string_view const name);
     // std::string name() {return _name;}
 };
 
@@ -53,7 +54,7 @@ class ValueType {
 private:
     std::string const _name;
 
-    ValueType(std::string const& name);
+    ValueType(std::string_view const name);
 
 public:
     std::string const& name() const;
@@ -89,7 +90,7 @@ public:
     Value(int value);
     Value(double value);
     Value(bool value);
-    Value(std::string const& value);
+    Value(std::string_view const value);
     Value(Function* value);
     Value(std::nullptr_t value);
 
@@ -140,9 +141,10 @@ public:
     ~Scope();
 
     Scope * parent();
+    Scope const* parent() const;
 
     void set(std::string const& var, Value const& val);
-    Value const& get(std::string const& var);
+    Value const& get(std::string const& var) const;
     bool has(std::string const& var) const;
 
     void merge(Scope const* env);

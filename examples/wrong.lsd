@@ -3,8 +3,8 @@
 
 function table_func(i, j) := "t1"  # Invalid
 
-var table_func := 5;;
-var x := "gg"/1*2
+var table_func := 5;; # Already defined
+var x := "gg"/1*2 # string / int
 
 a => FF_F       # Invalid
 ab -> Fa        # Invalid

@@ -1,10 +1,16 @@
 # Extended L System Generator
 
-This project implements an interpreter in C++ of L-Systems descriptor files (`*.lsd`) writen in a custom specific purpose language LSysDescriptor, LSysD or just LSD (see `Syntax and semantics`).
+This project implements an interpreter in C++ of L-Systems descriptor files (`*.lsd`) writen in a custom specific purpose language LSysDescriptor, LSysD or just LSD (see `Syntax and semantics`). lsysgen (or lsys) is a L System generator and interpreter. The program is also a compiler of a purpose specific language LSD (L System Descriptor), that defines one or more L Systems with an easy and compact syntax. You can just print the results of the L System but you can also create a SVG image from it (see --svg option). Enjoy creating plants and fractals with this tool!
 
-The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image SVG of it (see `2D Display interpretation`).
+An L system or Lindenmayer system is a parallel rewriting system and a type of formal grammar. An L-system consists of an alphabet of symbols that can be used to make strings, a collection of production rules that expand each symbol into some larger string of symbols, an initial "axiom" string from which to begin construction, and a mechanism for translating the generated strings into geometric structures.
 
-An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).
+L-systems were introduced and developed in 1968 by Aristid Lindenmayer, a Hungarian theoretical biologist and botanist at the University of Utrecht. Lindenmayer used L-systems to describe the behaviour of plant cells and to model the growth processes of plant development. L-systems have also been used to model the morphology of a variety of organisms and can be used to generate self-similar fractals.
+
+To create an L System an axiom and a set of rules are needed (you can build an L System with just an axiom too, although it wouldn't change over iterations). An axiom is a string of characters such as letters, numbers and some symbols, e.g. "A", "F++F++F", etc. A rule has generally the shape "left -> right", where 'left' is the character the rule will select to be replaced by the 'right' string, e.g. "A -> AB", "B->A", etc.
+
+<!--The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image SVG of it (see `2D Display interpretation`).
+
+An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).-->
 
 ## Examples (generated with the program)
 
@@ -61,7 +67,7 @@ Cantor set (ParametricCantorSet.lsd, 8 iterations)
 This program uses `ANTLR 4.11.1`, `CMake (>=3.15)` and other required libraries, like Java Runtime Environment to compile the grammar with the ANTLR jar file. ANTLR4 will later be installed and linked with the `make` command automatically. To install our dependencies:
 
 ```
-sudo apt install cmake uuid-dev default-jre
+sudo apt install cmake default-jre
 ```
 
 Then, in our `LSysGen` folder, run:
@@ -72,7 +78,13 @@ cmake ..
 make
 ```
 
-If everything goes well, you will get the shared library `lsysgen.so` (that contains all the functionality of the project), the executable `lsys` that prints the generated string in the standard output and `lsys2svg` that prints an SVG image of the 2D representation of the L system.
+For debug purposes, the cmake command should be something like:
+
+```
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+```
+
+If everything goes well, you will get the library `lsysgen.a` (that contains all the functionality of the project) and the executable `lsys`, the main program. Type `./lsys --help` for information about usage and arguments.
 
 <!--
 (*Optional*) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
@@ -94,30 +106,29 @@ antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor
 
 ### Execution
 
-There are two executables in this project: `lsys` and `lsys2svg`. They work with the same inputs, but `lsys` prints the result and `lsys2svg` shows a 2D representation of the result in a SVG file (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser).
+There is an executable (`lsys`) in this project that manages many options to create, customize and run your L Systems. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser).
 
 There is also a Python module, `lsys.py`, that fetches the generated shared library and serves as a Python wrapper of the library (through its class `LSystem` that is able to print the L system and also its SVG representation).
 
 To execute any of the above mentioned programs, go to `build/` and run either of:
 
 ```
-./lsys FILE [N_ITERATIONS]
-./lsys2svg FILE [N_ITERATIONS]
+./lsys INPUT_FILE [OUTPUT_FILE] [OPTIONS]
+./lsys -a AXIOM [OPTIONS]
 ```
 
 The python script is also runnable and prints the resulting L system string and the SVG image:
 
 ```
-./lsys.py FILE [N_ITERATIONS]
-python lsys.py FILE [N_ITERATIONS]
+./lsys.py INPUT_FILE [-i N_ITERATIONS]
+python lsys.py INPUT_FILE [N_ITERATIONS]
 ```
 
-`FILE` is a `*.lsd` file (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `FILE` will be used instead. Examples:
+`INPUT_FILE` is a `*.lsd` file (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `INPUT_FILE` will be used instead. Examples:
 
 ```
-echo "axiom a; a->b; b->ab;" | ./lsys - 12
-echo "axiom a; set iterations:=12; a->b; b->ab;" | ./lsys -
-./lsys ../examples/b2.lsd 20
+./lsys -a "A" -r a->B; b->AB; -i 12
+./lsys ../examples/B2.lsd -i 20 --svg B2.svg
 ```
 
 <!--There are some useful options that you can see with the help:
@@ -128,7 +139,7 @@ By default, the program will interpret the L-System and will draw it in a new wi
 
 ## Example L systems
 
-Example `*.lsd` files are provided in `examples/`. You just have to execute the program with the name of the file as its parameter, and optionally a number of iterations.
+Example `*.lsd` files are provided in `examples/`. You are free to use them in the program with the name of the file as its parameter, tweaking some parameters (see `--help`).
 
 ## Syntax and semantics
 
@@ -139,10 +150,10 @@ To define an L system with an axiom and the rules that transform it, I have crea
 In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:
 
 ```
-echo "axiom n(255,0,0)F+F+PF+F+F+Fp+F+F" | ./build/lsys2svg - > images/test.svg
+./build/lsys -a "F+F+PF+F+F+Fp+F+F" -F "#FF0000" --svg images/test.svg
 ```
 
-But this is not the main case. If we want to *generate* the L system, we create an LSD document for it.
+But this is not the main case. If we want to *generate* the L system, we create an LSD document for it or tweak the program's parameters (`-r` to add rules, etc.).
 
 The LSD document consists on a series of definitions inside a name:
 
@@ -187,7 +198,7 @@ lsystem SierpinskiTriangle {
 If we run:
 
 ```
-./build/lsys2svg examples/SierpinskiTriangle.lsd > images/SierpinskiTriangle-6.svg
+./build/lsys examples/SierpinskiTriangle.lsd --svg images/SierpinskiTriangle-6.svg
 ```
 
 This generates:
@@ -197,14 +208,14 @@ This generates:
 An example of an anonymous L system:
 
 ```
-echo "axiom A; A->B; B->AB" | ./build/lsys - 5
+./build/lsys -a "A" -r "A->B; B->AB" -i 5
 ```
 
 This gives us `BABABBAB`.
 
 ### Comments
 
-Every line followed by the character `#` is a comment and will be ignored by the interpreter:
+Every text (in a line) followed by the character `#` is a comment and will be ignored by the interpreter:
 
 ```
 # Hey I'm a comment
@@ -231,12 +242,14 @@ This is the number of times that rules will be applied to generate the L system.
 set iterations := 6
 ```
 
+We can also use the option `-i` in the program to set it.
+
 ### Production rules
 
 Production rules have the syntax:
 
 ```
-[tag:] [(weight)] [left_context<] char [>right_context] -> replacement
+[tag:] [(weight)] [left_context<] char [>right_context] [:condition] -> replacement
 ```
 
 Production rules can be inside `table` blocks, `rules` blocks, `production rules` blocks or outside any block:
@@ -277,16 +290,23 @@ both:
 left_context < char > right_context -> replacement
 ```
 
-or none (like DOL's rules).
+or none (like DOL's rules). A rule can't be chosen for some character if it doesn't meet the `condition`. For example, this rule:
+
+```
+A(x) : x < 5 -> A(x+1)
+```
+
+cannot match symbols `A`, `A(8)` or `A(6, 0.2)`.
+
 A probabilistic l-system may have more than one rule available for the same character. Also, a weight can be specified for each rule (when the weight is not defined, a rule has a default weight of `1`). That weight will determine the probability of the rule to be chosen over other available rules. The syntax of a weighted rule just adds the parenthesized value at the beginning of the rule. For example:
 
 ```
-(9) a -> a
-    a -> b
-(!) a < a -> ba
+9: a -> a
+   a -> b
+!: a < a -> ba
 ```
 
-In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied, because the special weight `!` means that it must be always chosen.
+In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied (when matching an `a` followed by another `a`), because the special weight `!` means that it must be always chosen.
 
 As you can see, any pair of ambiguous rules can bring non determinism to our l-system, even without explicit set of weights. Also, when two rules with `!` weight are available for some character, the first one will be always applied.
 
@@ -439,11 +459,15 @@ set seed := 6902             # (optional, defaults -1) You can specify a seed fo
 These other constant names are used by the 2D interpreter and do not have any meaning outside the 2D interpreter:
 
 ```
-set initial_heading := 90    # (optional, defaults 0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
-set rotation := 30           # (optional, defaults 12) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
-set line_width := 0.02       # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
-set background := "#FFBB00"  # (optional, defaults "transparent") This constant sets the background color of the SVG
+set initial_heading := 90          # (optional, defaults 0.0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
+set rotation := 30                 # (optional, defaults 12.0) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width := 0.02             # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set background := "#FFBB00"        # (optional, defaults transparent) This constant sets the background color of the SVG
+set line_color := "#F33"           # (optional, defaults "#000" (black)) This constant sets the default line color of the line being drawn
+set fill_color := "#rgb(0, 0, 0)"  # (optional, defaults "#000" (black)) This constant sets the default fill color when filling shapes
 ```
+
+Every special constant has a special command-line argument in the program to quickly force a value for that constant.
 
 You can also define any other variable or constant you want, and use them in the expressions of parametric rules.
 
@@ -500,7 +524,7 @@ The rest of the characters will be ignored when displaying.
 
 ## SVG
 
-`lsys2svg` converts the L-system to SVG. If you want to convert the image later to PNG, for example, in linux you can use inkscape:
+`lsys` with the option `--svg` converts the result of the L-system to SVG. If you want to convert the image later to PNG, you can use inkscape:
 
 ```
 inkscape -o test.png -w 1000 -b white test.svg
@@ -508,11 +532,15 @@ inkscape -o test.png -w 1000 -b white test.svg
 
 ## Next steps
 
-- Specify constants in execution parameters
+- Documentation
 - Manage pointers (destructors and deletes)
-- Capture all LSD semantic errors and expression evaluation errors
-- Debug
+- Capture all LSD syntax errors and expression evaluation errors
+- Debug, unit testing
+- Parameters
+- Action symbols
+- Make it a deb package?
 - Compile in windows?
+- Threads?
 - Run in a web page
 - 3D representation and model export?
 - Music representation?

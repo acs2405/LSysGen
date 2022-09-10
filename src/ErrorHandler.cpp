@@ -8,7 +8,7 @@
 
 namespace lsysgen {
 
-ErrorHandler::ErrorHandler(std::string const& filename, std::vector<std::string> const* sourceLines, StackTrace const* st): 
+ErrorHandler::ErrorHandler(std::string_view const filename, std::vector<std::string> const* sourceLines, StackTrace const* st): 
         _filename(filename != "-" ? filename : "<stdin>"), _sourceLines(sourceLines), 
         _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
         _stdin(filename == "-") {}
@@ -21,7 +21,7 @@ ErrorHandler::~ErrorHandler() {
     _messages.clear();
 }
 
-void ErrorHandler::fatalError(std::string const& msg, StackTrace const* st) {
+void ErrorHandler::fatalError(std::string_view const msg, StackTrace const* st) {
     Message const* e = this->createMessage(msg, Message::TYPE_FATAL_ERROR, st);
     _errors.push_back(e);
     _failed = true;
@@ -31,26 +31,26 @@ void ErrorHandler::fatalError(std::string const& msg, StackTrace const* st) {
     // exit(1);
 }
 
-void ErrorHandler::error(std::string const& msg, StackTrace const* st) {
+void ErrorHandler::error(std::string_view const msg, StackTrace const* st) {
     Message const* err = this->createMessage(msg, Message::TYPE_ERROR, st);
     _errors.push_back(err);
     _failed = true;
     this->addMessage(err);
 }
 
-void ErrorHandler::warning(std::string const& msg, StackTrace const* st) {
+void ErrorHandler::warning(std::string_view const msg, StackTrace const* st) {
     Message const* warn = this->createMessage(msg, Message::TYPE_WARNING, st);
     _warnings.push_back(warn);
     this->addMessage(warn);
 }
 
-void ErrorHandler::notice(std::string const& msg, StackTrace const* st) {
+void ErrorHandler::notice(std::string_view const msg, StackTrace const* st) {
     Message const* notice = this->createMessage(msg, Message::TYPE_NOTICE, st);
     _notices.push_back(notice);
     this->addMessage(notice);
 }
 
-Message * ErrorHandler::createMessage(std::string const& msg, int msgType, StackTrace const* st) const {
+Message * ErrorHandler::createMessage(std::string_view const msg, int msgType, StackTrace const* st) const {
     // st must never be in the parent trace stack.
     if (st == nullptr) {
         if (_parentTrace != nullptr)
@@ -74,16 +74,16 @@ void ErrorHandler::dump() {
     _notices.clear();
 }
 
-StackTrace * ErrorHandler::trace(antlr4::Token const* tokInit, antlr4::Token const* tokEnd, std::string const& text) {
+StackTrace * ErrorHandler::trace(antlr4::Token const* tokInit, antlr4::Token const* tokEnd, std::string_view const text) {
     antlr4::Token const* end = tokEnd != nullptr ? tokEnd : tokInit;
     return new StackTrace(text, tokInit, end, _parentTrace, _sourceLines, _filename);
 }
 
-StackTrace * ErrorHandler::trace(antlr4::tree::TerminalNode * t1, antlr4::tree::TerminalNode * t2, std::string const& text) {
+StackTrace * ErrorHandler::trace(antlr4::tree::TerminalNode * t1, antlr4::tree::TerminalNode * t2, std::string_view const text) {
     return this->trace(t1->getSymbol(), t2 != nullptr ? t2->getSymbol() : t1->getSymbol(), text);
 }
 
-StackTrace * ErrorHandler::trace(antlr4::ParserRuleContext const* ctx1, antlr4::ParserRuleContext const* ctx2, std::string const& text) {
+StackTrace * ErrorHandler::trace(antlr4::ParserRuleContext const* ctx1, antlr4::ParserRuleContext const* ctx2, std::string_view const text) {
     return this->trace(ctx1->start, ctx2 != nullptr ? ctx2->stop : ctx1->stop, text);
 }
 
@@ -116,7 +116,7 @@ const int Message::TYPE_ERROR = 2;
 const int Message::TYPE_WARNING = 3;
 const int Message::TYPE_NOTICE = 4;
 
-Message::Message(int type, std::string const& msg, StackTrace const* trace): 
+Message::Message(int type, std::string_view const msg, StackTrace const* trace): 
         _type(type), _msg(msg), _trace(trace) {}
 Message::~Message() {
     delete this->_trace;
@@ -162,12 +162,12 @@ std::ostream & operator<<(std::ostream & os, Message const& m) {
 
 
 
-StackTrace::StackTrace(std::string const& text, 
+StackTrace::StackTrace(std::string_view const text, 
             antlr4::Token const* tokInit, 
             antlr4::Token const* tokEnd, 
             StackTrace const* parent, 
             std::vector<std::string> const* sourceLines, 
-            std::string const& filename):
+            std::string_view const filename):
         _text(text), _tokInit(tokInit), _tokEnd(tokEnd), _parent(parent), 
         _sourceLines(sourceLines), _filename(filename) {}
 
@@ -207,7 +207,14 @@ std::string StackTrace::getMessageMark(std::string const& format) const {
     std::string normalFormat = "\u001b[0m";
     return padBefore + format + '^' + mark + normalFormat;
 }
-std::string StackTrace::getTraceString(int msgType, std::string const& text) const {
+// std::string ErrorHandler::format(int format, std::string_view content) {
+//     // TODO
+//     // settings.html
+//     // terminalSupportsColors();
+// }
+std::string StackTrace::getTraceString(int msgType, std::string_view const text) const {
+    if (_sourceLines == nullptr)
+        return "";
     std::stringstream ss;
     std::string color;
     switch (msgType) {

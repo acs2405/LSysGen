@@ -37,16 +37,23 @@
 //     return node;
 // }
 
-LSysDVisitor::LSysDVisitor(std::string const& filename, std::vector<std::string> const* sourceLines, Scope * scope, StackTrace const* trace) {
-    this->eh = new ErrorHandler(filename, sourceLines, trace);
+// LSysDVisitor::LSysDVisitor(Settings const* settings, 
+//         std::vector<std::string> const* sourceLines, 
+//         Scope * scope, StackTrace const* trace): 
+//         module(module), currentLSystem(nullptr), currentTable(nullptr), parentNode(nullptr), 
+//         baseScope(nullptr), currentScope(nullptr) {
+//     this->eh = new ErrorHandler(settings->inputFile.get(), sourceLines, trace);
+// }
 
-    this->currentLSystem = nullptr;
-    this->currentTable = nullptr;
-    this->parentNode = nullptr;
-    this->module = nullptr;
+LSysDVisitor::LSysDVisitor(Settings const& settings, std::vector<std::string> const* sourceLines, 
+        Scope * scope, StackTrace const* trace): 
+        module(nullptr), currentLSystem(nullptr), currentTable(nullptr), parentNode(nullptr), 
+        currentScope(nullptr), baseScope(nullptr), settings(settings), eh(nullptr) {
+    // if (sourceLines != nullptr)
+    this->eh = new ErrorHandler(settings.inputFile.get(), sourceLines, trace);
 
-    this->baseScope = scope != nullptr ? new Scope(scope) : nullptr;
-    this->currentScope = nullptr;
+    if (scope != nullptr)
+        this->baseScope = new Scope(scope); // TODO ??? El padre del padre???
 
     // this->scope = scope ? new Scope(scope) : new Scope();
     // this->taggedRules = new std::map<std::string, Rule<char>*>();
@@ -63,6 +70,74 @@ ErrorHandler* LSysDVisitor::messages() {return eh;}
 // Value LSysDVisitor::eval(LSysDParser::ExpressionContext* ctx) {
 //     return this->evaluator->eval(ctx);
 // }
+
+
+// When not visiting main
+LSystem<char> * LSysDVisitor::createLSystem(std::string_view name) {
+    module = new Module<char>(static_cast<std::string>(name));
+    module->eh = eh; //new ErrorHandler(eh);
+    module->_scope = new Scope(baseScope);
+    module->_evaluator = new LSysDExpressionEvaluator(eh);
+    currentScope = module->_scope;
+    currentLSystem = new LSystem<char>(module);
+    currentLSystem->_name = module->_name;
+    currentScope = currentLSystem->_scope;
+    return currentLSystem;
+}
+
+void LSysDVisitor::finishLSystem() {
+    currentLSystem->populateProperties(settings);
+    module->_lsystems[currentLSystem->_name] = currentLSystem;
+    setMainLSystem();
+    currentLSystem = nullptr;
+    currentScope = currentScope->parent();
+}
+
+// void LSysDVisitor::setAxiom(lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> * axiom) {
+//     currentLSystem->_axiom = axiom;
+// }
+
+void LSysDVisitor::setMainLSystem() { //(antlr4::ParserRuleContext* ctx) {
+    if (settings.lsystem.isset()) {
+        if (module->_lsystems.find(settings.lsystem.get()) != module->_lsystems.end())
+            module->_mainLSystem = module->_lsystems[settings.lsystem.get()];
+        else
+            eh->error("No L-System named " + settings.lsystem.get()); //, eh->trace(ctx->stop));
+    } else if (module->_mainLSystem == nullptr) {
+        if (module->_lsystems.size() == 1) {
+            module->_mainLSystem = module->_lsystems.begin()->second;
+            // if (ctx->module())
+            //     eh->warning("You should mark one L system as main", eh->trace(ctx->stop));
+        } else {
+            for (auto ls : module->_lsystems) {
+                if (ls.second->_name == module->_name) {
+                    module->_mainLSystem = ls.second;
+                    break;
+                }
+            }
+            if (module->_mainLSystem == nullptr) {
+                eh->error("No L system is either selected (-l NAME) or marked as main in " + eh->fileName()); //, eh->trace(ctx->stop));
+                // return static_cast<Module<char> *>(nullptr);
+            } else {
+                eh->warning("You should either select (-l NAME) or mark one L system as main"); //, eh->trace(ctx->stop));
+            }
+        }
+    }
+}
+
+std::any LSysDVisitor::visit(antlr4::tree::ParseTree *tree) {
+    return tree->accept(this);
+}
+
+std::any LSysDVisitor::visit(antlr4::tree::ParseTree *tree, std::vector<std::string> const* sourceLines, 
+        StackTrace const* trace) {
+    ErrorHandler * eh = this->eh;
+    this->eh = new ErrorHandler(settings.inputFile.get(), sourceLines, trace);
+    std::any ret = this->visit(tree);
+    delete this->eh;
+    this->eh = eh;
+    return ret;
+}
 
 
 
@@ -104,35 +179,23 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             return static_cast<Module<char> *>(nullptr);
         currentScope = currentScope->parent();
         eh->traceDown(eh->trace(ctx->stop));
-        currentLSystem->populateProperties();
+        currentLSystem->populateProperties(settings);
         eh->traceUp();
         module->_lsystems[currentLSystem->_name] = currentLSystem;
         currentLSystem = nullptr;
     }
     currentScope = currentScope->parent();
     
-    if (module->_mainLSystem == nullptr) {
-        if (module->_lsystems.size() == 1) {
-            module->_mainLSystem = module->_lsystems.begin()->second;
-            if (ctx->module())
-                eh->warning("You should mark one L system as main", eh->trace(ctx->stop));
-        } else {
-            for (auto ls : module->_lsystems) {
-                if (ls.second->_name == module->_name) {
-                    module->_mainLSystem = ls.second;
-                    break;
-                }
-            }
-            if (module->_mainLSystem == nullptr) {
-                eh->error("No L system marked as main in " + eh->fileName(), eh->trace(ctx->stop));
-                return static_cast<Module<char> *>(nullptr);
-            } else {
-                eh->warning("You should mark one L system as main", eh->trace(ctx->stop));
-            }
-        }
-    }
+    setMainLSystem();
+
+    if (eh->failed() || module->eh->failed())
+            return static_cast<Module<char> *>(nullptr);
 
     return this->module;
+}
+
+std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
+    return visit(ctx->word());
 }
 
 std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
@@ -149,7 +212,7 @@ std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
     currentScope = currentScope->parent();
     eh->traceDown(eh->trace(ctx->ID()));
     if (!eh->failed())
-        currentLSystem->populateProperties();
+        currentLSystem->populateProperties(settings);
     eh->traceUp();
     module->_lsystems[currentLSystem->_name] = currentLSystem;
     if (ctx->KWMAIN()) {
@@ -530,7 +593,7 @@ std::any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
 }
 
 std::any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) {
-    std::string s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
+    std::string_view s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
     for (char c : s) {
         ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>(c);
         this->parentNode->addChild(node->asGeneric());
@@ -539,7 +602,7 @@ std::any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx
 }
 
 std::any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) {
-    std::string s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
+    std::string_view s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
     // int pos = 0;
     for (char c : s) {
         if (c == '_')

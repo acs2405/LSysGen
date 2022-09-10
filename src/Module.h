@@ -13,6 +13,7 @@ class Module;
 #include "ErrorHandler.h"
 #include "LSysDVisitor.h"
 #include "values.h"
+// #include "Settings.h"
 
 #include <string>
 #include <iostream>
@@ -35,9 +36,10 @@ class Module {
     ErrorHandler * eh;
 
     LSysDExpressionEvaluator * _evaluator;
+    // Settings const* _settings;
 
 public:
-    Module(std::string const& name);
+    Module(std::string_view name);
     // Module();
 
     ~Module();
@@ -46,9 +48,9 @@ public:
     LSysDExpressionEvaluator * evaluator();
 
     Scope * scope();
-    // Scope * scope();
     std::string const& name() const;
-    std::string const& filename() const;
+    // Settings const* settings() const;
+    // std::string const& filename() const;
 
     LSystem<T> * mainLSystem();
 };

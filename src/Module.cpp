@@ -8,8 +8,9 @@
 namespace lsysgen {
 
 template<typename T>
-Module<T>::Module(std::string const& name): _name(name), _mainLSystem(nullptr), 
-        _lsystems(), _scope(nullptr), eh(nullptr) {}
+Module<T>::Module(std::string_view name): _name(name), //_settings(settings), 
+        _mainLSystem(nullptr), _lsystems(), _scope(nullptr), eh(nullptr) {}
+
 // template<typename T>
 // Module<T>::Module(): _scope() {}
 
@@ -27,16 +28,17 @@ ErrorHandler * Module<T>::messages() {return this->eh;}
 template<typename T>
 LSysDExpressionEvaluator * Module<T>::evaluator() {return this->_evaluator;}
 
-template<typename T>
-Scope * Module<T>::scope() {return _scope;}
+// template<typename T>
+// Settings const* Module<T>::settings() const {return this->_settings;}
 
 template<typename T>
-std::string const& Module<T>::name() const {return _name;}
+Scope * Module<T>::scope() {return this->_scope;}
 
 template<typename T>
-LSystem<T> * Module<T>::mainLSystem() {
-    return this->_mainLSystem;
-}
+std::string const& Module<T>::name() const {return this->_name;}
+
+template<typename T>
+LSystem<T> * Module<T>::mainLSystem() {return this->_mainLSystem;}
 
 
 
