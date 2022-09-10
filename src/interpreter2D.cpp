@@ -96,7 +96,9 @@ std::string node2svg(
     svg += "\" height=\"" + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
     if (lsystem && lsystem->settings2D().background.isset())
-        svg += "<rect width=\"100%\" height=\"100%\" fill=\"" + lsystem->settings2D().background.get() + "\" />\n";
+        svg += "<rect width=\"" + std::to_string(desiredWidth) + 
+                "\" height=\"" + std::to_string(desiredHeight) + 
+                "\" fill=\"" + lsystem->settings2D().background.get() + "\" />\n";
     svg += "<g transform=\"";
     // svg += "translate(" + std::to_string(margin); // when margin was absolute
     // svg += "," + std::to_string(margin) + ") ";
