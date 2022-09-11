@@ -90,25 +90,51 @@ bool terminalSupportsColors() {
     return false;
 }
 
-void readFromFile(char const* fileName, std::string & content) {
-    std::ifstream file(fileName, std::ios::in);
-    if (file.fail()) {
-        std::cerr << "File '" << fileName << "' does not exist." << std::endl;
-        exit(1);
+bool readFromFile(std::string const& fileName, std::string & content) {
+    return readFromFile(fileName.c_str(), content);
+}
+bool readFromStream(std::istream & stream, std::string & content) {
+    if (stream.fail()) {
+        return false;
+        // std::cerr << "File '" << fileName << "' does not exist." << std::endl;
+        // exit(1);
     }
-    content.assign((std::istreambuf_iterator<char>(file)),
+    content.assign((std::istreambuf_iterator<char>(stream)),
                      std::istreambuf_iterator<char>());
-    file.close();
+    return true;
 }
 
-void writeToFile(char const* fileName, std::string_view content) {
-    std::ofstream file(fileName, std::ios::out);
-    if (file.fail()) {
-        std::cerr << "File '" << fileName << "' is not writable." << std::endl;
-        exit(1);
+bool readFromFile(char const* fileName, std::string & content) {
+    if (strcmp(fileName, "-") == 0) {
+        return readFromStream(std::cin, content);
+    } else {
+        std::ifstream file (fileName, std::ios::in);
+        bool ret = readFromStream(file, content);
+        file.close();
+        return ret;
     }
-    file << content << std::endl;
-    file.close();
+}
+
+bool writeToFile(std::string const& fileName, std::string_view content) {
+    return writeToFile(fileName.c_str(), content);
+}
+bool writeToStream(std::ostream & stream, std::string_view content) {
+    if (stream.fail()) {
+        return false;
+    }
+    stream << content << std::endl; // << std::endl / std::flush;
+    return true;
+}
+
+bool writeToFile(char const* fileName, std::string_view content) {
+    if (strcmp(fileName, "-") == 0) {
+        return writeToStream(std::cout, content);
+    } else {
+        std::ofstream file (fileName, std::ios::out);
+        bool ret = writeToStream(file, content);
+        file.close();
+        return ret;
+    }
 }
     
 }

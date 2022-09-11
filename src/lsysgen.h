@@ -32,10 +32,6 @@ extern "C" char const* lsystem_to_svg(lsysgen::LSystem<char> * lsystem);
 
 lsysgen::LSystem<char> * parseLSystem(lsysgen::Settings const& settings);
 
-// lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file);
-
-lsysgen::LSystem<char> * parseLSystemFromStream(std::istream & stream, lsysgen::Settings const& settings);
-
 lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, lsysgen::Settings const& settings);
 
 lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen::Settings const& settings);

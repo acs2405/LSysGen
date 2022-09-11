@@ -142,7 +142,9 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             } else if (argNamesOpt.find(arg) != argNamesOpt.end()) {
                 std::string arg2;
                 if (argc > i+1) {
-                    arg2 = argv[++i];
+                    // Excludes options starting with -, but includes "-"
+                    if (argv[i+1][0] != '-' || argv[i+1][1] == '\0')
+                        arg2 = argv[++i];
                 }
                 if (arg == "--svg") {
                     if (settings.renderMode.isset()) {
@@ -164,9 +166,8 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 auto & args = settings.args.get();
                 for (++i; i < argc; ++i) {
                     std::string arg2 = argv[i];
-                    if (arg2.size() > 0 && arg2[0] == '-') {
-                        break;
-                    } else {
+                    // Excludes options starting with -, but includes "-"
+                    if (argv[i][0] != '-' || argv[i][1] == '\0') {
                         if (arg == "-A" || arg == "--args") {
                             std::smatch m;
                             if (std::regex_match(arg2, m, argRegex)) {
@@ -180,6 +181,8 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                                 exit(1);
                             }
                         }
+                    } else {
+                        break;
                     }
                 }
             } else {

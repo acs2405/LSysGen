@@ -74,31 +74,12 @@ lsysgen::LSystem<char> * parseLSystem(lsysgen::Settings const& settings) {
     std::string fileContents;
     if (settings.inputFile.isset()) {
         std::string const& file = settings.inputFile.get();
-        if (file == "-") {
-            return parseLSystemFromStream(std::cin, settings); //"<stdin>");
-        } else {
-            std::fstream fstream(file.c_str(), std::ios::in);
-            if (fstream.fail()) {
-                std::cerr << "File '" << file << "' does not exist." << std::endl;
-                exit(1);
-            }
-            lsysgen::LSystem<char> * ret = parseLSystemFromStream(fstream, settings);
-            fstream.close();
-            return ret;
+        std::string fileContents;
+        if (!readFromFile(file, fileContents)) {
+            std::cerr << "Input file '" << file << "' does not exist." << std::endl;
+            exit(1);
         }
-    } else {
-        if (settings.axiom.isset()) {
-            return parseLSystemFromAxiom(settings.axiom.get(), settings);
-        } else {
-            std::cerr << "You must either specify an input file or an axiom (-a AXIOM)" << std::endl;
-                exit(1);
-        }
-    }
-}
 
-lsysgen::LSystem<char> * parseLSystemFromStream(std::istream & stream, lsysgen::Settings const& settings) {
-        std::string fileContents((std::istreambuf_iterator<char>(stream)),
-                     std::istreambuf_iterator<char>());
         switch (settings.inputMode.get()) {
             case Settings::InputMode::LSD:
                 return parseLSystemFromString(fileContents, settings);
@@ -107,31 +88,17 @@ lsysgen::LSystem<char> * parseLSystemFromStream(std::istream & stream, lsysgen::
             default:
                 return nullptr;
         }
+    } else {
+        if (settings.axiom.isset()) {
+            return parseLSystemFromAxiom(settings.axiom.get(), settings);
+        } else {
+            std::cerr << "You must either specify an input file or an axiom (-a AXIOM)" << std::endl;
+            exit(1);
+        }
+    }
 }
 
-// lsysgen::LSystem<char>* parseLSystemFromFile(std::string const& file) {
-//     if (file == "-") {
-//         return parseLSystemFromStream(std::cin, file); //"<stdin>");
-//     } else {
-//         std::fstream fstream;
-//         fstream.open(file);
-//         if (fstream.fail()) {
-//             std::cerr << "File '" << file << "' does not exist." << std::endl;
-//             exit(1);
-//         }
-//         // fstream.close();
-//         return parseLSystemFromStream(fstream, file);
-//     }
-//     // std::cout << file << std::endl;
-// }
-
 lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, lsysgen::Settings const& settings) {
-
-    // std::string fileContents((std::istreambuf_iterator<char>(stream)),
-    //              std::istreambuf_iterator<char>());
-
-    // std::stringstream ss;
-    // ss << fileContents;
 
     antlr4::ANTLRInputStream * input = new antlr4::ANTLRInputStream(fileContents);
     LSysDLexer * lexer = new LSysDLexer(input);
@@ -166,7 +133,8 @@ lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, l
 
 /*
  * Ideas:
- * - Solucionar tema del formato en los errores (--html)
+ * - When random seed print the seed used?
+ * - Solucionar tema del formato en los errores (--html?)
  * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)
  * - Llamadas a otros LSystem: ¿un settings por llamada? (Mejor solo args)
  * - Parámetros por nombre con param, por nombre y posición entre paréntesis

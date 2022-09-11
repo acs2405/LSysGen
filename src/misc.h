@@ -73,8 +73,14 @@ std::string getModuleName(std::string const& filename);
 
 bool terminalSupportsColors();
 
-void readFromFile(char const* fileName, std::string & content);
-void writeToFile(char const* outputFile, std::string_view output);
+bool readFromStream(std::istream & stream, std::string & content);
+bool writeToStream(std::ostream & stream, std::string_view content);
+
+bool readFromFile(char const* fileName, std::string & content);
+bool writeToFile(char const* fileName, std::string_view content);
+
+bool readFromFile(std::string const& fileName, std::string & content);
+bool writeToFile(std::string const& fileName, std::string_view content);
 
 // std::string anyToString(Value * v);
 
