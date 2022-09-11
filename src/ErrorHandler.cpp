@@ -214,7 +214,7 @@ std::string StackTrace::getMessageMark(std::string const& format) const {
 // }
 std::string StackTrace::getTraceString(int msgType, std::string_view const text) const {
     if (_sourceLines == nullptr)
-        return "";
+        return static_cast<std::string>(text);
     std::stringstream ss;
     std::string color;
     switch (msgType) {

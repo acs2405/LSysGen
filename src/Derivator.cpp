@@ -40,13 +40,15 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
             // Check condition:
             if (r->cond()) {
                 Value v = evaluator->eval(r->cond(), &paramMapping);
-                if (v.isError())
+                if (evaluator->messages()->failed()) {
+                    evaluator->messages()->dump();
                     return nullptr;
-                else if (v.isBool()) {
+                }
+                if (v.isBool()) {
                     if (!v.asBool())
                         continue;
                 } else {
-                    eh->fatalError("The condition expression (of type " + v.type()->name() + ") must be a boolean");
+                    eh->error("The condition expression (of type " + v.type()->name() + ") must be a boolean");
                     return nullptr;
                 }
             }
@@ -139,9 +141,10 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(ParseTre
             std::vector<Value> * values = new std::vector<Value>();
             for (LSysDParser::ExpressionContext * arg : *node->content().args) {
                 Value ret = evaluator->eval(arg, paramMapping);
-                // if (evaluator->messages()->failed())
-                if (ret.isError())
+                if (evaluator->messages()->failed()) {
+                    evaluator->messages()->dump();
                     return nullptr;
+                }
                 values->push_back(ret);
             }
             instanceNode->content().values = values;

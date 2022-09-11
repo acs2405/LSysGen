@@ -28,7 +28,7 @@ std::regex const argRegex ("([A-Za-z_][A-Za-z_0-9]*):(.+)");
 
 
 void argumentError(std::string_view message, bool printUsageAfterMessage=false) {
-    std::cout << "Argument error: " << message << std::endl;
+    std::cerr << "Argument error: " << message << std::endl;
     if (printUsageAfterMessage)
         printUsage();
     exit(1);

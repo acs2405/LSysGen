@@ -14,13 +14,13 @@ Operations::~Operations() {}
 
 Value Operations::op_error(std::string const& op, Value const& op1, Value const& op2) {
     if (!op1.isError() && !op2.isError())
-        eh->fatalError("Cannot use operator " + op + " with a " + op1.type()->name() + " and a " + op2.type()->name(), eh->currentTrace());
+        eh->error("Cannot use operator " + op + " with " + op1.type()->name() + " and " + op2.type()->name(), eh->currentTrace());
     return Value::error();
 }
 
 Value Operations::op_error(std::string const& op, Value const& op1) {
     if (!op1.isError())
-        eh->fatalError("Cannot use operator " + op + " with a " + op1.type()->name(), eh->currentTrace());
+        eh->error("Cannot use operator " + op + " with " + op1.type()->name(), eh->currentTrace());
     return Value::error();
 }
 

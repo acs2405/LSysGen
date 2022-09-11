@@ -47,7 +47,7 @@ std::any LSysDExpressionEvaluator::visitIdExpr(LSysDParser::IdExprContext *ctx) 
     if (this->scope->has(name)) {
         return Value(this->scope->get(name));
     } else {
-        eh->fatalError("Undefined name '" + name + "'", eh->trace(ctx));
+        eh->error("Undefined name '" + name + "'", eh->trace(ctx));
         return Value::error();
     }
 }
@@ -131,7 +131,7 @@ std::any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::FunctionCa
         eh->traceUp();
         return ret;
     } else if (!vf.isError()) {
-        eh->fatalError("the expression (of type " + vf.type()->name() + ") is not a function", eh->trace(ctx->expression()));
+        eh->error("the expression (of type " + vf.type()->name() + ") is not a function", eh->trace(ctx->expression()));
     }
     return Value::error();
 }
@@ -208,7 +208,7 @@ std::any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprContex
     if (cond.isBool())
         res = std::any_cast<Value>(this->visit(ctx->expression()[cond.asBool() ? 1 : 2]));
     else if (!cond.isError())
-        eh->fatalError("the condition expression (of type " + cond.type()->name() + ") must be a boolean", eh->trace(ctx->expression()[0]));
+        eh->error("the condition expression (of type " + cond.type()->name() + ") must be a boolean", eh->trace(ctx->expression()[0]));
     return res;
 }
 
