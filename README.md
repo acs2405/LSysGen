@@ -1,6 +1,6 @@
 # Extended L System Generator
 
-This project implements an interpreter in C++ of L-Systems descriptor files (`*.lsd`) writen in a custom specific purpose language LSysDescriptor, LSysD or just LSD (see `Syntax and semantics`). lsysgen (or lsys) is a L System generator and interpreter. The program is also a compiler of a purpose specific language LSD (L System Descriptor), that defines one or more L Systems with an easy and compact syntax. You can just print the results of the L System but you can also create a SVG image from it (see --svg option). Enjoy creating plants and fractals with this tool!
+This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that defines one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). 
 
 An L system or Lindenmayer system is a parallel rewriting system and a type of formal grammar. An L-system consists of an alphabet of symbols that can be used to make strings, a collection of production rules that expand each symbol into some larger string of symbols, an initial "axiom" string from which to begin construction, and a mechanism for translating the generated strings into geometric structures.
 
@@ -8,7 +8,9 @@ L-systems were introduced and developed in 1968 by Aristid Lindenmayer, a Hungar
 
 To create an L System an axiom and a set of rules are needed (you can build an L System with just an axiom too, although it wouldn't change over iterations). An axiom is a string of characters such as letters, numbers and some symbols, e.g. "A", "F++F++F", etc. A rule has generally the shape "left -> right", where 'left' is the character the rule will select to be replaced by the 'right' string, e.g. "A -> AB", "B->A", etc.
 
-<!--The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image SVG of it (see `2D Display interpretation`).
+Enjoy creating plants and fractals with this tool!
+
+<!--The project is able to generate L-Systems after its axiom and rules, print the result or generate a 2D image SVG of it (see `2D rendering`).
 
 An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).-->
 
@@ -34,7 +36,7 @@ lsystem DragonCurve {
 }
 ```
 
-Executing the program with this file (`./build/lsys2svg examples/DragonCurve.lsd`) generates:
+Executing the program with this file (`lsys examples/DragonCurve.lsd --svg images/Dragon-10.svg`) generates:
 
 ![Dragon curve](./images/Dragon-10.svg)
 
@@ -106,9 +108,9 @@ antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor
 
 ### Execution
 
-There is an executable (`lsys`) in this project that manages many options to create, customize and run your L Systems. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser).
+Theris project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage out L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
 
-There is also a Python module, `lsys.py`, that fetches the generated shared library and serves as a Python wrapper of the library (through its class `LSystem` that is able to print the L system and also its SVG representation).
+There is also a small Python module, `lsys.py`, that uses the `lsysgen` library and serves as a Python wrapper for the library (through its class `LSystem` that is able to print the L system and also its 2D render).
 
 To execute any of the above mentioned programs, go to `build/` and run either of:
 
@@ -124,7 +126,7 @@ The python script is also runnable and prints the resulting L system string and 
 python lsys.py INPUT_FILE [N_ITERATIONS]
 ```
 
-`INPUT_FILE` is a `*.lsd` file (or `-` for standard input) that describes an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `INPUT_FILE` will be used instead. Examples:
+`INPUT_FILE` is a `*.lsd` file (or `-` for standard input) that defines an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `INPUT_FILE` will be used instead. Examples:
 
 ```
 ./lsys -a "A" -r a->B; b->AB; -i 12
@@ -145,7 +147,7 @@ Example `*.lsd` files are provided in `examples/`. You are free to use them in t
 
 ### Document structure
 
-To define an L system with an axiom and the rules that transform it, I have created the LSD (L System Descriptor) specific purpose language.
+To define an L system with an axiom and the rules that transform it, I have created the LSDL (L System Defining Language) specific purpose language.
 
 In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:
 
@@ -153,9 +155,9 @@ In the cases where we want to define just an axiom for the program to interpret 
 ./build/lsys -a "F+F+PF+F+F+Fp+F+F" -F "#FF0000" --svg images/test.svg
 ```
 
-But this is not the main case. If we want to *generate* the L system, we create an LSD document for it or tweak the program's parameters (`-r` to add rules, etc.).
+But this is not the main case. If we want to *generate* the L system, we create an LSDL document for it or tweak the program's parameters (`-r` to add rules, etc.).
 
-The LSD document consists on a series of definitions inside a name:
+The LSDL document consists on a series of definitions inside a name:
 
 ```
 lsystem Name {
@@ -471,11 +473,11 @@ Every special constant has a special command-line argument in the program to qui
 
 You can also define any other variable or constant you want, and use them in the expressions of parametric rules.
 
-## 2D Display interpretation
+## 2D rendering
 
-The program `lsys2svg` creates an SVG image file after the resulting string.
+The program `lsys` with the `--svg` argument renders the output of the L System generation in a 2D SVG image file.
 
-The special characters that 2D interpretation uses are:
+The special characters that 2D rendering uses are:
 
 - `F` draws a forward line.
 - `G` draws a backward line.
@@ -534,7 +536,7 @@ inkscape -o test.png -w 1000 -b white test.svg
 
 - Documentation
 - Manage pointers (destructors and deletes)
-- Capture all LSD syntax errors and expression evaluation errors
+- Capture all LSDL syntax errors and expression evaluation errors
 - Debug, unit testing
 - Parameters
 - Action symbols
