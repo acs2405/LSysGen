@@ -40,7 +40,7 @@ lsystem DragonCurve {
 
 Executing the program with this file (`lsys examples/DragonCurve.lsd --svg | display`) generates:
 
-![Dragon curve](./images/Dragon.svg)
+![Dragon curve](./images/DragonCurve.svg)
 
 ### Other examples
 
