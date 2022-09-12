@@ -32,6 +32,8 @@ Settings2D::Settings2D():
 
 Settings2D::~Settings2D() {}
 
+// Settings2D::unset() {}
+
 Settings::Settings(): 
         renderMode(Settings::RenderMode::NONE), 
         inputMode(Settings::InputMode::LSD), 
@@ -72,10 +74,13 @@ template<typename T>
 bool Setting<T>::isset() const {return this->_defined;}
 
 template<typename T>
-T const& Setting<T>::get() const {return this->_value;}
+T Setting<T>::get() const {return this->_value;}
 
 template<typename T>
-T & Setting<T>::get() {return this->_value;}
+T & Setting<T>::getRef() {
+    this->_defined = true;
+    return this->_value;
+}
 
 // template<typename T>
 // T & operator=(T & v1, Setting<T> & v2) {

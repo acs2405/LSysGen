@@ -3,6 +3,7 @@
 
 
 #include <set>
+#include <list>
 
 #define LSYSGEN_VERSION "0.6"
 
@@ -175,37 +176,39 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                     settings.outputRenderFile = arg2;
             }
         } else if (argNamesN.find(arg) != argNamesN.end()) {
-            // if (settings.args.isset()) {
-            //     std::cerr << arg << " argument repeated" << std::endl;
-            //     exit(1);
-            // }
-            if (arg == "-A" || arg == "--args") {
-                settings.args.set();
-            }
-            auto & args = settings.args.get();
+            std::list<char*> values;
             for (++i; i < argc; ++i) {
-                std::string arg2 = argv[i];
                 // Excludes options starting with -, but includes "-"
                 if (argv[i][0] != '-' || argv[i][1] == '\0') {
-                    if (arg == "-A" || arg == "--args") {
-                        std::smatch m;
-                        if (std::regex_match(arg2, m, argRegex)) {
-                            if (args.find(m[1]) != args.end()) {
-                                argumentError("lsystem argument \"" + m[1].str() + "\" repeated");
-                            }
-                            args[m[1]] = m[2];
-                        } else {
-                            argumentError(arg + " arguments must be pairs NAME:VALUE");
-                        }
-                    }
+                    values.push_back(argv[i]);
                 } else {
+                    // Found an option name. Stop here
+                    --i;
                     break;
+                }
+            }
+            if (arg == "-A" || arg == "--args") {
+                if (settings.args.isset())
+                    argumentError("arguments argument repeated");
+                auto & args = settings.args.getRef();
+                for (char const* arg2 : values) {
+                    std::cmatch m;
+                    if (std::regex_match(arg2, m, argRegex)) {
+                        if (args.find(m[1]) != args.end())
+                            argumentError("lsystem argument \"" + m[1].str() + "\" repeated");
+                        args[m[1]] = m[2];
+                    } else {
+                        argumentError(arg + " arguments must be pairs NAME:VALUE");
+                    }
                 }
             }
         } else {
             argumentError("unknown argument \"" + arg + "\"");
         }
     }
+
+    // for (auto [name, value] : settings.args.get())
+    //     std::cout << name << ": " << value << std::endl;
 
     // if (svgOptionsSet && settings.renderMode.get() != lsysgen::Settings::RenderMode::SVG)
     //     argumentError("--svg option is required for " + arg + " option");
@@ -280,7 +283,7 @@ and right context of a character when checking a rule. Too many iterations may t
     std::cout << "     -S N, --seed N: sets or overrides a seed for a non-deterministic L System. When two or more rules can be \
 applied to the same character, some randomness is introduced. Setting a seed (> 0) will produce some \"random\" result, but \
 it will always produce the same result if executed with the same seed. Default is -1 (chooses a random seed)." << std::endl;
-    std::cout << "     -A ARG:VALUE ..., --args ARG:VALUE ...: sets arguments for the L System [NOT IMPLEMENTED]." << std::endl;
+    std::cout << "     -A ARG:VALUE ..., --args ARG:VALUE ...: sets arguments for the L System." << std::endl;
     std::cout << std::endl;
 
     std::cout << "     -X, --axiom-input: when this option is set, the program will read the input file as an axiom rather than as \

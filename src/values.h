@@ -20,6 +20,7 @@ class Scope;
 
 #include "LSysDParser.h"
 #include "LSysDExpressionEvaluator.h"
+#include "LSystem.h"
 
 
 namespace lsysgen {
@@ -64,6 +65,7 @@ public:
     static ValueType const BOOL_TYPE;
     static ValueType const STRING_TYPE;
     static ValueType const FUNCTION_TYPE;
+    static ValueType const LSYSTEM_TYPE;
     static ValueType const NULL_TYPE;
     static ValueType const ERROR_TYPE;
 
@@ -91,7 +93,8 @@ public:
     Value(double value);
     Value(bool value);
     Value(std::string_view const value);
-    Value(Function* value);
+    Value(Function * value);
+    Value(LSystem<char> * value);
     Value(std::nullptr_t value);
 
     ValueType const* type() const;
@@ -101,6 +104,7 @@ public:
     bool isBool () const;
     bool isString () const;
     bool isFunction () const;
+    bool isLSystem () const;
     bool isNull () const;
     bool isError () const;
 
@@ -111,7 +115,9 @@ public:
     bool asBool () const;
     std::string asString () const;
     Function* asFunction ();
-    Function* asFunction () const;
+    Function const* asFunction () const;
+    LSystem<char> * asLSystem ();
+    LSystem<char> const* asLSystem () const;
     std::nullptr_t asNull () const;
 
     template<typename T>

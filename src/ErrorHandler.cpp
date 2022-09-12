@@ -8,13 +8,13 @@
 
 namespace lsysgen {
 
-ErrorHandler::ErrorHandler(std::string_view const filename, std::vector<std::string> const* sourceLines, StackTrace const* st): 
-        _filename(filename != "-" ? filename : "<stdin>"), _sourceLines(sourceLines), 
+ErrorHandler::ErrorHandler(std::string_view const filename, StackTrace const* st): 
+        _filename(filename.size() > 0 && filename != "-" ? filename : "<inline>"), 
         _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
         _stdin(filename == "-") {}
 
 ErrorHandler::ErrorHandler(ErrorHandler const& eh): 
-        _filename(eh._filename), _sourceLines(eh._sourceLines), _parentTrace(eh._parentTrace), 
+        _filename(eh._filename), _parentTrace(eh._parentTrace), 
         _messages(), _errors(), _warnings(), _notices(), _failed(false), _stdin(eh._stdin) {}
 
 ErrorHandler::~ErrorHandler() {
@@ -76,7 +76,7 @@ void ErrorHandler::dump() {
 
 StackTrace * ErrorHandler::trace(antlr4::Token const* tokInit, antlr4::Token const* tokEnd, std::string_view const text) {
     antlr4::Token const* end = tokEnd != nullptr ? tokEnd : tokInit;
-    return new StackTrace(text, tokInit, end, _parentTrace, _sourceLines, _filename);
+    return new StackTrace(text, tokInit, end, _parentTrace, _filename);
 }
 
 StackTrace * ErrorHandler::trace(antlr4::tree::TerminalNode * t1, antlr4::tree::TerminalNode * t2, std::string_view const text) {
@@ -166,14 +166,13 @@ StackTrace::StackTrace(std::string_view const text,
             antlr4::Token const* tokInit, 
             antlr4::Token const* tokEnd, 
             StackTrace const* parent, 
-            std::vector<std::string> const* sourceLines, 
             std::string_view const filename):
         _text(text), _tokInit(tokInit), _tokEnd(tokEnd), _parent(parent), 
-        _sourceLines(sourceLines), _filename(filename) {}
+        _filename(filename) {}
 
 StackTrace::StackTrace(StackTrace const& st): 
         _text(st._text), _tokInit(st._tokInit), _tokEnd(st._tokEnd), _parent(st._parent), //_parent(new StackTrace(*st._parent)),
-        _sourceLines(st._sourceLines), _filename(st._filename) {}
+        _filename(st._filename) {}
 
 // StackTrace::StackTrace(antlr4::ParserRuleContext* ctx, StackTrace* parent, std::vector<std::string>* sourceLines, std::string filename): 
 //         StackTrace(ctx->start, ctx->stop, parent, sourceLines, filename) {}
@@ -181,10 +180,21 @@ StackTrace::StackTrace(StackTrace const& st):
 StackTrace::~StackTrace() {}
 
 std::string StackTrace::getLine() const {
-    if (this->getLineNumber() <= _sourceLines->size())
-        return (*_sourceLines)[this->getLineNumber() - 1];
-    else
-        return "";
+    antlr4::CharStream * input = _tokInit->getInputStream();
+    // if (_tokInit->getStartIndex() < input->size() && _tokInit->getStopIndex() < input->size())
+    std::string untilTokEnd = input->getText(antlr4::misc::Interval(_tokInit->getStartIndex() - _tokInit->getCharPositionInLine(), _tokInit->getStopIndex()));
+    int maxAfter = 60; // Takes up to 60 characters since _tokEnd->getStopIndex() + 1
+    int after = std::min(maxAfter, static_cast<int>(input->size() - _tokInit->getStopIndex()));
+    // if (_tokInit->getStopIndex() + 1 < input->size())
+    std::string afterTokEnd = input->getText(antlr4::misc::Interval(_tokInit->getStopIndex() + 1, _tokInit->getStopIndex() + after));
+    // afterTokEnd may contain line breaks
+    std::string::size_type breakPos = afterTokEnd.find('\n');
+    if (breakPos == std::string::npos)
+        return untilTokEnd + afterTokEnd;
+    else {
+        std::string untilBreak(afterTokEnd.begin(), afterTokEnd.begin() + breakPos);
+        return untilTokEnd + untilBreak;
+    }
 }
 
 std::string StackTrace::getMessageLine(std::string const& format) const {
@@ -213,8 +223,6 @@ std::string StackTrace::getMessageMark(std::string const& format) const {
 //     // terminalSupportsColors();
 // }
 std::string StackTrace::getTraceString(int msgType, std::string_view const text) const {
-    if (_sourceLines == nullptr)
-        return static_cast<std::string>(text);
     std::stringstream ss;
     std::string color;
     switch (msgType) {
@@ -225,9 +233,9 @@ std::string StackTrace::getTraceString(int msgType, std::string_view const text)
         default:                    color = "\u001b[32m"; break;
     }
     std::string slino = std::to_string(this->getLineNumber());
-    std::string smaxlino = std::to_string(_sourceLines->size());
-    int pad = smaxlino.size() - slino.size();
-    std::string lino = "  " + std::string(pad, ' ') + slino + " | ";
+    // std::string smaxlino = std::to_string(getLine()->size());
+    // int pad = smaxlino.size() - slino.size();
+    std::string lino = "  " /*+ std::string(pad, ' ')*/ + slino + " | ";
     std::string linosp = std::string(lino.size() - 3, ' ') + " | ";
     ss << "\u001b[1m" << _filename;
     ss << ":" << this->getLineNumber();

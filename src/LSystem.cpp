@@ -284,6 +284,9 @@ Module<T> * LSystem<T>::module() {
     return this->_module;
 }
 
+// template<typename T>
+// bool LSystem<T>::isMain() const {return this->_main;}
+
 
 
 template class LSystem<char>;

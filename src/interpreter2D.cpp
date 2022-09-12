@@ -19,7 +19,11 @@ std::string Point2D::toString() const {
     // return std::format("{0:.2} {1:.2} ", x, y);
 }
 
-Color::Color(float r, float g, float b, float a): r(r), g(g), b(b), a(a) {}
+Color::Color(float r, float g, float b, float a): 
+        r(std::max(0.0f, std::min(r, 1.0f))), 
+        g(std::max(0.0f, std::min(g, 1.0f))), 
+        b(std::max(0.0f, std::min(b, 1.0f))), 
+        a(std::max(0.0f, std::min(a, 1.0f))) {}
 Color::Color(std::string const& color): Color() {this->parse(color);}
 Color::Color(): r(0.0), g(0.0), b(0.0), a(1.0) {}
 
@@ -54,6 +58,8 @@ void Color::parse(std::string const& s) {
     // std::cout << toString() << std::endl;
 }
 
+Color Color::rgb() const {return Color(r, g, b);}
+
 std::string Color::toString() const {
     char buf[50];
     if (a == 1.0)
@@ -62,6 +68,12 @@ std::string Color::toString() const {
         sprintf(buf, "rgba(%d,%d,%d,%f)", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b), a);
     return buf;
     // return std::format("#{0:02X}{1:02X}{2:02X}", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
+}
+
+std::string Color::alpha() const {
+    char buf[10];
+    sprintf(buf, "%.6f", a);
+    return buf;
 }
 
 State2D::State2D(): pos(), dir(0.0), penColor(), fillColor(), lineWidth(NAN) {}
@@ -95,10 +107,16 @@ std::string node2svg(
     std::string svg = "<svg width=\"" + std::to_string(desiredWidth);
     svg += "\" height=\"" + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
-    if (lsystem && lsystem->settings2D().background.isset())
-        svg += "<rect width=\"" + std::to_string(desiredWidth) + 
-                "\" height=\"" + std::to_string(desiredHeight) + 
-                "\" fill=\"" + lsystem->settings2D().background.get() + "\" />\n";
+    if (lsystem && lsystem->settings2D().background.isset()) {
+        Color bg = Color(lsystem->settings2D().background.get());
+        svg += "<rect";
+        // svg += " width=\"100%\" height=\"100%\"";
+        svg += " width=\"" + std::to_string(desiredWidth) + "\"";
+        svg += " height=\"" + std::to_string(desiredHeight) + "\"";
+        svg += " fill=\"" + bg.rgb().toString() + "\"";
+        svg += " fill-opacity=\"" + bg.alpha() + "\"";
+        svg += "/>\n";
+    }
     svg += "<g transform=\"";
     // svg += "translate(" + std::to_string(margin); // when margin was absolute
     // svg += "," + std::to_string(margin) + ") ";
@@ -143,17 +161,22 @@ std::string node2svg(
         move = 0.0;
         if (node->isLeaf()) {
             values = node->content().values;
-            std::string fillstr;
+            std::string fillstr, fillopstr;
             if (fill) {
-                fillstr = state.fillColor.toString();
+                fillstr = state.fillColor.rgb().toString();
+                fillopstr = state.fillColor.alpha();
             } else {
                 fillstr = "none";
+                fillopstr = "1";
             }
             if (!inPath) {
                 // svgContent += "<g fill=\"" + fillstr + "\">";
-                element = "<path stroke=\"" + state.penColor.toString();
+                element = "<path stroke=\"" + state.penColor.rgb().toString();
+                element += "\" stroke-opacity=\"" + state.penColor.alpha();
                 element += "\" stroke-width=\"" + std::to_string(state.lineWidth);
-                element += "\" fill=\"" + fillstr + "\" d=\"M";
+                element += "\" fill=\"" + fillstr;
+                element += "\" fill-opacity=\"" + fillopstr;
+                element += "\" d=\"M";
                 element += state.pos.toString();
                 inPath = true;
             }
@@ -228,21 +251,24 @@ std::string node2svg(
                             r = v[0].asFloat();
                             g = v[1].asFloat();
                             b = v[2].asFloat();
-                            if (values->size() == 4)
-                                a = v[3].asFloat();
+                            if (values->size() == 4) {
+                                if (v[3].isFloat())
+                                    a = v[3].asFloat();
+                                // TODO else error
+                            }
                         } else {
                             // TODO error
                         }
                     } else {
                         // TODO error
                     }
-                    if (values->size() >= 3 && (node->element() == 'c' || node->element() == 'n')) {
+                    if (node->element() == 'c' || node->element() == 'n') {
                         state.penColor.r = r;
                         state.penColor.g = g;
                         state.penColor.b = b;
                         state.penColor.a = a;
                     }
-                    if (values->size() >= 3 && (node->element() == 'c' || node->element() == 'l' || node->element() == 'P')) {
+                    if (node->element() == 'c' || node->element() == 'l' || node->element() == 'P') {
                         state.fillColor.r = r;
                         state.fillColor.g = g;
                         state.fillColor.b = b;

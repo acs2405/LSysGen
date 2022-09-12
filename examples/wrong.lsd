@@ -15,19 +15,19 @@ ab -> Fa        # Invalid
 a -> aFa        # Valid
 a -> aBa        # Valid
 rules {
-    F -> avd    # Valid
-    v =>        # Valid
+	F -> avd    # Valid
+	v =>        # Valid
 }
 coding rules {
-    r -> rr     # Invalid
-    r => k      # Valid
+	r -> rr     # Invalid
+	r => k      # Valid
 }
 production rules {
-    k => F-F    # Invalid
-    k<_ -> F-F  # Valid
+	k => F-F    # Invalid
+	k<_ -> F-F  # Valid
 }
 table t1 {
-    a -> b      # Valid
-    b => c      # Invalid
+	a -> b      # Valid
+	b => c      # Invalid
 }
 u => [+F]       # Valid

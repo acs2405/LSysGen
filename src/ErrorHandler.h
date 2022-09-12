@@ -46,14 +46,13 @@ private:
     bool _stdin;
 
     std::string const _filename;
-    std::vector<std::string> const* _sourceLines;
     StackTrace const* _parentTrace;
 
     Message * createMessage(std::string_view const msg, int msgType=0, StackTrace const* st=nullptr) const;
     void addMessage(Message const* msg);
 
 public:
-    ErrorHandler(std::string_view const filename, std::vector<std::string> const* sourceLines, StackTrace const* st=nullptr);
+    ErrorHandler(std::string_view const filename, StackTrace const* st=nullptr);
     ErrorHandler(ErrorHandler const& eh);
     ~ErrorHandler();
 
@@ -130,7 +129,6 @@ public:
             antlr4::Token const* tokInit, 
             antlr4::Token const* tokEnd, 
             StackTrace const* parent, 
-            std::vector<std::string> const* sourceLines, 
             std::string_view const filename);
     StackTrace(StackTrace const& st);
 	~StackTrace();

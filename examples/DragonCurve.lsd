@@ -5,7 +5,8 @@ lsystem DragonCurve {
 
 	set iterations := 10
 	set initial_heading := 0
-	set background := "#fff"
+	set background := "#000"
+	set line_color := "#3f3"
 	set rotation := 90
 
 	rules {

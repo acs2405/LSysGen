@@ -32,7 +32,9 @@ struct Color {
     Color();
 
     void parse(std::string const& s);
+    Color rgb() const;
     std::string toString() const;
+    std::string alpha() const;
 };
 
 class State2D {

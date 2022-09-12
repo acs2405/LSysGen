@@ -46,10 +46,11 @@ class LSystem {
 
     ParseTreeNode<InstanceNodeContent, T> * _axiom;
     int _iterations;
-    // Settings const* _settings;
     Settings2D _settings2D;
     std::list<T> * _ignore;
     Function * _tableFunc;
+
+    // bool _main;
 
     ParseTreeNode<InstanceNodeContent, T> * _lastWord;
     std::vector<ParseTreeNode<InstanceNodeContent, T> *> _encodedProgression;
@@ -88,6 +89,8 @@ public:
     int iteration() const;
     std::string const& name() const;
     Module<T> * module();
+
+    // bool isMain() const;
 };
 
 }

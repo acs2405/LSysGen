@@ -36,8 +36,8 @@ public:
     void set();
 
     bool isset() const;
-    T const& get() const;
-    T & get();
+    T get() const;
+    T & getRef();
 };
 
 // template<typename T>

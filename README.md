@@ -14,7 +14,9 @@ Enjoy creating plants and fractals with this tool!
 
 An L-System has a set of rules and an axiom, that changes every character on each iteration if a rule is found for each of them. You should also specify the number of iterations (default is 0, prints axiom).-->
 
-## Examples (generated with the program)
+## Example L Systems (generated with the program)
+
+Example `*.lsd` files are provided in `examples/`. You are free to use them in the program, even tweaking some parameters (see `lsys --help`).
 
 ```
 lsystem DragonCurve {
@@ -36,29 +38,27 @@ lsystem DragonCurve {
 }
 ```
 
-Executing the program with this file (`lsys examples/DragonCurve.lsd --svg images/Dragon-10.svg`) generates:
+Executing the program with this file (`lsys examples/DragonCurve.lsd --svg | display`) generates:
 
-![Dragon curve](./images/Dragon-10.svg)
-
-Dragon curve (DragonCurve.lsd, 10 iterations)
+![Dragon curve](./images/Dragon.svg)
 
 ### Other examples
 
-![Some parametric random plant](./images/B2-20-1.svg)
+![Some parametric random plant](./images/B2.svg)
 
-Some parametric random plant (B2.lsd, 20 iterations)
+Some parametric random plant (B2.lsd)
 
-![Penrose tiling](./images/PenroseTiling-4.svg)
+![Penrose tiling](./images/PenroseTiling.svg)
 
-Penrose tiling (PenroseTiling.lsd, 4 iterations)
+Penrose tiling (PenroseTiling.lsd)
 
-![Broccoli](./images/Broccoli-7.svg)
+![Broccoli](./images/Broccoli.svg)
 
-Broccoli (Broccoli.lsd, 7 iterations)
+Broccoli (Broccoli.lsd)
 
-![Cantor set](./images/ParametricCantorSet-8.svg)
+![Cantor set](./images/ParametricCantorSet.svg)
 
-Cantor set (ParametricCantorSet.lsd, 8 iterations)
+Cantor set (ParametricCantorSet.lsd)
 
 ## The program
 
@@ -108,42 +108,72 @@ antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor
 
 ### Execution
 
-Theris project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage out L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
+This project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage out L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
 
-There is also a small Python module, `lsys.py`, that uses the `lsysgen` library and serves as a Python wrapper for the library (through its class `LSystem` that is able to print the L system and also its 2D render).
-
-To execute any of the above mentioned programs, go to `build/` and run either of:
+To execute the `lsys` program, go to `build/` and run either of:
 
 ```
 ./lsys INPUT_FILE [OUTPUT_FILE] [OPTIONS]
 ./lsys -a AXIOM [OPTIONS]
 ```
 
-The python script is also runnable and prints the resulting L system string and the SVG image:
+The main options are:
+
+- `-i N`: sets or overrides the number of iterations
+- `-a AXIOM`: sets or overrides the axiom. `AXIOM` should be quoted.
+- `-r RULES`: adds rules to the L System. `RULES` must be quoted.
+- `--svg [OUTPUT_SVG_FILE]`: outputs a SVG image after the L System result. If not set, the program outputs the result as is. If `OUTPUT_SVG_FILE` is set, that will be the file where the output will be writen, otherwise the output will be printed to the standard output.
+
+Run `./lsys --help` to see all options. 
+
+Examples:
+
+Inline L System (without LSDL file, defined by axiom (`-a`) and rules (`-r`) arguments):
 
 ```
-./lsys.py INPUT_FILE [-i N_ITERATIONS]
-python lsys.py INPUT_FILE [N_ITERATIONS]
+./lsys -a "A" -r "A->B; B->AB;" -i 10
 ```
 
-`INPUT_FILE` is a `*.lsd` file (or `-` for standard input) that defines an L-system. The next part of this file will show you how to edit a `*.lsd` file, and `N_ITERATIONS` is the number of iterations of the algorithm. If absent, the one defined in `INPUT_FILE` will be used instead. Examples:
+Output:
 
 ```
-./lsys -a "A" -r a->B; b->AB; -i 12
+ABBABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBAB
+```
+
+L System from LSDL file (ImageMagick's `display` opens a window that displays the SVG image output):
+
+```
+./lsys ../examples/Test1.lsd --svg | display
+```
+
+Output:
+
+![Test1 image](./images/Test1.svg)
+
+Other examples:
+
+```
+./lsys ../examples/HilbertCurve.lsd --svg -i 4 | display
 ./lsys ../examples/B2.lsd -i 20 --svg B2.svg
 ```
 
-<!--There are some useful options that you can see with the help:
+There is also a small Python module, `lsys.py`, that uses the `lsysgen` library and serves as a Python wrapper for the library (through its class `LSystem` that is able to print the L system and also its 2D render). This python script is also runnable and prints the resulting L system string and the SVG image:
+
+```
+python lsys.py INPUT_FILE [N_ITERATIONS]
+```
+
+<!--
+
+`INPUT_FILE` is a `*.lsd` file (or `-` for standard input) that defines an L-system. The next part of this file will show you how to edit a `*.lsd` file.
+
+There are some useful options that you can see with the help:
 
 $ python3 lsys\.py \-h
 
 By default, the program will interpret the L-System and will draw it in a new window.-->
 
-## Example L systems
-
-Example `*.lsd` files are provided in `examples/`. You are free to use them in the program with the name of the file as its parameter, tweaking some parameters (see `--help`).
-
-## Syntax and semantics
+## LSDL Syntax and semantics
 
 ### Document structure
 
@@ -152,7 +182,7 @@ To define an L system with an axiom and the rules that transform it, I have crea
 In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:
 
 ```
-./build/lsys -a "F+F+PF+F+F+Fp+F+F" -F "#FF0000" --svg images/test.svg
+./build/lsys -a "F+F+PF+F+F+Fp+F+F" -F "#FF0000" -R 30 --svg images/test.svg
 ```
 
 But this is not the main case. If we want to *generate* the L system, we create an LSDL document for it or tweak the program's parameters (`-r` to add rules, etc.).
@@ -200,12 +230,12 @@ lsystem SierpinskiTriangle {
 If we run:
 
 ```
-./build/lsys examples/SierpinskiTriangle.lsd --svg images/SierpinskiTriangle-6.svg
+./build/lsys examples/SierpinskiTriangle.lsd --svg | display
 ```
 
 This generates:
 
-![Sierpinski](./images/SierpinskiTriangle-6.svg)
+![Sierpinski](./images/SierpinskiTriangle.svg)
 
 An example of an anonymous L system:
 
@@ -526,7 +556,13 @@ The rest of the characters will be ignored when displaying.
 
 ## SVG
 
-`lsys` with the option `--svg` converts the result of the L-system to SVG. If you want to convert the image later to PNG, you can use inkscape:
+`lsys` with the option `--svg` converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's `display`:
+
+```
+lsys examples/B2.lsd --svg | display
+```
+
+If you want to convert a SVG file into a PNG file, you can use inkscape:
 
 ```
 inkscape -o test.png -w 1000 -b white test.svg

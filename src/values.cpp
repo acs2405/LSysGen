@@ -58,6 +58,7 @@ ValueType const ValueType::FLOAT_TYPE("float");
 ValueType const ValueType::BOOL_TYPE("bool");
 ValueType const ValueType::STRING_TYPE("string");
 ValueType const ValueType::FUNCTION_TYPE("function");
+ValueType const ValueType::LSYSTEM_TYPE("lsystem");
 ValueType const ValueType::NULL_TYPE("nullType");
 ValueType const ValueType::ERROR_TYPE("error");
 
@@ -70,6 +71,7 @@ Value::Value(double value): _type(&ValueType::FLOAT_TYPE), _value(value) {}
 Value::Value(bool value): _type(&ValueType::BOOL_TYPE), _value(value) {}
 Value::Value(std::string_view const value): _type(&ValueType::STRING_TYPE), _value(static_cast<std::string>(value)) {}
 Value::Value(Function* value): _type(&ValueType::FUNCTION_TYPE), _value(value) {}
+Value::Value(LSystem<char> * value): _type(&ValueType::LSYSTEM_TYPE), _value(value) {}
 Value::Value(std::nullptr_t value): _type(&ValueType::NULL_TYPE), _value(value) {}
 
 ValueType const* Value::type() const {return this->_type;}
@@ -81,6 +83,7 @@ bool Value::isFloat () const {return this->is(&ValueType::FLOAT_TYPE);}
 bool Value::isBool () const {return this->is(&ValueType::BOOL_TYPE);}
 bool Value::isString () const {return this->is(&ValueType::STRING_TYPE);}
 bool Value::isFunction () const {return this->is(&ValueType::FUNCTION_TYPE);}
+bool Value::isLSystem () const {return this->is(&ValueType::LSYSTEM_TYPE);}
 bool Value::isNull () const {return this->is(&ValueType::NULL_TYPE);}
 bool Value::isError () const {return this->is(&ValueType::ERROR_TYPE);}
 
@@ -99,8 +102,10 @@ double Value::asFloat () const {return this->as<double>();}
 bool Value::asBool () const {return this->as<bool>();}
 std::string Value::asString () const {return this->as<std::string>();}
 std::nullptr_t Value::asNull () const {return this->as<std::nullptr_t>();}
-Function* Value::asFunction () {return this->as<Function*>();}
-Function* Value::asFunction () const {return this->as<Function*>();}
+Function * Value::asFunction () {return this->as<Function *>();}
+Function const* Value::asFunction () const {return this->as<Function const*>();}
+LSystem<char> * Value::asLSystem () {return this->as<LSystem<char> *>();}
+LSystem<char> const* Value::asLSystem () const {return this->as<LSystem<char> const*>();}
 
 template<typename T>
 T Value::as () {
@@ -124,7 +129,9 @@ std::string Value::toString() const {
     } else if (this->isString()) {
         return '"' + strEscape(this->as<std::string>()) + '"';
     } else if (this->isFunction()) {
-        return this->as<Function*>()->toString();
+        return this->as<Function *>()->toString();
+    } else if (this->isLSystem()) {
+        return "<LSystem " + this->as<LSystem<char> *>()->name() + ">";
     } else {
         return "<error>";
     }
