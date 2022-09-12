@@ -470,8 +470,22 @@ The syntax of the coding rules is the same than production rules', but using dou
 
 We have seen the `iterations` constant and the `table_func` function to choose which table to choose each iteration. We can define any function, variable or constant inside our L system.
 
+Axioms and rules share a special variable: `i`, that equals the current iteration number. In the axiom, `i` = `0`, in the production rules, `i` = `1` in the first iteration, `i` = `2` in the second, etc. and in the coding rules, `i` always equals the total number of iterations. Example:
+
 ```
-set double(x) = 2*x       # double is a function that takes 1 argument
+./lsys -a "A(i)" -r "A(x)->F(i)fA(x); f=>f(i)" -i 3
+```
+
+Output:
+
+```
+F(1)f(3)F(2)f(3)F(3)f(3)A(0)
+```
+
+Some examples of custom functions, variables and constants:
+
+```
+set double(x) := 2*x      # double is a function that takes 1 argument
 set SQRT_2 := 1.414       # SQRT_2 is a constant
 var x := double(SQRT_2)   # x is a variable
 var y                     # y is also a variable
@@ -491,12 +505,12 @@ set seed := 6902             # (optional, defaults -1) You can specify a seed fo
 These other constant names are used by the 2D interpreter and do not have any meaning outside the 2D interpreter:
 
 ```
-set initial_heading := 90          # (optional, defaults 0.0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
-set rotation := 30                 # (optional, defaults 12.0) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
-set line_width := 0.02             # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
-set background := "#FFBB00"        # (optional, defaults transparent) This constant sets the background color of the SVG
-set line_color := "#F33"           # (optional, defaults "#000" (black)) This constant sets the default line color of the line being drawn
-set fill_color := "#rgb(0, 0, 0)"  # (optional, defaults "#000" (black)) This constant sets the default fill color when filling shapes
+set initial_heading := 90      # (optional, defaults 0.0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
+set rotation := 30             # (optional, defaults 12.0) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width := 0.02         # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set line_color := "#F33"       # (optional, defaults "#000" (black)) This constant sets the default line color of the line being drawn
+set fill_color := "rgb(0,0,0)" # (optional, defaults "#000" (black)) This constant sets the default fill color when filling shapes
+set background := "#FFBB00"    # (optional, defaults transparent) This constant sets the background color of the SVG
 ```
 
 Every special constant has a special command-line argument in the program to quickly force a value for that constant.

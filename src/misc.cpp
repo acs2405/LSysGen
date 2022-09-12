@@ -11,19 +11,23 @@
 
 namespace lsysgen {
 
-Random::Random(): gen() {}
+Random::Random(): _seed(1), gen(_seed) {}
 
 Random::~Random() {}
 
 void Random::seed(std::uint_fast32_t seed) {
+    this->_seed = seed;
     this->gen.seed(seed);
 }
+
+std::uint_fast32_t Random::seed() const {return this->_seed;}
 
 std::uint_fast32_t Random::randomSeed() {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-    return static_cast<std::uint_fast32_t>(millis);
+    std::mt19937 gen(millis);
+    return gen() * millis % gen();
 }
 
 std::uint_fast32_t Random::rand() {

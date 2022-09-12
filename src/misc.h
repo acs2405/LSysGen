@@ -28,6 +28,7 @@ namespace lsysgen {
 
 class Random {
     std::mt19937 gen;
+    std::uint_fast32_t _seed;
 
 public:
 	Random();
@@ -36,6 +37,8 @@ public:
     void seed(std::uint_fast32_t seed);
     std::uint_fast32_t rand();
     double randFloat();
+
+    std::uint_fast32_t seed() const;
 
     static std::uint_fast32_t randomSeed();
 };

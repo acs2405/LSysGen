@@ -12,14 +12,14 @@
 std::set<std::string> const argNames0 = {
     "--help", "-X", "--axiom-input"
 };
+std::set<std::string> const argNamesOpt = {
+    "--svg", "-S", "--seed"
+};
 std::set<std::string> const argNames1 = {
     "-a", "--axiom", "-r", "--rules", "-i", "--iterations", "-I", 
-    "--ignore", "-S", "--seed", "-H", "--heading", 
+    "--ignore", "-H", "--heading", 
     "-R", "--rotation", "-W", "--line-width", "-B", "--background", 
     "-C", "--line-color", "-F", "--fill-color", "-l", "--lsystem"
-};
-std::set<std::string> const argNamesOpt = {
-    "--svg"
 };
 std::set<std::string> const argNamesN = {
     "-A", "--args"
@@ -86,6 +86,29 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 printHelp();
                 exit(0);
             }
+        } else if (argNamesOpt.find(arg) != argNamesOpt.end()) {
+            std::string arg2;
+            if (argc > i+1) {
+                // Excludes options starting with -, but includes "-"
+                if (argv[i+1][0] != '-' || argv[i+1][1] == '\0')
+                    arg2 = argv[++i];
+            }
+            if (arg == "--svg") {
+                if (settings.renderMode.isset()) {
+                    argumentError("render mode argument repeated");
+                }
+                settings.renderMode.set(lsysgen::Settings::RenderMode::SVG);
+                if (arg2.size() > 0)
+                    settings.outputRenderFile = arg2;
+            } else if (arg == "-S" || arg == "--seed") {
+                if (settings.seed.isset())
+                    argumentError("seed argument repeated");
+                if (arg2.size() > 0) {
+                    settings.seed.set(strict_stoi(arg, arg2));
+                } else {
+                    settings.seed.set();
+                }
+            }
         } else if (argNames1.find(arg) != argNames1.end()) {
             if (argc == i+1)
                 argumentError(arg + " must be followed by a value");
@@ -102,11 +125,7 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             } else if (arg == "-i" || arg == "--iterations") {
                 if (settings.iterations.isset())
                     argumentError("iterations argument repeated");
-                try {
-                    settings.iterations.set(std::stoi(arg2));
-                } catch (std::invalid_argument const& ex) {
-                    argumentError(arg + " value must be an integer");
-                }
+                settings.iterations.set(strict_stoi(arg, arg2));
             } else if (arg == "-l" || arg == "--lsystem") {
                 if (settings.lsystem.isset())
                     argumentError("lsystem argument repeated");
@@ -115,38 +134,18 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (settings.ignore.isset())
                     argumentError("ignore argument repeated");
                 settings.ignore.set(arg2);
-            } else if (arg == "-S" || arg == "--seed") {
-                if (settings.seed.isset())
-                    argumentError("seed argument repeated");
-                try {
-                    settings.seed.set(std::stoi(arg2));
-                } catch (std::invalid_argument const& ex) {
-                    argumentError(arg + " value must be an integer");
-                }
             } else if (arg == "-H" || arg == "--heading") {
                 if (settings.settings2D.heading.isset())
                     argumentError("heading argument repeated");
-                try {
-                    settings.settings2D.heading.set(std::stod(arg2));
-                } catch (std::invalid_argument const& ex) {
-                    argumentError(arg + " value must be a number");
-                }
+                settings.settings2D.heading.set(strict_stod(arg, arg2));
             } else if (arg == "-R" || arg == "--rotation") {
                 if (settings.settings2D.rotation.isset())
                     argumentError("rotation argument repeated");
-                try {
-                    settings.settings2D.rotation.set(std::stod(arg2));
-                } catch (std::invalid_argument const& ex) {
-                    argumentError(arg + " value must be a number");
-                }
+                settings.settings2D.rotation.set(strict_stod(arg, arg2));
             } else if (arg == "-W" || arg == "--line_width") {
                 if (settings.settings2D.lineWidth.isset())
                     argumentError("line width argument repeated");
-                try {
-                    settings.settings2D.lineWidth.set(std::stod(arg2));
-                } catch (std::invalid_argument const& ex) {
-                    argumentError(arg + " value must be a number");
-                }
+                settings.settings2D.lineWidth.set(strict_stod(arg, arg2));
             } else if (arg == "-C" || arg == "--line-color") {
                 if (settings.settings2D.lineColor.isset())
                     argumentError("line color argument repeated");
@@ -159,21 +158,6 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (settings.settings2D.background.isset())
                     argumentError("background argument repeated");
                 settings.settings2D.background.set(arg2);
-            }
-        } else if (argNamesOpt.find(arg) != argNamesOpt.end()) {
-            std::string arg2;
-            if (argc > i+1) {
-                // Excludes options starting with -, but includes "-"
-                if (argv[i+1][0] != '-' || argv[i+1][1] == '\0')
-                    arg2 = argv[++i];
-            }
-            if (arg == "--svg") {
-                if (settings.renderMode.isset()) {
-                    argumentError("render mode argument repeated");
-                }
-                settings.renderMode.set(lsysgen::Settings::RenderMode::SVG);
-                if (arg2.size() > 0)
-                    settings.outputRenderFile = arg2;
             }
         } else if (argNamesN.find(arg) != argNamesN.end()) {
             std::list<char*> values;
@@ -203,7 +187,10 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 }
             }
         } else {
-            argumentError("unknown argument \"" + arg + "\"");
+            if (argv[i][0] != '-' || argv[i][1] == '\0')
+                argumentError("unexpected argument \"" + arg + "\"");
+            else
+                argumentError("unknown option " + arg);
         }
     }
 
@@ -216,6 +203,28 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
     // return settings;
 }
 
+
+int strict_stoi(std::string const& arg, std::string const& s, int base) {
+    try {
+        size_t pos;
+        int i = std::stoi(s, &pos, base);
+        if (pos == s.size())
+            return i;
+    } catch (std::invalid_argument const& ex) {}
+    argumentError(arg + " value must be an integer");
+    return 0;
+}
+
+double strict_stod(std::string const& arg, std::string const& s) {
+    try {
+        size_t pos;
+        double d = std::stod(s, &pos);
+        if (pos == s.size())
+            return d;
+    } catch (std::invalid_argument const& ex) {}
+    argumentError(arg + " value must be a number");
+    return 0.0;
+}
 
 void printUsage() {
     std::cerr << "Usage:" << std::endl;
@@ -280,9 +289,11 @@ rules. Defaults to 0." << std::endl;
 LSD files may contain multiple L Systems. If no one is found declared with that name, an error will occur." << std::endl;
     std::cout << "     -I CHARS, --ignore CHARS: sets or overrides the characters the L System will ignore when looking for left \
 and right context of a character when checking a rule. Too many iterations may take too much time. Defaults to empty." << std::endl;
-    std::cout << "     -S N, --seed N: sets or overrides a seed for a non-deterministic L System. When two or more rules can be \
-applied to the same character, some randomness is introduced. Setting a seed (> 0) will produce some \"random\" result, but \
-it will always produce the same result if executed with the same seed. Default is -1 (chooses a random seed)." << std::endl;
+    std::cout << "     -S [N], --seed [N]: sets or overrides a seed for a non-deterministic L System. If N is present, N will be \
+used as seed, otherwise, a random seed will be used (based in the system's current milliseconds). If this option is present, the \
+chosen seed will be printed to the standard error. When two or more rules can be applied to the same character, some randomness is \
+introduced. Setting a seed (> 0) will produce some seemingly \"random\" result, but it will always produce the same result when \
+executed with the same seed. Default value is -1 (chooses a random seed)." << std::endl;
     std::cout << "     -A ARG:VALUE ..., --args ARG:VALUE ...: sets arguments for the L System." << std::endl;
     std::cout << std::endl;
 

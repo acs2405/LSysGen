@@ -132,7 +132,8 @@ lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, l
 
 /*
  * Ideas:
- * - ELIMINAR LINES DE UNA VEZ mediante CommonToken::getInputStream() y CommonToken::getCharPositionInLine()
+ * - line_width relative to SVG width?
+ * - Cache grammar outputs for java not to be required?
  * - When random seed print the seed used?
  * - Solucionar tema del formato en los errores (--html?)
  * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)

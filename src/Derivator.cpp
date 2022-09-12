@@ -21,7 +21,6 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
         std::list<Rule<T> *> const* candidateRules = table->rulesFor(node->element());
         std::list<Rule<T> *> applicableRules;
         Scope paramMapping(scope);
-        Value v = paramMapping.get("i");
         for (Rule<T> * r : *candidateRules) {
             // std::cerr << "RULE CANDIDATE: " << r->toString() << std::endl;
             // Check arguments:
@@ -204,6 +203,9 @@ Rule<T> const* Derivator<T>::chooseRule(std::list<Rule<T> *> const& rules) {
 
 template<typename T>
 Random * Derivator<T>::random() {return this->_random;}
+
+template<typename T>
+Random const* Derivator<T>::random() const {return this->_random;}
 
 
 

@@ -19,6 +19,7 @@ class LSystem;
 #include "LSysDVisitor.h"
 #include "Derivator.h"
 #include "Settings.h"
+#include "misc.h"
 
 #include <string>
 #include <map>
@@ -87,6 +88,7 @@ public:
 
     ParseTreeNode<InstanceNodeContent, T> * current();
     int iteration() const;
+    std::uint_fast32_t seed() const;
     std::string const& name() const;
     Module<T> * module();
 

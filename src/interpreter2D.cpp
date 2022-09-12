@@ -107,6 +107,7 @@ std::string node2svg(
     std::string svg = "<svg width=\"" + std::to_string(desiredWidth);
     svg += "\" height=\"" + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
+    svg += "<!-- SEED " + std::to_string(lsystem->seed()) + " -->\n";
     if (lsystem && lsystem->settings2D().background.isset()) {
         Color bg = Color(lsystem->settings2D().background.get());
         svg += "<rect";

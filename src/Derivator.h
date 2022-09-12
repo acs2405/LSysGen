@@ -44,6 +44,7 @@ public:
     ParseTreeNode<InstanceNodeContent, T> * derive(ParseTreeNode<InstanceNodeContent, T> const* node, Table<T> const* table, std::list<T> const* ignore=nullptr, Scope * scope=nullptr);
 
     Random * random();
+    Random const* random() const;
 };
 
 }

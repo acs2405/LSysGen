@@ -14,6 +14,7 @@ LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), _settings2D()
         _tableFunc(nullptr), _axiom(nullptr), _iterations(Settings::DEFAULT_ITERATIONS), 
         _ignore(), _current(-1), _lastWord(nullptr), _encodedProgression() {
     this->_scope = new Scope(module->scope());
+    this->_scope->set("i", 0);
 
     this->_defaultTable = new Table<char>("<default>");
     this->_tables[this->_defaultTable->name] = this->_defaultTable;
@@ -110,6 +111,8 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         } else if (!v.isError())
             eh->error("seed property must be a integer number");
     }
+    if (settings.seed.isset())
+        std::cerr << "USING SEED " << std::to_string(seed) << std::endl;
     this->derivator.random()->seed(seed);
     // 2D settings:
     this->_settings2D = settings.settings2D;
@@ -191,6 +194,7 @@ void LSystem<T>::prepare() {
         this->_current = 0;
         // this->_axiom = this->parser.parseWord(this->_axiom, this->_scope());
         this->_scope->set("i", 0);
+        // this->_scope->set("r", 0.0);
         this->_lastWord = this->_axiom;  // seed
         ParseTreeNode<InstanceNodeContent, T> * derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
         if (derived == nullptr)
@@ -220,6 +224,7 @@ void LSystem<T>::iterate(int iterations) {
         if (table == nullptr)
             return;
         this->_scope->set("i", i);
+        // this->_scope->set("r", static_cast<double>(i)/(this->_iterations));
         // std::cout << "ROUND " << i << std::endl;
         // std::cout << this->_scope->get("i").asInt() << std::endl;
         ParseTreeNode<InstanceNodeContent, T> * lastWord = this->_lastWord;
@@ -238,6 +243,7 @@ void LSystem<T>::iterate(int iterations) {
     if (this->_current < 0)
         this->_current = 0;
     this->_scope->set("i", this->_current);
+    // this->_scope->set("r", 1.0);
 }
 
 template<typename T>
@@ -272,6 +278,11 @@ ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
 template<typename T>
 int LSystem<T>::iteration() const {
     return this->_current;
+}
+
+template<typename T>
+std::uint_fast32_t LSystem<T>::seed() const {
+    return derivator.random()->seed();
 }
 
 template<typename T>

@@ -1,4 +1,7 @@
 
+# Transition function (progress : 0..1):
+function t(progress, minVal, maxVal) := minVal - (minVal - maxVal)*progress
+
 lsystem Broccoli {
 
 	axiom w(.5)c(0.0)0(0.0)
@@ -13,9 +16,6 @@ lsystem Broccoli {
 
 	set minWidth := .5
 	set maxWidth := 5.0
-
-	# Transition function (p : 0..1):
-	function t(p, minVal, maxVal) := minVal - (minVal - maxVal)*p
 
 	rules {
 		1(a) -> 1(a)

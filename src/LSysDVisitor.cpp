@@ -228,9 +228,9 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         if (eh->failed() || module->eh->failed())
             return static_cast<LSystem<char> *>(nullptr);
         currentScope = currentScope->parent();
-        eh->traceDown(eh->trace(ctx->stop));
+        // eh->traceDown(eh->trace(ctx->stop));
         currentLSystem->populateProperties(settings);
-        eh->traceUp();
+        // eh->traceUp();
         currentLSystem = nullptr;
     }
     currentScope = currentScope->parent();
@@ -301,7 +301,7 @@ std::any LSysDVisitor::visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) {
             selectedLSystem = module->_mainLSystem;
         } else if (module->_lsystems.size() == 1) {
             selectedLSystem = module->_lsystems.begin()->second;
-            eh->warning("You should mark one L system as main");
+            // eh->warning("You should mark one L system as main");
         } else {
             eh->error("No L system is either selected (-l NAME) or marked as main in " + eh->fileName()); //, eh->trace(ctx->stop));
         }
@@ -330,10 +330,10 @@ std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
     }
     // eh->traceUp();
     currentScope = currentScope->parent();
-    eh->traceDown(eh->trace(ctx->ID()));
+    // eh->traceDown(eh->trace(ctx->ID()));
     if (!eh->failed() && currentLSystem == selectedLSystem)
         currentLSystem->populateProperties(settings);
-    eh->traceUp();
+    // eh->traceUp();
     currentLSystem = nullptr;
     return nullptr;
 }
