@@ -19,7 +19,8 @@ std::set<std::string> const argNames1 = {
     "-a", "--axiom", "-r", "--rules", "-i", "--iterations", "-I", 
     "--ignore", "-H", "--heading", 
     "-R", "--rotation", "-W", "--line-width", "-B", "--background", 
-    "-C", "--line-color", "-F", "--fill-color", "-l", "--lsystem"
+    "-C", "--line-color", "-F", "--fill-color", "-l", "--lsystem", 
+    "-w", "--width", "-h", "--height"
 };
 std::set<std::string> const argNamesN = {
     "-A", "--args"
@@ -158,6 +159,14 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (settings.settings2D.background.isset())
                     argumentError("background argument repeated");
                 settings.settings2D.background.set(arg2);
+            } else if (arg == "-w" || arg == "--width") {
+                if (settings.settings2D.width.isset())
+                    argumentError("width argument repeated");
+                settings.settings2D.width.set(strict_stod(arg, arg2));
+            } else if (arg == "-h" || arg == "--height") {
+                if (settings.settings2D.height.isset())
+                    argumentError("height argument repeated");
+                settings.settings2D.height.set(strict_stod(arg, arg2));
             }
         } else if (argNamesN.find(arg) != argNamesN.end()) {
             std::list<char*> values;
@@ -314,5 +323,7 @@ be parametrized to rotate a custom angle)" << std::endl;
     std::cout << "     -C COLOR, --line-color COLOR: sets or overrides the color of the line drawn by the turtle." << std::endl;
     std::cout << "     -F COLOR, --fill-color COLOR: sets or overrides the fill color when filling a shape between P and p characters." << std::endl;
     std::cout << "     -B COLOR, --background COLOR: sets or overrides the background color of the image." << std::endl;
+    std::cout << "     -w NUMBER, --width NUMBER: sets the width of the SVG element." << std::endl;
+    std::cout << "     -h NUMBER, --height NUMBER: sets the height of the SVG element." << std::endl;
 }
 

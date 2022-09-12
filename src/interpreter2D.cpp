@@ -90,10 +90,11 @@ std::string node2svg(
     State2D initialState;
     Bounds2D bounds;
     // TODO: isNaN(rotation y linewidth) ???
-    initialState.dir = lsystem ? lsystem->settings2D().heading.get() : Settings2D::DEFAULT_HEADING;
-    initialState.lineWidth = lsystem ? lsystem->settings2D().lineWidth.get() : Settings2D::DEFAULT_LINE_WIDTH;
-    initialState.penColor = Color(lsystem ? lsystem->settings2D().lineColor.get() : Settings2D::DEFAULT_LINE_COLOR);
-    initialState.fillColor = Color(lsystem ? lsystem->settings2D().fillColor.get() : Settings2D::DEFAULT_FILL_COLOR);
+    Settings2D settings2D = lsystem ? lsystem->settings2D() : Settings2D::DEFAULT;
+    initialState.dir = settings2D.heading.get();
+    initialState.lineWidth = settings2D.lineWidth.get();
+    initialState.penColor = Color(settings2D.lineColor.get());
+    initialState.fillColor = Color(settings2D.fillColor.get());
     std::string svgContent = node2svg(parent, initialState, bounds, lsystem);
     float marginProportion = 0.05;
     float boundsWidth = bounds.p1.x - bounds.p0.x,
@@ -102,14 +103,24 @@ std::string node2svg(
     //     boundsWidth = 1.0;
     // if (boundsHeight == 0.0)
     //     boundsHeight = 1.0;
-    float desiredWidth = 500.0, desiredHeight = desiredWidth*(boundsHeight+2)/(boundsWidth+2);
+    float ratio = (boundsWidth + 2) / (boundsHeight + 2);
+    float desiredWidth, desiredHeight;
+    if (settings2D.height.isset()) {
+        desiredHeight = settings2D.height.get();
+        if (settings2D.width.isset())
+            desiredWidth = settings2D.width.get();
+        else
+            desiredWidth = desiredHeight * ratio;
+    } else {
+        desiredWidth = settings2D.width.get();
+        desiredHeight = desiredWidth / ratio;
+    }
     float margin = std::max(boundsWidth, boundsHeight) * marginProportion + 1;
-    std::string svg = "<svg width=\"" + std::to_string(desiredWidth);
-    svg += "\" height=\"" + std::to_string(desiredHeight);
+    std::string svg = "<svg viewBox=\"0 0 " + std::to_string(desiredWidth) + " " + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
     svg += "<!-- SEED " + std::to_string(lsystem->seed()) + " -->\n";
-    if (lsystem && lsystem->settings2D().background.isset()) {
-        Color bg = Color(lsystem->settings2D().background.get());
+    if (settings2D.background.isset()) {
+        Color bg = Color(settings2D.background.get());
         svg += "<rect";
         // svg += " width=\"100%\" height=\"100%\"";
         svg += " width=\"" + std::to_string(desiredWidth) + "\"";

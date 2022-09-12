@@ -52,15 +52,19 @@ public:
     static std::string     const DEFAULT_BACKGROUND;
     static std::string     const DEFAULT_LINE_COLOR;
     static std::string     const DEFAULT_FILL_COLOR;
+    static double          const DEFAULT_WIDTH;
+    static double          const DEFAULT_HEIGHT;
 
     static Settings2D      const DEFAULT;
 
     Setting<double> heading;
     Setting<double> rotation;
     Setting<double> lineWidth;
-    Setting<std::string> background;
     Setting<std::string> lineColor;
     Setting<std::string> fillColor;
+    Setting<std::string> background;
+    Setting<double> width;
+    Setting<double> height;
 
     Settings2D();
 

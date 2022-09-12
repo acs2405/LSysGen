@@ -18,17 +18,24 @@ int                   const Settings::DEFAULT_SEED         = -1;
 double                const Settings2D::DEFAULT_HEADING    = 0.0;
 double                const Settings2D::DEFAULT_ROTATION   = 12.0;
 double                const Settings2D::DEFAULT_LINE_WIDTH = 0.1;
-std::string           const Settings2D::DEFAULT_BACKGROUND = "#fff";
 std::string           const Settings2D::DEFAULT_LINE_COLOR = "#000";
 std::string           const Settings2D::DEFAULT_FILL_COLOR = "#000";
+std::string           const Settings2D::DEFAULT_BACKGROUND = "#fff";
+double                const Settings2D::DEFAULT_WIDTH      = 500.0;
+double                const Settings2D::DEFAULT_HEIGHT     = Settings2D::DEFAULT_WIDTH;
+
+Settings              const Settings::DEFAULT;
+Settings2D            const Settings2D::DEFAULT;
 
 Settings2D::Settings2D(): 
         heading(Settings2D::DEFAULT_HEADING), 
         rotation(Settings2D::DEFAULT_ROTATION), 
         lineWidth(Settings2D::DEFAULT_LINE_WIDTH), 
-        background(Settings2D::DEFAULT_BACKGROUND), 
         lineColor(Settings2D::DEFAULT_LINE_COLOR), 
-        fillColor(Settings2D::DEFAULT_FILL_COLOR) {}
+        fillColor(Settings2D::DEFAULT_FILL_COLOR), 
+        background(Settings2D::DEFAULT_BACKGROUND), 
+        width(Settings2D::DEFAULT_WIDTH), 
+        height(Settings2D::DEFAULT_HEIGHT) {}
 
 Settings2D::~Settings2D() {}
 
