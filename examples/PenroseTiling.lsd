@@ -1,20 +1,26 @@
 # Penrose tiling
 # 
 
+# Transition function (progress : 0..1):
+function t(progress, minVal, maxVal) := minVal - (minVal - maxVal)*progress
+
 lsystem PenroseTiling {
 
-	set iterations := 6
+	set iterations := 4
 	set initial_heading := 60.0
 	set rotation := 36.0
+	set background := "#000";
 
 	axiom [7]++[7]++[7]++[7]++[7]
 
 	rules {
-		6 -> 8F++9F----7F[-8F----6F]++
-		7 -> +8F--9F[---6F--7F]+
-		8 -> -6F++7F[+++8F++9F]-
-		9 -> --8F++++6F[+9F++++7F]--7F
+		6 -> 8F(1)++9F(2)----7F(3)[-8F----6F(4)]++
+		7 -> +8F(5)--9F(6)[---6F(7)--7F(8)]+
+		8 -> -6F(9)++7F(10)[+++8F(11)++9F(12)]-
+		9 -> --8F(13)++++6F(14)[+9F(15)++++7F(16)]--7F(17)
 		F -> 
+
+		F(x) => c(t(x, 80, 255)/17, t(x, 80, 196)/17, 0)F
 	}
 
 }
