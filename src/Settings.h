@@ -85,13 +85,13 @@ public:
     } InputMode;
 
     static Settings::RenderMode  const DEFAULT_RENDER_MODE;
-    static Settings::InputMode  const DEFAULT_INPUT_MODE;
+    static Settings::InputMode   const DEFAULT_INPUT_MODE;
 
-    static int             const DEFAULT_ITERATIONS;
-    static std::string     const DEFAULT_IGNORE;
-    static int             const DEFAULT_SEED;
+    static int                   const DEFAULT_ITERATIONS;
+    static std::string           const DEFAULT_IGNORE;
+    static int                   const DEFAULT_SEED;
 
-    static Settings        const DEFAULT;
+    static Settings              const DEFAULT;
 
     Setting<std::string> inputFile;
     Setting<std::string> outputResultFile;

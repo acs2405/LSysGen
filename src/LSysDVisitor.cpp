@@ -69,34 +69,6 @@ ErrorHandler* LSysDVisitor::messages() {return eh;}
 //     return this->evaluator->eval(ctx);
 // }
 
-// void LSysDVisitor::setMainLSystem() { //(antlr4::ParserRuleContext* ctx) {
-//     if (settings.lsystem.isset()) {
-//         if (module->_lsystems.find(settings.lsystem.get()) != module->_lsystems.end())
-//             module->_mainLSystem = module->_lsystems[settings.lsystem.get()];
-//         else
-//             eh->error("No L-System named " + settings.lsystem.get()); //, eh->trace(ctx->stop));
-//     } else if (module->_mainLSystem == nullptr) {
-//         if (module->_lsystems.size() == 1) {
-//             module->_mainLSystem = module->_lsystems.begin()->second;
-//             // if (ctx->module())
-//             //     eh->warning("You should mark one L system as main", eh->trace(ctx->stop));
-//         } else {
-//             for (auto [name, lsys] : module->_lsystems) {
-//                 if (lsys->_name == module->_name) {
-//                     module->_mainLSystem = lsys;
-//                     break;
-//                 }
-//             }
-//             if (module->_mainLSystem == nullptr) {
-//                 eh->error("No L system is either selected (-l NAME) or marked as main in " + eh->fileName()); //, eh->trace(ctx->stop));
-//                 // return static_cast<Module<char> *>(nullptr);
-//             } else {
-//                 eh->warning("You should either select (-l NAME) or mark one L system as main"); //, eh->trace(ctx->stop));
-//             }
-//         }
-//     }
-// }
-
 void LSysDVisitor::parseArgs() {
     for (auto [param, value] : settings.args.get()) {
         antlr4::ANTLRInputStream * exprInput = new antlr4::ANTLRInputStream(value);
@@ -141,11 +113,6 @@ void LSysDVisitor::addRules() {
 
     // This adds the rules to the current LSystem
     visit(rulesTree); //, splitInLines(settings.rules));
-
-    // if (eh->failed()) {
-    //     eh->dump();
-    //     exit(1);
-    // }
 }
 
 void LSysDVisitor::setAxiom() {
@@ -168,33 +135,47 @@ void LSysDVisitor::setAxiom() {
     currentLSystem->_axiom = 
             std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>
             (visit(axiomTree)); //, splitInLines(settings.axiom)));
-
-    // if (eh->failed()) {
-    //     eh->dump();
-    //     exit(1);
-    // }
 }
 
-
-
-std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
+Module<char> * LSysDVisitor::createModule() const {
     std::string moduleName;
-    if (eh->fromStdin())
-        moduleName = eh->fileName();
-    else {
-        moduleName = getModuleName(eh->fileName());
+    if (!settings.inputFile.isset()) {
+        moduleName = eh->fileName(); // == "__inline__"
+    } else if (settings.inputFile.get() == "-") {
+        moduleName = eh->fileName(); // == "__stdin__"
+    } else {
+        moduleName = getModuleName(eh->fileName(), settings.inputMode.get() == Settings::InputMode::AXIOM ? "" : "lsd");
         if (moduleName.size() > 0) {
             // std::regex_replace(moduleName, std::regex("[-]"), "_");
             // std::regex_replace(moduleName, std::regex("[^a-zA-Z0-9_]"), "");
         } else {
-            eh->error("The input file name must end in .lsd", eh->trace(ctx->stop));
-            return static_cast<LSystem<char> *>(nullptr);
+            if (settings.inputMode.get() == Settings::InputMode::LSD)
+                eh->error("The input LSD file name must be a valid module name + .lsd");
+            else
+                eh->error("The input word file name must be a valid module name");
+            return static_cast<Module<char> *>(nullptr);
         }
     }
-    module = new Module<char>(moduleName);
-    module->eh = eh; //new ErrorHandler(eh);
-    module->_scope = new Scope(baseScope);
-    module->_evaluator = new LSysDExpressionEvaluator(eh);
+    Module<char> * mod = new Module<char>(moduleName);
+    mod->eh = eh; //new ErrorHandler(eh);
+    mod->_scope = new Scope(baseScope);
+    mod->_evaluator = new LSysDExpressionEvaluator(eh);
+    return mod;
+}
+
+LSystem<char> * LSysDVisitor::createLSystem(std::string const& name) const {
+    LSystem<char> * lsys = new LSystem<char>(module);
+    lsys->_name = name;
+    module->_lsystems[lsys->_name] = lsys;
+    return lsys;
+}
+
+// VISITS:
+
+std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
+    module = createModule();
+    if (module == nullptr)
+        return static_cast<LSystem<char> *>(nullptr);
     currentScope = module->_scope;
     if (ctx->module()) {
         // Named L Systems(s)
@@ -203,11 +184,10 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
             return static_cast<LSystem<char> *>(nullptr);
     } else {
         // Anonymous L System
-        currentLSystem = new LSystem<char>(module);
-        currentLSystem->_name = module->_name;
-        module->_lsystems[currentLSystem->_name] = currentLSystem;
+        currentLSystem = createLSystem(module->_name);
         if (settings.lsystem.isset())
-            eh->error("Anonymous L System. No '" + settings.lsystem.get() + "' L System can be selected");
+            eh->error("Input file is just an anonymous L System. No '" + settings.lsystem.get() + 
+                    "' L System could be selected");
         module->_mainLSystem = currentLSystem;
         selectedLSystem = currentLSystem;
         currentScope = currentLSystem->_scope;
@@ -247,13 +227,14 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
     if (module) {
         return visitWord(ctx->word());
     } else {
-        module = new Module<char>(eh->fileName());
-        module->eh = eh; //new ErrorHandler(eh);
-        module->_scope = new Scope(baseScope);
-        module->_evaluator = new LSysDExpressionEvaluator(eh);
-        currentLSystem = new LSystem<char>(module);
-        currentLSystem->_name = module->_name;
-        module->_lsystems[currentLSystem->_name] = currentLSystem;
+        module = createModule();
+        if (module == nullptr)
+            return static_cast<LSystem<char> *>(nullptr);
+        currentScope = module->_scope;
+        currentLSystem = createLSystem(module->_name);
+        if (settings.lsystem.isset())
+            eh->error("Input file is just a word. No '" + settings.lsystem.get() + 
+                    "' L System could be selected");
         module->_mainLSystem = currentLSystem;
         selectedLSystem = currentLSystem;
         currentScope = currentLSystem->_scope;
@@ -274,9 +255,7 @@ std::any LSysDVisitor::visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) {
     for (auto gdef : ctx->globalDef()) {
         if (gdef->lsystem()) {
             LSysDParser::LsystemContext * lsysdef = gdef->lsystem();
-            LSystem<char> * lsys = new LSystem<char>(module);
-            lsys->_name = lsysdef->ID()->getText();
-            module->_lsystems[lsys->_name] = lsys;
+            LSystem<char> * lsys = createLSystem(lsysdef->ID()->getText());
             if (settings.lsystem.isset() && settings.lsystem.get() == lsys->_name) {
                 if (selectedLSystem == nullptr)
                     selectedLSystem = lsys;

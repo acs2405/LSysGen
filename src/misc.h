@@ -72,7 +72,7 @@ std::string strEscape(std::string const& s);
 std::string strUnescape(std::string const& s);
 std::string sanitizeXML(std::string const& s);
 
-std::string getModuleName(std::string const& filename);
+std::string getModuleName(std::string const& filename, std::string const& ext="");
 
 bool terminalSupportsColors();
 

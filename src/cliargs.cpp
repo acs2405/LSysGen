@@ -56,7 +56,8 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
         if (argv[i][0] != '-' || argv[i][1] == '\0') {
             if (positionalArgs == 0) {
                 // Found first positional argument
-                settings.inputFile.set(arg);
+                if (arg.size() > 0)
+                    settings.inputFile.set(arg);
             } else if (positionalArgs == 1) {
                 // Found second positional argument
                 settings.outputResultFile.set(arg);
@@ -281,7 +282,8 @@ there is more than one L System defined in the file, the one marked with main is
 be expected to only contain a word that will act as an axiom. If INPUT_FILE is set to \"-\" then the program will read from the \
 standard input. Either -a or INPUT_FILE are required." << std::endl;
     std::cout << "     OUTPUT_FILE: this file is optional and will be used to write the result word of the L System derivations \
-(even if --svg option is set). If OUTPUT_FILE is set to \"-\" then the result will be printed to the standard output. When \
+(even if --svg option is set). If OUTPUT_FILE is set to \"-\" then the result will be printed to the standard output. If set to a \
+directory, a FILE.txt file will be created inside that directory, where FILE will be the name of the selected L System. When \
 neither OUTPUT_FILE nor --svg are set then the result will be printed to the standard output." << std::endl;
     std::cout << std::endl;
 
@@ -309,11 +311,12 @@ executed with the same seed. Default value is -1 (chooses a random seed)." << st
     std::cout << "     -X, --axiom-input: when this option is set, the program will read the input file as an axiom rather than as \
 a LSD file." << std::endl;
     std::cout << std::endl;
-    std::cout << "     --svg [SVG_OUTPUT_FILE]: this option activates SVG image creation after iterating the L System. The program \
+    std::cout << "     --svg [OUTPUT_SVG_FILE]: this option activates SVG image creation after iterating the L System. The program \
 interprets the result of the iterations to build a SVG file and printing it to the standard output, or optionally in the file \
-SVG_OUTPUT_FILE. The procedure of the creation of the image is: a \"turtle\" head with a pen is heading left (by default) and the \
-result string symbols (only the special characters) will draw lines, move or change the state of the turtle, e.g. F moves forward \
-while drawing a line, f moves forward without drawing, + will turn the turtle to its left and - to its right." << std::endl;
+OUTPUT_SVG_FILE. If OUTPUT_SVG_FILE set to a directory, a FILE.svg file will be created inside that directory, where FILE will be \
+the name of the selected L System. The procedure of the creation of the image is: a \"turtle\" head with a pen is heading left (by \
+default) and the result string symbols (only the special characters) will draw lines, move or change the state of the turtle, e.g. \
+F moves forward while drawing a line, f moves forward without drawing, + will turn the turtle to its left and - to its right." << std::endl;
     std::cout << std::endl;
     std::cout << "Options for SVG output:" << std::endl;
     std::cout << "     -H DEGREES, --heading DEGREES: sets or overrides the initial heading of the turtle." << std::endl;

@@ -13,9 +13,14 @@ namespace lsysgen {
 bool const ErrorHandler::terminalSupportsColors = lsysgen::terminalSupportsColors();
 
 ErrorHandler::ErrorHandler(std::string_view const filename, StackTrace const* st): 
-        _filename(filename.size() > 0 && filename != "-" ? filename : "<inline>"), 
         _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
         _stdin(filename == "-") {
+    if (filename.size() == 0)
+        _filename = "__inline__";
+    else if (filename == "-")
+        _filename = "__stdin__";
+    else
+        _filename = filename;
     // if (ErrorHandler::terminalSupportsColors)
     //     this->_format = ErrorHandler::Format::COLOR_TERMINAL;
     // else

@@ -3,7 +3,7 @@
 This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). Example:
 
 ```
-lsys -a "A" -r "A->F(1.0)[+A][-A]; F(x)->F(x*1.6)" -H 90 -R 60 -C "#f00" -W 2 -i 11 --svg -w 1000 | display
+lsys -a "A" -r "A->F(1.0)[+A][-A]; F(x)->F(x*1.6)" -H 90 -R 60 -C "#f00" -W 2 -i 11 --svg - -w 1000 | display
 ```
 
 Shows:
@@ -47,7 +47,7 @@ lsystem DragonCurve {
 }
 ```
 
-Executing the program with this file (`lsys examples/DragonCurve.lsd --svg | display`) generates:
+Executing the program with this file (`lsys examples/DragonCurve.lsd --svg - | display`) generates:
 
 ![Dragon curve](./images/DragonCurve.svg)
 
@@ -139,7 +139,7 @@ The main options are:
 - `-i N`: sets or overrides the number of iterations
 - `-a AXIOM`: sets or overrides the axiom. `AXIOM` should be quoted.
 - `-r RULES`: adds rules to the L System. `RULES` must be quoted.
-- `--svg [OUTPUT_SVG_FILE]`: outputs a SVG image after the L System result. If not set, the program outputs the result as is. If `OUTPUT_SVG_FILE` is set, that will be the file where the output will be writen, otherwise the output will be printed to the standard output.
+- `--svg [OUTPUT_SVG_FILE]`: outputs a SVG image after the L System result. If not set, the program outputs the result as is. If `OUTPUT_SVG_FILE` is set, that will be the file where the output will be writen, otherwise the output will be printed to the standard output. If `OUTPUT_SVG_FILE` set to a directory, a `FILE.svg` file will be created inside that directory, where `FILE` will be the name of the selected L System.
 
 Run `./lsys --help` to see all options. 
 
@@ -160,7 +160,7 @@ ABBABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBABABBABBABABBABBABABBABABBA
 L System from LSDL file (ImageMagick's `display` opens a window that displays the SVG image output):
 
 ```
-./lsys ../examples/Test1.lsd --svg | display
+./lsys ../examples/Test1.lsd --svg - | display
 ```
 
 Output:
@@ -247,7 +247,7 @@ lsystem SierpinskiTriangle {
 If we run:
 
 ```
-./build/lsys examples/SierpinskiTriangle.lsd --svg | display
+./build/lsys examples/SierpinskiTriangle.lsd --svg - | display
 ```
 
 This generates:
@@ -609,7 +609,7 @@ The rest of the characters will be ignored when displaying.
 `lsys` with the option `--svg` converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's `display`:
 
 ```
-lsys examples/B2.lsd --svg | display
+lsys examples/B2.lsd --svg - | display
 ```
 
 If you want to convert a SVG file into a PNG file, you can use inkscape:

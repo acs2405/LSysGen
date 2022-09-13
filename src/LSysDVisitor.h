@@ -44,13 +44,14 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
                             LSysDParser::RcontextContext * rctxCtx, 
                             LSysDParser::CondContext * condCtx, 
                             LSysDParser::RsideContext * rsideCtx);
-    void setMainLSystem();
 
     void parseArgs();
 
     void setAxiom();
-
     void addRules();
+
+    Module<char> * createModule() const;
+    LSystem<char> * createLSystem(std::string const& name) const;
 
 public:
     LSysDVisitor(Settings const& settings, Scope * scope=nullptr, StackTrace const* trace=nullptr);

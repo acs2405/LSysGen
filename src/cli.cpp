@@ -2,6 +2,9 @@
 #include "cli.h"
 
 
+#include <filesystem>
+
+
 
 int main(int argc, char** argv) {
 
@@ -22,8 +25,11 @@ int main(int argc, char** argv) {
     }
 
     if (settings.outputResultFile.isset()) {
-        if (!writeToFile(settings.outputResultFile.get(), lsystem->current()->toString())) {
-            std::cerr << "File '" << settings.outputResultFile.get() << "' is not writable." << std::endl;
+        std::filesystem::path outputResultFile = settings.outputResultFile.get();
+        if (std::filesystem::is_directory(outputResultFile))
+            outputResultFile /= lsystem->name() + ".txt";
+        if (!writeToFile(outputResultFile.c_str(), lsystem->current()->toString())) {
+            std::cerr << "File " << outputResultFile << " is not writable." << std::endl;
             exit(1);
         }
     }
@@ -32,8 +38,11 @@ int main(int argc, char** argv) {
             std::cout << lsystem->current()->toString() << std::endl;
     } else if (settings.renderMode.get() == Settings::RenderMode::SVG) {
         if (settings.outputRenderFile.isset()) {
-            if (!writeToFile(settings.outputRenderFile.get(), node2svg(lsystem->current(), lsystem))) {
-                std::cerr << "File '" << settings.outputRenderFile.get() << "' is not writable." << std::endl;
+            std::filesystem::path outputRenderFile = settings.outputRenderFile.get();
+            if (std::filesystem::is_directory(outputRenderFile))
+                outputRenderFile /= lsystem->name() + ".svg";
+            if (!writeToFile(outputRenderFile.c_str(), node2svg(lsystem->current(), lsystem))) {
+                std::cerr << "File " << outputRenderFile << " is not writable." << std::endl;
                 exit(1);
             }
         } else {

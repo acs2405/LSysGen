@@ -73,11 +73,16 @@ std::string sanitizeXML(std::string const& s) {
     return str;
 }
 
-std::string getModuleName(std::string const& filename) {
+std::string getModuleName(std::string const& filename, std::string const& ext) {
     std::smatch sm;
     // std::regex_match(filename, sm, std::regex("^(?:[^/\\\\]*[/\\\\])*([^/\\\\]*)\\.lsd$"));
-    std::regex_search(filename, sm, std::regex("([^/\\\\:*?|]+)\\.lsd$"));
-    if (sm.size() == 2)
+    // std::regex_search(filename, sm, std::regex("([^/\\\\:*?|]+)\\." + ext + "$"));
+    std::string const re_id = "[a-zA-Z][a-zA-Z0-9_]*";
+    if (ext.size() > 0)
+        std::regex_search(filename, sm, std::regex("(?:^|[/\\\\:])(" + re_id + ")\\." + ext + "$"));
+    else
+        std::regex_search(filename, sm, std::regex("(?:^|[/\\\\:])(" + re_id + ")(?:\\.[a-zA-Z0-9]+)?$"));
+    if (sm.size() > 0)
         return sm[1];
     else
         return "";

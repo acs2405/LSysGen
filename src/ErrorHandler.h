@@ -80,7 +80,7 @@ private:
     bool _stdin;
     // ErrorHandler::Format _format;
 
-    std::string const _filename;
+    std::string _filename;
     StackTrace const* _parentTrace;
 
     Message * createMessage(std::string_view const msg, Message::Type msgType=Message::Type::NONE, StackTrace const* st=nullptr) const;

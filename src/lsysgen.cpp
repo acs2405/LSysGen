@@ -8,12 +8,13 @@
 
 /*
  * Ideas:
- * - Errores HTML? (--html?)
  * - Cache grammar outputs for java not to be required?
+ * - Optimizar paths SVG de ramas padres e hijas con el mismo formato, uniéndolas en el mismo path
  * - Parámetros por nombre con param, por nombre y posición entre paréntesis?
  * - Números aleatorios en expresiones (rand(), randFloat()) y más funciones para hacer cálculos
  * - Comentario en SVG "Made in LSysGen [VERSION]"
- * - Si el archivo de salida introducido es una carpeta, exportar en esa carpeta con el nombre del módulo + .txt/.svg
+ * - Si se ponen múltiples iteraciones (-i 0:5) y se selecciona una carpeta, crear los archivos *-i#.svg/.txt
+ * - Errores HTML? (--html?)
  * 
  * - line_width relative to SVG width? Parece imposible.
  * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)
