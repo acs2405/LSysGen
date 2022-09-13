@@ -251,7 +251,7 @@ void printHelp() {
     std::cout << std::endl;
     std::cout << "This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) \
 interpreter. LSDL is a custom specific purpose language that has been created ad-hoc for this project as a way of describing L \
-Systems to the generator. The program reads LSDL *.lsd files, that defines one or more L Systems with an easy and compact \
+Systems to the generator. The program reads LSDL *.lsd files, that define one or more L Systems with an easy and compact \
 syntax. You can not only print the results of the L System but also create a SVG image from it (see --svg).\
 " << std::endl;
     std::cout << "An L system or Lindenmayer system is a parallel rewriting system and a type of formal grammar. An L-system \

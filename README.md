@@ -1,6 +1,12 @@
 # Extended L System Generator
 
-This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). An example output:
+This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). Example:
+
+```
+lsys -a "A" -r "A->F(1.0)[+A][-A]; F(x)->F(x*1.6)" -H 90 -R 60 -C "#f00" -W 2 -i 11 --svg -w 1000 | display
+```
+
+Shows:
 
 ![Penrose tiling](./images/tree1.svg)
 

@@ -8,17 +8,18 @@
 
 /*
  * Ideas:
- * - Solucionar tema del formato en los errores (--html?)
+ * - Errores HTML? (--html?)
  * - Cache grammar outputs for java not to be required?
  * - Parámetros por nombre con param, por nombre y posición entre paréntesis?
- * - Números aleatorios en expresiones (rand(), randFloat())
+ * - Números aleatorios en expresiones (rand(), randFloat()) y más funciones para hacer cálculos
  * - Comentario en SVG "Made in LSysGen [VERSION]"
  * - Si el archivo de salida introducido es una carpeta, exportar en esa carpeta con el nombre del módulo + .txt/.svg
+ * 
  * - line_width relative to SVG width? Parece imposible.
  * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)
  * - Llamadas a otros LSystem: ¿un settings por llamada? (Mejor solo args)
- * - Acciones
- * - Cada rama ([]) un hilo (thread)? (como garantizar un mismo resultado con una misma semilla?)
+ * - Acciones {x=3; c=0}
+ * - Cada rama ([]) un hilo (thread)? (como garantizar un mismo resultado con una misma semilla? Parece imposible)
  * - Módulo para compilar a código para ejecutar?
  * - Interpretación de símbolos dependiente de contexto? (lc cambie el color de fill?)
  *

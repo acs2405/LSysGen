@@ -23,18 +23,52 @@ class StackTrace;
 
 namespace lsysgen {
 
-class ErrorHandler {
-// public:
-//     typedef enum {
-//         NOTICE = 1,
-//         WARNING = 2,
-//         ERROR = 3,
-//         FATAL_ERROR = 4,
-//         BG = 16
-//         BOLD = 32
-//     } Format;
+class Message {
+public:
+    typedef enum {
+        NONE,
+        FATAL_ERROR,
+        ERROR,
+        WARNING,
+        NOTICE
+    } Type;
 
-//     static std::string format(int format, std::string_view content);
+private:
+    Message::Type _type;
+    std::string const _msg;
+    StackTrace const* _trace;
+
+public:
+    Message(Message::Type type, std::string_view const msg, StackTrace const* trace);
+    ~Message();
+
+    bool isFatalError() const;
+    bool isError() const;
+    bool isWarning() const;
+    bool isNotice() const;
+    Message::Type type() const;
+
+    std::string buildMessage() const;
+
+    static std::string colored(Message::Type type, std::string const& content);
+    static std::string bold(std::string const& content);
+
+    // void print(std::ostream& os) const;
+    // void print() const;
+};
+
+std::ostream & operator<<(std::ostream & os, Message const& m);
+
+
+class ErrorHandler {
+public:
+    // typedef enum {
+    //     NONE,
+    //     COLOR_TERMINAL
+    //     // HTML
+    // } Format;
+
+    static bool const terminalSupportsColors;
 
 private:
     std::list<Message const*> _messages;
@@ -44,11 +78,12 @@ private:
 
     bool _failed;
     bool _stdin;
+    // ErrorHandler::Format _format;
 
     std::string const _filename;
     StackTrace const* _parentTrace;
 
-    Message * createMessage(std::string_view const msg, int msgType=0, StackTrace const* st=nullptr) const;
+    Message * createMessage(std::string_view const msg, Message::Type msgType=Message::Type::NONE, StackTrace const* st=nullptr) const;
     void addMessage(Message const* msg);
 
 public:
@@ -76,6 +111,7 @@ public:
 
     bool failed() const;
     bool fromStdin() const;
+    // ErrorHandler::Format format() const;
 
     std::list<Message const*> const& messages() const;
     std::list<Message const*> const& errors() const;
@@ -84,35 +120,6 @@ public:
 
     std::string const& fileName() const;
 };
-
-class Message {
-public:
-    static const int TYPE_FATAL_ERROR;
-    static const int TYPE_ERROR;
-    static const int TYPE_WARNING;
-    static const int TYPE_NOTICE;
-
-private:
-    int _type;
-	std::string const _msg;
-	StackTrace const* _trace;
-
-public:
-	Message(int type, std::string_view const msg, StackTrace const* trace);
-	~Message();
-
-    bool isFatalError() const;
-    bool isError() const;
-    bool isWarning() const;
-    bool isNotice() const;
-
-    std::string buildMessage() const;
-
-    // void print(std::ostream& os) const;
-    // void print() const;
-};
-
-std::ostream & operator<<(std::ostream & os, Message const& m);
 
 
 class StackTrace {
@@ -134,9 +141,9 @@ public:
 	~StackTrace();
 
     std::string getLine() const;
-    std::string getMessageLine(std::string const& format="") const;
-    std::string getMessageMark(std::string const& format="") const;
-    std::string getTraceString(int msgType=0, std::string_view const text="") const;
+    std::string getMessageLine(Message::Type msgType=Message::Type::NONE) const;
+    std::string getMessageMark(Message::Type msgType=Message::Type::NONE) const;
+    std::string getTraceString(Message::Type msgType=Message::Type::NONE, std::string_view const text="") const;
     // std::string getCallTraceString(int msgType=0) const;
 
     int getLineNumber() const;

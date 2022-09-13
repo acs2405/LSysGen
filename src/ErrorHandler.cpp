@@ -2,27 +2,35 @@
 #include "ErrorHandler.h"
 
 
+#include "misc.h"
+
 #include <sstream>
 #include <regex>
 
 
 namespace lsysgen {
 
+bool const ErrorHandler::terminalSupportsColors = lsysgen::terminalSupportsColors();
+
 ErrorHandler::ErrorHandler(std::string_view const filename, StackTrace const* st): 
         _filename(filename.size() > 0 && filename != "-" ? filename : "<inline>"), 
         _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
-        _stdin(filename == "-") {}
+        _stdin(filename == "-") {
+    // if (ErrorHandler::terminalSupportsColors)
+    //     this->_format = ErrorHandler::Format::COLOR_TERMINAL;
+    // else
+    //     this->_format = ErrorHandler::Format::NONE;
+}
 
 ErrorHandler::ErrorHandler(ErrorHandler const& eh): 
-        _filename(eh._filename), _parentTrace(eh._parentTrace), 
-        _messages(), _errors(), _warnings(), _notices(), _failed(false), _stdin(eh._stdin) {}
+        ErrorHandler(eh._filename, eh._parentTrace) {}
 
 ErrorHandler::~ErrorHandler() {
     _messages.clear();
 }
 
 void ErrorHandler::fatalError(std::string_view const msg, StackTrace const* st) {
-    Message const* e = this->createMessage(msg, Message::TYPE_FATAL_ERROR, st);
+    Message const* e = this->createMessage(msg, Message::Type::FATAL_ERROR, st);
     _errors.push_back(e);
     _failed = true;
     this->addMessage(e);
@@ -32,25 +40,25 @@ void ErrorHandler::fatalError(std::string_view const msg, StackTrace const* st) 
 }
 
 void ErrorHandler::error(std::string_view const msg, StackTrace const* st) {
-    Message const* err = this->createMessage(msg, Message::TYPE_ERROR, st);
+    Message const* err = this->createMessage(msg, Message::Type::ERROR, st);
     _errors.push_back(err);
     _failed = true;
     this->addMessage(err);
 }
 
 void ErrorHandler::warning(std::string_view const msg, StackTrace const* st) {
-    Message const* warn = this->createMessage(msg, Message::TYPE_WARNING, st);
+    Message const* warn = this->createMessage(msg, Message::Type::WARNING, st);
     _warnings.push_back(warn);
     this->addMessage(warn);
 }
 
 void ErrorHandler::notice(std::string_view const msg, StackTrace const* st) {
-    Message const* notice = this->createMessage(msg, Message::TYPE_NOTICE, st);
+    Message const* notice = this->createMessage(msg, Message::Type::NOTICE, st);
     _notices.push_back(notice);
     this->addMessage(notice);
 }
 
-Message * ErrorHandler::createMessage(std::string_view const msg, int msgType, StackTrace const* st) const {
+Message * ErrorHandler::createMessage(std::string_view const msg, Message::Type msgType, StackTrace const* st) const {
     // st must never be in the parent trace stack.
     if (st == nullptr) {
         if (_parentTrace != nullptr)
@@ -101,6 +109,7 @@ StackTrace const* ErrorHandler::currentTrace() const {return _parentTrace;}
 
 bool ErrorHandler::failed () const {return _failed;}
 bool ErrorHandler::fromStdin() const {return _stdin;}
+// ErrorHandler::Format ErrorHandler::format() const {return _format;}
 
 std::list<Message const*> const& ErrorHandler::messages() const {return _messages;}
 std::list<Message const*> const& ErrorHandler::errors() const {return _errors;}
@@ -111,34 +120,32 @@ std::string const& ErrorHandler::fileName() const {return _filename;}
 
 
 
-const int Message::TYPE_FATAL_ERROR = 1;
-const int Message::TYPE_ERROR = 2;
-const int Message::TYPE_WARNING = 3;
-const int Message::TYPE_NOTICE = 4;
-
-Message::Message(int type, std::string_view const msg, StackTrace const* trace): 
+Message::Message(Message::Type type, std::string_view const msg, StackTrace const* trace): 
         _type(type), _msg(msg), _trace(trace) {}
 Message::~Message() {
     delete this->_trace;
 }
 
-bool Message::isFatalError() const {return _type == Message::TYPE_FATAL_ERROR;}
-bool Message::isError() const {return _type == Message::TYPE_ERROR;}
-bool Message::isWarning() const {return _type == Message::TYPE_WARNING;}
-bool Message::isNotice() const {return _type == Message::TYPE_NOTICE;}
+bool Message::isFatalError() const {return _type == Message::Type::FATAL_ERROR;}
+bool Message::isError() const {return _type == Message::Type::ERROR;}
+bool Message::isWarning() const {return _type == Message::Type::WARNING;}
+bool Message::isNotice() const {return _type == Message::Type::NOTICE;}
+Message::Type Message::type() const {return _type;}
 
 std::string Message::buildMessage() const {
     std::string msgTypeStr;
-    if (this->isFatalError())
-        msgTypeStr = "\u001b[1m\u001b[31mFATAL ERROR:\u001b[0m " + _msg;
-    else if (this->isError())
-        msgTypeStr = "\u001b[1m\u001b[31mERROR:\u001b[0m " + _msg;
-    else if (this->isWarning())
-        msgTypeStr = "\u001b[1m\u001b[33mWARNING:\u001b[0m " + _msg;
-    else if (this->isNotice())
-        msgTypeStr = "\u001b[1m\u001b[36mNOTICE:\u001b[0m " + _msg;
-    else
-        msgTypeStr = "\u001b[1m\u001b[32mMESSAGE:\u001b[0m " + _msg;
+    switch(_type) {
+        case Message::Type::FATAL_ERROR:
+            msgTypeStr = Message::bold(Message::colored(_type, "FATAL ERROR: ")) + _msg;
+        case Message::Type::ERROR:
+            msgTypeStr = Message::bold(Message::colored(_type, "ERROR: ")) + _msg;
+        case Message::Type::WARNING:
+            msgTypeStr = Message::bold(Message::colored(_type, "WARNING: ")) + _msg;
+        case Message::Type::NOTICE:
+            msgTypeStr = Message::bold(Message::colored(_type, "NOTICE: ")) + _msg;
+        default:
+            msgTypeStr = _msg;
+    }
     if (_trace)
         return _trace->getTraceString(_type, msgTypeStr);
     else {
@@ -146,6 +153,31 @@ std::string Message::buildMessage() const {
         ss << msgTypeStr << std::endl;
         return ss.str();
     }
+}
+
+std::string Message::colored(Message::Type type, std::string const& content) {
+    if (ErrorHandler::terminalSupportsColors) {
+        switch(type) {
+            case Message::Type::FATAL_ERROR:
+            case Message::Type::ERROR:
+                return "\u001b[31m" + content + "\u001b[0m";
+            case Message::Type::WARNING:
+                return "\u001b[33m" + content + "\u001b[0m";
+            case Message::Type::NOTICE:
+                return "\u001b[36m" + content + "\u001b[0m";
+            default:
+                return content;
+        }
+        return content;
+    } else {
+        return content;
+    }
+}
+std::string Message::bold(std::string const& content) {
+    if (ErrorHandler::terminalSupportsColors)
+        return "\u001b[1m" + content + "\u001b[0m";
+    else
+        return content;
 }
 
 // void Message::print(std::ostream& os) const {
@@ -197,54 +229,46 @@ std::string StackTrace::getLine() const {
     }
 }
 
-std::string StackTrace::getMessageLine(std::string const& format) const {
+std::string StackTrace::getMessageLine(Message::Type msgType) const {
     // std::cout << "HERE!" << std::endl;
     int n = this->getColNumber();
     int len = this->getLength();
     std::regex retab ("\t");
-    std::string normalFormat = "\u001b[0m";
     std::string line = this->getLine();
     line = std::regex_replace(line, retab, " ");
-    line = line.substr(0, n) + format + line.substr(n, len+1) + normalFormat + (line.size() > 0 ? line.substr(n+len+1) : "");
+    line = line.substr(0, n) + Message::bold(Message::colored(msgType, line.substr(n, len+1))) + 
+            (line.size() > 0 ? line.substr(n+len+1) : "");
     return line;
 }
-std::string StackTrace::getMessageMark(std::string const& format) const {
+std::string StackTrace::getMessageMark(Message::Type msgType) const {
     std::string line = this->getLine();
     int n = this->getColNumber();
     int len = std::max(0, std::min((int)this->getLength(), (int)line.size() - n));
     std::string padBefore(n, ' ');
     std::string mark(len, '~');
-    std::string normalFormat = "\u001b[0m";
-    return padBefore + format + '^' + mark + normalFormat;
+    return padBefore + Message::bold(Message::colored(msgType, '^' + mark));
 }
 // std::string ErrorHandler::format(int format, std::string_view content) {
 //     // TODO
 //     // settings.html
 //     // terminalSupportsColors();
 // }
-std::string StackTrace::getTraceString(int msgType, std::string_view const text) const {
+std::string StackTrace::getTraceString(Message::Type msgType, std::string_view const text) const {
     std::stringstream ss;
-    std::string color;
-    switch (msgType) {
-        case Message::TYPE_FATAL_ERROR:   color = "\u001b[31m"; break;
-        case Message::TYPE_ERROR:   color = "\u001b[31m"; break;
-        case Message::TYPE_WARNING: color = "\u001b[33m"; break;
-        case Message::TYPE_NOTICE:  color = "\u001b[36m"; break;
-        default:                    color = "\u001b[32m"; break;
-    }
     std::string slino = std::to_string(this->getLineNumber());
     // std::string smaxlino = std::to_string(getLine()->size());
     // int pad = smaxlino.size() - slino.size();
     std::string lino = "  " /*+ std::string(pad, ' ')*/ + slino + " | ";
     std::string linosp = std::string(lino.size() - 3, ' ') + " | ";
-    ss << "\u001b[1m" << _filename;
-    ss << ":" << this->getLineNumber();
-    ss << ":" << this->getColNumber();
-    ss << ":\u001b[0m " << (text.size() > 0 ? text : _text) << std::endl;
-    ss << lino   << this->getMessageLine("\u001b[1m" + color) << std::endl;
-    ss << linosp << this->getMessageMark("\u001b[1m" + color) << std::endl;
+    ss << Message::bold(_filename + 
+            ":" + std::to_string(this->getLineNumber()) + 
+            ":" + std::to_string(this->getColNumber()) + 
+            ": ");
+    ss << (text.size() > 0 ? text : _text) << std::endl;
+    ss << lino   << this->getMessageLine(msgType) << std::endl;
+    ss << linosp << this->getMessageMark(msgType) << std::endl;
     if (_parent != nullptr)
-        ss << _parent->getTraceString(Message::TYPE_NOTICE);
+        ss << _parent->getTraceString(Message::Type::NOTICE);
     return ss.str();
 }
 // std::string StackTrace::getCallTraceString(int msgType) const {
