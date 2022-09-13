@@ -1,6 +1,6 @@
 # Extended L System Generator
 
-This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that defines one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). An example output:
+This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). An example output:
 
 ![Penrose tiling](./images/tree1.svg)
 
@@ -27,7 +27,8 @@ lsystem DragonCurve {
 
     set iterations = 10
     set initial_heading = 0
-    set background = "#fff"
+    set background = "#000"
+    set line_color = "#3f3"
     set rotation = 90
 
     rules {
