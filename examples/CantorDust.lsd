@@ -3,10 +3,10 @@ lsystem CantorDust {
 	
 	axiom A
 
-	set iterations := 4
-	set rotation := 90
-	set background := "#af8"
-	set line_width := 0
+	set iterations = 4
+	set rotation = 90
+	set background = "#af8"
+	set line_width = 0
 
 	rules {
 

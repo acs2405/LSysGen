@@ -3,12 +3,12 @@ lsystem ParametricCantorSet {
 
 	axiom S(0);
 	
-	set iterations := 5;
-	set rotation := 90;
-	set initial_heading := 0;
-	set width := 25.0;
-	set height := .3;
-	set background := "#bbf"
+	set iterations = 5;
+	set rotation = 90;
+	set initial_heading = 0;
+	set width = 25.0;
+	set height = .3;
+	set background = "#bbf"
 
 	rules {
 

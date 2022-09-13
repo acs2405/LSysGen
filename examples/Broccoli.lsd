@@ -1,28 +1,28 @@
 
 # Transition function (progress : 0..1):
-function t(progress, minVal, maxVal) := minVal - (minVal - maxVal)*progress
+function t(progress, minVal, maxVal) = minVal - (minVal - maxVal)*progress
 
 lsystem Broccoli {
 
 	axiom w(.5)c(0.0)0(0.0)
 
-	set iterations := 7
-	set rotation := 45
-	set initial_heading := 90
-	set ignore := "+-c"
+	set iterations = 7
+	set rotation = 45
+	set initial_heading = 90
+	set ignore = "+-c"
 
-	set minColor := .75
-	set maxColor := .20
+	set minColor = .75
+	set maxColor = .20
 
-	set minWidth := .5
-	set maxWidth := 5.0
+	set minWidth = .5
+	set maxWidth = 5.0
 
 	rules {
 		1(a) -> 1(a)
 		1 < 0(a) -> 1(a)c(a+1)[+(45)0(a+1)][-(45)0(a+1)]
 		1 < 0(a) -> 1(a)c(a+1)[+(45)0(a+1)][-(50)0(a+1)][+(15)0(a+1)]
 		1 < 0(a) -> 1(a)c(a+1)[-(60)0(a+1)][+(20)0(a+1)]
-		2:  0(a) -> 1(a)c(a+1)[+(60)0(a+1)][+(30)0(a+1)][-(25)0(a+1)][-(60)0(a+1)]
+		2|  0(a) -> 1(a)c(a+1)[+(60)0(a+1)][+(30)0(a+1)][-(25)0(a+1)][-(60)0(a+1)]
 		1 < 0(a) -> 1(a)c(a+1)[+(60)0(a+1)][0][-(60)0(a+1)]
 		#-(d) -> +(d)
 		#-(d) -> -(d)

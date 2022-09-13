@@ -3,20 +3,20 @@ lsystem DragonCurve {
 
 	axiom FX
 
-	set iterations := 10
-	set initial_heading := 0
-	set background := "#000"
-	set line_color := "#3f3"
-	set rotation := 90
+	set iterations = 10
+	set initial_heading = 0
+	set background = "#000"
+	set line_color = "#3f3"
+	set rotation = 90
 
 	rules {
 
 		X -> X+YF+
 		Y -> -FX-Y
 
-	# 	(!) F => F
-	# 	(!) + => +
-	# 	(!) - => -
+	# 	!| F => F
+	# 	!| + => +
+	# 	!| - => -
 	# 	    _ =>
 
 	}

@@ -195,7 +195,7 @@ tag
   ;
 
 weight
-  : (INT | FLOAT | XM) COLON
+  : (INT | FLOAT | XM) BITOR
   ;
 
 lside

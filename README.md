@@ -23,10 +23,10 @@ lsystem DragonCurve {
 
     axiom FX
 
-    set iterations := 10
-    set initial_heading := 0
-    set background := "#fff"
-    set rotation := 90
+    set iterations = 10
+    set initial_heading = 0
+    set background = "#fff"
+    set rotation = 90
 
     rules {
 
@@ -105,6 +105,14 @@ where `<ANTLR4-JAR>` is a jar file that contains the ANTLR 4 parser generator. O
 antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor -no-listener
 ```
 -->
+
+#### MacOS
+
+MacOS target is expected to be tested in the future.
+
+#### Windows
+
+Windows target is still not available for this project.
 
 ### Execution
 
@@ -212,10 +220,10 @@ lsystem SierpinskiTriangle {
 
     axiom F-G-G
 
-    set iterations := 6
-    set initial_heading := 0
-    set rotation := -120
-    set background := "#ffbb00"
+    set iterations = 6
+    set initial_heading = 0
+    set rotation = -120
+    set background = "#ffbb00"
 
     rules {
         F -> F-G+F+G-F
@@ -251,7 +259,7 @@ Every text (in a line) followed by the character `#` is a comment and will be ig
 
 ```
 # Hey I'm a comment
-set notAComment := 3 #aComment
+set notAComment = 3 #aComment
 ```
 
 ### Axiom
@@ -271,7 +279,7 @@ Semicolons at the end of each definition are only required if you wish to write 
 This is the number of times that rules will be applied to generate the L system. We just have to define the `iterations` constant as a non-negative integer:
 
 ```
-set iterations := 6
+set iterations = 6
 ```
 
 We can also use the option `-i` in the program to set it.
@@ -281,7 +289,7 @@ We can also use the option `-i` in the program to set it.
 Production rules have the syntax:
 
 ```
-[tag:] [(weight)] [left_context<] char [>right_context] [:condition] -> replacement
+[weight|] [left_context<] char [>right_context] [:condition] -> replacement
 ```
 
 Production rules can be inside `table` blocks, `rules` blocks, `production rules` blocks or outside any block:
@@ -325,7 +333,7 @@ left_context < char > right_context -> replacement
 or none (like DOL's rules). A rule can't be chosen for some character if it doesn't meet the `condition`. For example, this rule:
 
 ```
-A(x) : x < 5 -> A(x+1)
+9| A(x) : x < 5 -> A(x+1)
 ```
 
 cannot match symbols `A`, `A(8)` or `A(6, 0.2)`.
@@ -333,9 +341,9 @@ cannot match symbols `A`, `A(8)` or `A(6, 0.2)`.
 A probabilistic l-system may have more than one rule available for the same character. Also, a weight can be specified for each rule (when the weight is not defined, a rule has a default weight of `1`). That weight will determine the probability of the rule to be chosen over other available rules. The syntax of a weighted rule just adds the parenthesized value at the beginning of the rule. For example:
 
 ```
-9: a -> a
+9| a -> a
    a -> b
-!: a < a -> ba
+!| a < a -> ba
 ```
 
 In this example, with an axiom `aaba`, the system would replace the first and last `a` characters by `a` (90% probability) or `b` (10% probability). The second 'a' would match the three rules, but only the third would be always applied (when matching an `a` followed by another `a`), because the special weight `!` means that it must be always chosen.
@@ -382,9 +390,9 @@ matches with the `c` in `[abddd]c[adrst]`, `[ab]c[ad]`, `[ab][c[[ad]s]]`, but no
 A rule can have in the left hand side the special character `_` that represents any character. For example:
 
 ```
-    a -> bd
-    b -> ac
-(!) a < _ > a -> a
+   a -> bd
+   b -> ac
+!| a < _ > a -> a
 ```
 
 means that any character surrounded by `a`s will always be replaced by an `a`. This one:
@@ -400,13 +408,13 @@ matches the `a` of `baca`, `b+ca`, `bbca`, etc.
 If you plan to use tables, you need to write the line:
 
 ```
-set table_func(i) := <expr>
+set table_func(i) = <expr>
 ```
 
 where `<expr>` is the expression of the function that decides which table will be used for the `i`-th iteration. For example:
 
 ```
-set table_func(i) :=  if i % 5 != 1 then "t1" else "t2"
+set table_func(i) =  if i % 5 != 1 then "t1" else "t2"
 ```
 
 Table names cannot be numbers. The code that defines a table is:
@@ -415,12 +423,29 @@ Table names cannot be numbers. The code that defines a table is:
 table <name> { <rules> }
 ```
 
+Example:
+
+```
+set table_func(i) = 't' + str(i % 2)
+
+table t0 {
+    a -> b
+    b -> ab
+}
+table t1 {
+    a -> ba
+    b -> a
+}
+```
+
+<!--
+
 Inside `table` blocks you can define rules or reference tags of already defined rules. For example:
 
 ```
 set table_func(i) = 't' + str(i % 2)
 rules {
-    rep: (!) aa < a -> aFb
+    rep: {!} aa < a -> aFb
 }
 table t0 {
     a -> b
@@ -433,6 +458,8 @@ table t1 {
     rep
 }
 ```
+
+-->
 
 ### Coding rules
 
@@ -485,32 +512,32 @@ F(1)f(3)F(2)f(3)F(3)f(3)A(0)
 Some examples of custom functions, variables and constants:
 
 ```
-set double(x) := 2*x      # double is a function that takes 1 argument
-set SQRT_2 := 1.414       # SQRT_2 is a constant
-var x := double(SQRT_2)   # x is a variable
-var y                     # y is also a variable
-x := x + 1                # OK
-y := "Hello"              # OK
-SQRT_2 := 3.1             # ERROR: you can't change the value of a constant
+set double(x) = 2*x      # double is a function that takes 1 argument
+set SQRT_2 = 1.414       # SQRT_2 is a constant
+var x = double(SQRT_2)   # x is a variable
+var y                    # y is also a variable
+x = x + 1                # OK
+y = "Hello"              # OK
+SQRT_2 = 3.1             # ERROR: you can't change the value of a constant
 ```
 
 These are special constant names used by the L system generator:
 
 ```
-set iterations := 8          # (defaults 0) This line sets the number of iterations that the system will be executing
-set ignore := "fF-+"         # (optional, defaults "") This constant sets the characters that must be ignored as context (see contexts in rules)
-set seed := 6902             # (optional, defaults -1) You can specify a seed for a non-deterministic L-System. If a negative seed is defined, the program sets a random seed.
+set iterations = 8          # (defaults 0) This line sets the number of iterations that the system will be executing
+set ignore = "fF-+"         # (optional, defaults "") This constant sets the characters that must be ignored as context (see contexts in rules)
+set seed = 6902             # (optional, defaults -1) You can specify a seed for a non-deterministic L-System. If a negative seed is defined, the program sets a random seed.
 ```
 
 These other constant names are used by the 2D interpreter and do not have any meaning outside the 2D interpreter:
 
 ```
-set initial_heading := 90      # (optional, defaults 0.0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
-set rotation := 30             # (optional, defaults 12.0) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
-set line_width := 0.02         # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
-set line_color := "#F33"       # (optional, defaults "#000" (black)) This constant sets the default line color of the line being drawn
-set fill_color := "rgb(0,0,0)" # (optional, defaults "#000" (black)) This constant sets the default fill color when filling shapes
-set background := "#FFBB00"    # (optional, defaults transparent) This constant sets the background color of the SVG
+set initial_heading = 90      # (optional, defaults 0.0) This constant sets the initial heading in degrees that the turtle will have. 0 heads east. 90 heads north
+set rotation = 30             # (optional, defaults 12.0) This constant sets the angle rotation in degrees that is used in rotations (- and + chars)
+set line_width = 0.02         # (optional, defaults 0.1) This constant sets the line width of F and G draw characters, relative to the line length (0.02 is a line width of 0.02 per 1 pixel of line length, so if the line is 100px long, its width will be 2px)
+set line_color = "#F33"       # (optional, defaults "#000" (black)) This constant sets the default line color of the line being drawn
+set fill_color = "rgb(0,0,0)" # (optional, defaults "#000" (black)) This constant sets the default fill color when filling shapes
+set background = "#FFBB00"    # (optional, defaults transparent) This constant sets the background color of the SVG
 ```
 
 Every special constant has a special command-line argument in the program to quickly force a value for that constant.

@@ -3,10 +3,10 @@ lsystem SierpinskiCarpet {
 	
 	axiom A
 
-	set iterations := 4
-	set rotation := 90
-	set background := "#aff"
-	set line_width := 0
+	set iterations = 4
+	set rotation = 90
+	set background = "#aff"
+	set line_width = 0
 
 	rules {
 		#A(l|l==3) -> A(3)+f(1)-A(1)f(1)f(1)A(1)g(2)+f(1)-A(3)-f(2)+ f(3) A(3)+f(1)-A(1)f(1)f(1)A(1)g(2)+f(1)-A(3)-f(2)+ f(3) A(3)+f(1)-A(1)f(1)f(1)A(1)g(2)+f(1)-A(3)-f(2)+ g(6)

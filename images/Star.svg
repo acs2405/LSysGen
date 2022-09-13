@@ -1,12 +1,15 @@
-<svg width="500.000000" height="479.606842" xmlns="http://www.w3.org/2000/svg" version="1.1">
-<rect width="500.000000" height="479.606842" fill="#FFF8CC" fill-opacity="1.000000"/>
-<g transform="scale(38.461540,38.336147) translate(1.500000,5.132713) ">
-<path stroke="#F0D764" stroke-opacity="1.000000" stroke-width="0.100000" fill="#F0D764" fill-opacity="0.300000" d="M0.00 0.00 L10.00 0.00 L1.91 5.88 L5.00 -3.63 L8.09 5.88 L-0.00 -0.00 Z" />
-<circle cx="10.000000" cy="0.000000" r="1.000000" stroke="#F0D764" stroke-width="0.000000" fill="#F0D764"/>
-<circle cx="1.909830" cy="5.877852" r="1.000000" stroke="#F0D764" stroke-width="0.000000" fill="#F0D764"/>
-<circle cx="5.000000" cy="-3.632713" r="1.000000" stroke="#F0D764" stroke-width="0.000000" fill="#F0D764"/>
-<circle cx="8.090170" cy="5.877852" r="1.000000" stroke="#F0D764" stroke-width="0.000000" fill="#F0D764"/>
-<circle cx="-0.000000" cy="-0.000000" r="1.000000" stroke="#F0D764" stroke-width="0.000000" fill="#F0D764"/>
+<svg viewBox="0 0 1000.000000 979.106689" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<!-- SEED 36397406 -->
+<rect width="1000.000000" height="979.106689" fill="#FFF8CC" fill-opacity="1.000000"/>
+<g transform="scale(76.923080,76.797020) translate(1.500000,4.979479) ">
+<path stroke="#DC8C3C" stroke-opacity="1.000000" stroke-width="0.100000" fill="#DC8C3C" fill-opacity="0.300000" d="M0.00 0.00 L10.00 0.00 L0.99 4.34 L7.23 -3.48 L5.00 6.27 L2.77 -3.48 L9.01 4.34 L0.00 -0.00 Z" />
+<circle cx="10.000000" cy="0.000000" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
+<circle cx="0.990311" cy="4.338836" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
+<circle cx="7.225211" cy="-3.479477" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
+<circle cx="5.000000" cy="6.269802" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
+<circle cx="2.774796" cy="-3.479479" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
+<circle cx="9.009691" cy="4.338838" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
+<circle cx="0.000003" cy="-0.000001" r="1.000000" stroke="#DC8C3C" stroke-width="0.000000" fill="#DC8C3C"/>
 </g>
 </svg>
 

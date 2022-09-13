@@ -4,15 +4,15 @@ lsystem Koch {
 	# axiom n(255,255,255)P(255,255,255,.4)A--A--AZp
 	axiom PA--A--AZp
 
-	set rotation := 60
-	set iterations := 5
-	set background := "#aaf"
-    set line_color := "#fff"
-    set fill_color := "rgba(255, 255, 255, .4)"
-	set line_width := 1.0;
+	set rotation = 60
+	set iterations = 5
+	set background = "#aaf"
+    set line_color = "#fff"
+    set fill_color = "rgba(255, 255, 255, .4)"
+	set line_width = 1.0;
 
-	set w := 2
-	set l := 5
+	set w = 2
+	set l = 5
 
 	rules {
 		A -> A+A--A+A

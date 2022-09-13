@@ -6,6 +6,23 @@
 
 
 
+/*
+ * Ideas:
+ * - Solucionar tema del formato en los errores (--html?)
+ * - Cache grammar outputs for java not to be required?
+ * - Parámetros por nombre con param, por nombre y posición entre paréntesis?
+ * - Números aleatorios en expresiones (rand(), randFloat())
+ * - Comentario en SVG "Made in LSysGen [VERSION]"
+ * - line_width relative to SVG width? Parece imposible.
+ * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)
+ * - Llamadas a otros LSystem: ¿un settings por llamada? (Mejor solo args)
+ * - Acciones
+ * - Cada rama ([]) un hilo (thread)? (como garantizar un mismo resultado con una misma semilla?)
+ * - Módulo para compilar a código para ejecutar?
+ * - Interpretación de símbolos dependiente de contexto? (lc cambie el color de fill?)
+ *
+ */
+
 lsysgen::LSystem<char> * lsystem_create(lsysgen::Settings const& settings) {
     lsysgen::LSystem<char> * lsystem = parseLSystem(settings);
 
@@ -123,81 +140,8 @@ lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, l
         return nullptr;
     }
 
-    // if (settings.axiom.isset()) {
-    //     lsystem->setAxiom(parseAxiom(settings.axiom.get(), visitor));
-    // }
-
     return lsystem;
 }
-
-/*
- * Ideas:
- * - line_width relative to SVG width?
- * - Cache grammar outputs for java not to be required?
- * - When random seed print the seed used?
- * - Solucionar tema del formato en los errores (--html?)
- * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)
- * - Llamadas a otros LSystem: ¿un settings por llamada? (Mejor solo args)
- * - Parámetros por nombre con param, por nombre y posición entre paréntesis
- * - Acciones
- * - Cada rama ([]) un hilo (thread)? (como garantizar un mismo resultado con una misma semilla?)
- * - Módulo para compilar a código para ejecutar?
- * - Interpretación de símbolos dependiente de contexto? (lc cambie el color de fill?)
- *
- */
-
-// lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> * parseAxiom(std::string_view s_axiom, LSysDVisitor & visitor) {
-//     antlr4::ANTLRInputStream * axiomInput = new antlr4::ANTLRInputStream(s_axiom);
-//     LSysDLexer * axiomLexer = new LSysDLexer(axiomInput);
-
-//     if (axiomLexer->getNumberOfSyntaxErrors() != 0)
-//         exit(1);
-
-//     antlr4::CommonTokenStream * axiomTokens = new antlr4::CommonTokenStream(axiomLexer);
-//     LSysDParser * axiomParser = new LSysDParser(axiomTokens);
-
-//     antlr4::tree::ParseTree * axiomTree = axiomParser->mainWord();
-//     // for (auto n : static_cast<LSysDParser::WordContext*>(axiomTree)->rItem())
-//     //     std::cout << n->getText() << std::endl;
-
-//     if (axiomParser->getNumberOfSyntaxErrors() != 0)
-//         exit(1);
-
-//     lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> * axiom = 
-//             std::any_cast<lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> *>
-//             (visitor.visit(axiomTree, splitInLines(s_axiom)));
-
-//     if (visitor.messages()->failed()) {
-//         visitor.messages()->dump();
-//         exit(1);
-//     }
-
-//     return axiom;
-// }
-
-// void parseRules(std::string_view s_rules, LSysDVisitor & visitor) {
-//     antlr4::ANTLRInputStream * rulesInput = new antlr4::ANTLRInputStream(s_rules);
-//     LSysDLexer * rulesLexer = new LSysDLexer(rulesInput);
-
-//     if (rulesLexer->getNumberOfSyntaxErrors() != 0)
-//         exit(1);
-
-//     antlr4::CommonTokenStream * rulesTokens = new antlr4::CommonTokenStream(rulesLexer);
-//     LSysDParser * rulesParser = new LSysDParser(rulesTokens);
-
-//     antlr4::tree::ParseTree * rulesTree = rulesParser->mainRuleDefs();
-
-//     if (rulesParser->getNumberOfSyntaxErrors() != 0)
-//         exit(1);
-
-//     // This adds the rules to the current LSystem
-//     visitor.visit(rulesTree, splitInLines(s_rules));
-
-//     if (visitor.messages()->failed()) {
-//         visitor.messages()->dump();
-//         exit(1);
-//     }
-// }
 
 lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen::Settings const& settings) {
     antlr4::ANTLRInputStream * axiomInput = new antlr4::ANTLRInputStream(s_axiom);
@@ -210,24 +154,12 @@ lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen
     LSysDParser * axiomParser = new LSysDParser(axiomTokens);
 
     antlr4::tree::ParseTree * axiomTree = axiomParser->mainWord();
-    // for (auto n : static_cast<LSysDParser::WordContext*>(axiomTree)->rItem())
-    //     std::cout << n->getText() << std::endl;
 
     if (axiomParser->getNumberOfSyntaxErrors() != 0)
         exit(1);
 
     LSysDVisitor visitor(settings);
     lsysgen::LSystem<char> * lsystem = std::any_cast<lsysgen::LSystem<char> *>(visitor.visit(axiomTree));
-
-    // visitor.setAxiom();
-
-    // if (settings.rules.isset()) {
-    //     // TODO: hacer los visits de rules que no cambien el estado sino que devuelvan las reglas
-    //     visitor.addRules();
-    //     // parseRules(settings.rules.get(), visitor);
-    // }
-
-    // visitor.finishLSystem();
 
     if (visitor.messages()->failed()) {
         visitor.messages()->dump();
@@ -236,13 +168,3 @@ lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen
 
     return lsystem;
 }
-
-// std::vector<std::string> * splitInLines(std::string_view s) {
-//     std::vector<std::string> * lines = new std::vector<std::string>();
-//     std::stringstream ss;
-//     ss << s;
-//     std::string line;
-//     while (std::getline(ss, line))
-//         lines->push_back(line);
-//     return lines;
-// }

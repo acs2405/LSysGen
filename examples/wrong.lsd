@@ -1,15 +1,15 @@
 
 #axiom a
 
-function table_func(i, j) := "t1"  # Invalid
+function table_func(i, j) = "t1"  # Invalid
 
-var table_func := 5;; # Already defined
-var x := "gg"/1*2 # string / int
+var table_func = 5;; # Already defined
+var x = "gg"/1*2 # string / int
 
 a => FF_F       # Invalid
 ab -> Fa        # Invalid
-1.0: _ ->       # Valid
-0x1a: a -> x    # Invalid
+ 1.0| _ ->      # Valid
+0x1a| a -> x    # Invalid
 
 
 a -> aFa        # Valid

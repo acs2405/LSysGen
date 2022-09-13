@@ -3,18 +3,18 @@ lsystem Star {
 
 	axiom PB(1)C(1)A(1)Zp
 
-	set iterations := 2
-	set initial_heading := 0.0
-	set rotation := 12.5
-	set background := "#fff8cc"
-	set line_width := .1
-	set line_color := "rgb(240, 215, 100)";
-	set fill_color := "rgba(240, 215, 100, .3)";
+	set iterations = 3
+	set initial_heading = 0.0
+	set rotation = 12.5
+	set background = "#fff8cc"
+	set line_width = .1
+	set line_color = "rgb(220, 140, 60)";
+	set fill_color = "rgba(220, 140, 60, .3)";
 
-	var e := 1
+	var e = 1
 
 	# TODO: No debe omitir los espacios:
-	#function f(x) := if x == 1 then e else 1+f(x-1)
+	#function f(x) = if x == 1 then e else 1+f(x-1)
 
 	production rules {
 		A(i) -> B(i+1)C(i+1)B(i+1)C(i+1)A(i+1)
@@ -24,7 +24,7 @@ lsystem Star {
 
 	coding rules {
 		A(i) => 
-		B(i) => F(10)[P(240, 215, 100,1.0)w(0)c(1)p]
+		B(i) => F(10)[P(220, 140, 60, 1.0)w(0)c(1)p]
 		C(i) => -(180 - 180/(2.0*i-1)) # Para estrellas de lados impares
 	}
 

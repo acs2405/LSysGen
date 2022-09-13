@@ -1,6 +1,7 @@
-<svg width="500.000000" height="500.000000" xmlns="http://www.w3.org/2000/svg" version="1.1">
-<rect width="500.000000" height="500.000000" fill="#AAFF88" fill-opacity="1.000000"/>
-<g transform="scale(5.488474,5.488474) translate(5.050000,86.050003) ">
+<svg viewBox="0 0 1000.000000 1000.000000" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<!-- SEED 453576444 -->
+<rect width="1000.000000" height="1000.000000" fill="#AAFF88" fill-opacity="1.000000"/>
+<g transform="scale(10.976949,10.976949) translate(5.050000,86.050003) ">
 <path stroke="#000000" stroke-opacity="1.000000" stroke-width="0.000000" fill="#000000" fill-opacity="1.000000" d="M0.00 0.00 L1.00 0.00 L1.00 -1.00 L0.00 -1.00 L-0.00 0.00 " />
 <path stroke="#000000" stroke-opacity="1.000000" stroke-width="0.000000" fill="#000000" fill-opacity="1.000000" d="M2.00 0.00 L3.00 0.00 L3.00 -1.00 L2.00 -1.00 L2.00 0.00 " />
 <path stroke="#000000" stroke-opacity="1.000000" stroke-width="0.000000" fill="#000000" fill-opacity="1.000000" d="M3.00 -2.00 L3.00 -3.00 L2.00 -3.00 L2.00 -2.00 L3.00 -2.00 " />

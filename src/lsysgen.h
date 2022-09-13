@@ -36,9 +36,3 @@ lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, l
 
 lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen::Settings const& settings);
 
-lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> * parseAxiom(std::string_view s_axiom, LSysDVisitor & visitor);
-
-void parseRules(std::string_view s_rules, LSysDVisitor & visitor);
-
-std::vector<std::string> * splitInLines(std::string_view s);
-
