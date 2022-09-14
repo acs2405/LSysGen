@@ -67,7 +67,7 @@ Broccoli (examples/Broccoli.lsd):
 
 Cantor set (examples/ParametricCantorSet.lsd):
 
-![Cantor set](./images/CantorSet.svg)
+![Cantor set](./images/ParametricCantorSet.svg)
 
 ## The program
 
