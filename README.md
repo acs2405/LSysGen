@@ -625,6 +625,7 @@ If you want to convert a SVG file into a PNG file, you can use inkscape:
 
 ```
 inkscape -o test.png -w 1000 -b white test.svg
+inkscape --export-type=png -w 2000 images/*
 ```
 
 ## Next steps
