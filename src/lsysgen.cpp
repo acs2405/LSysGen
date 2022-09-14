@@ -8,7 +8,6 @@
 
 /*
  * Ideas:
- * - Cache grammar outputs for java not to be required?
  * - Optimizar paths SVG de ramas padres e hijas con el mismo formato, uniéndolas en el mismo path
  * - Parámetros por nombre con param, por nombre y posición entre paréntesis?
  * - Números aleatorios en expresiones (rand(), randFloat()) y más funciones para hacer cálculos
@@ -67,11 +66,11 @@ int lsystem_get_number_of_errors(lsysgen::LSystem<char> * lsystem) {
 char const* lsystem_get_result_string(lsysgen::LSystem<char> * lsystem) {
     if (lsystem->messages()->errors().size() == 0) {
         std::string sret = lsystem->current()->toString();
-        char const* ret1 = sret.c_str();
-        char * ret = new char[sret.size()+1];
-        strcpy(ret, ret1);
+        // char const* ret1 = sret.c_str();
+        // char * ret = new char[sret.size()+1];
+        // strcpy(ret, ret1);
 
-        return ret;
+        return sret.c_str();
     } else
         return nullptr;
 }
@@ -79,11 +78,11 @@ char const* lsystem_get_result_string(lsysgen::LSystem<char> * lsystem) {
 char const* lsystem_to_svg(lsysgen::LSystem<char> * lsystem) {
     if (lsystem->messages()->errors().size() == 0) {
         std::string sret = node2svg(lsystem->current(), lsystem);
-        char const* ret1 = sret.c_str();
-        char * ret = new char[sret.size()+1];
-        strcpy(ret, ret1);
+        // char const* ret1 = sret.c_str();
+        // char * ret = new char[sret.size()+1];
+        // strcpy(ret, ret1);
 
-        return ret;
+        return sret.c_str();
     } else
         return nullptr;
 }

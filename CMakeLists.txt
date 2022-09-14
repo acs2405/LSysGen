@@ -47,15 +47,29 @@ include_directories(${ANTLR4_INCLUDE_DIRS})
 # this is not required if the jar file can be found under PATH environment
 set(ANTLR_EXECUTABLE ${PROJECT_SOURCE_DIR}/antlr-4.11.1-complete.jar)
 # add macros to generate ANTLR Cpp code from grammar
-find_package(ANTLR REQUIRED)
+find_package(ANTLR)
 
-# Call macro to add lexer and grammar to your build dependencies.
-antlr_target(LSysDLexer LSysDLexer.g4 LEXER)
-             # PACKAGE antlrcpptest)
-antlr_target(LSysDParser LSysDParser.g4 PARSER VISITOR
-             # PACKAGE antlrcpptest
-             DEPENDS_ANTLR LSysDLexer
-             COMPILE_FLAGS -lib ${ANTLR_LSysDLexer_OUTPUT_DIR})
+if (Java_JAVA_EXECUTABLE)
+  # Call macro to add lexer and grammar to your build dependencies.
+  antlr_target(LSysDLexer LSysDLexer.g4 LEXER)
+               # PACKAGE antlrcpptest)
+  antlr_target(LSysDParser LSysDParser.g4 PARSER VISITOR
+               # PACKAGE antlrcpptest
+               DEPENDS_ANTLR LSysDLexer
+               COMPILE_FLAGS -lib ${ANTLR_LSysDLexer_OUTPUT_DIR})
+
+  file(COPY ${ANTLR_LSysDLexer_OUTPUT_DIR} DESTINATION ${PROJECT_SOURCE_DIR}/antlr4cpp_generated_src)
+  file(COPY ${ANTLR_LSysDParser_OUTPUT_DIR} DESTINATION ${PROJECT_SOURCE_DIR}/antlr4cpp_generated_src)
+else()
+  set(ANTLR_LSysDLexer_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/antlr4cpp_generated_src/LSysDLexer)
+  set(ANTLR_LSysDParser_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/antlr4cpp_generated_src/LSysDParser)
+
+  file(COPY ${PROJECT_SOURCE_DIR}/antlr4cpp_generated_src/LSysDLexer DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/antlr4cpp_generated_src)
+  file(COPY ${PROJECT_SOURCE_DIR}/antlr4cpp_generated_src/LSysDParser DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/antlr4cpp_generated_src)
+
+  file (GLOB ANTLR_LSysDLexer_CXX_OUTPUTS ${ANTLR_LSysDLexer_OUTPUT_DIR}/*.cpp)
+  file (GLOB ANTLR_LSysDParser_CXX_OUTPUTS ${ANTLR_LSysDParser_OUTPUT_DIR}/*.cpp)
+endif()
 
 # include generated files in project environment
 include_directories(${ANTLR_LSysDLexer_OUTPUT_DIR})

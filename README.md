@@ -75,10 +75,16 @@ Cantor set (examples/ParametricCantorSet.lsd):
 
 #### Ubuntu/Debian
 
-This program uses `ANTLR 4.11.1`, `CMake (>=3.15)` and other required libraries, like Java Runtime Environment to compile the grammar with the ANTLR jar file. ANTLR4 will later be installed and linked with the `make` command automatically. To install our dependencies:
+This program uses `ANTLR 4.11.1` and `CMake (>=3.15)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program to run, it justs provides the `display` program to be able to easily display SVG outputs in the command line (`./lsys (...) -svg - | display`). To install our dependencies:
 
 ```
-sudo apt install cmake default-jre
+sudo apt install cmake imagemagick
+```
+
+If you want to modify grammar files, you will need `Java 11` for `make` to generate C++ outputs automatically with the ANTLR jar file. In this case, also run:
+
+```
+sudo apt install default-jre
 ```
 
 Then, in our `LSysGen` folder, run:
@@ -89,7 +95,7 @@ cmake ..
 make
 ```
 
-For debug purposes, the cmake command should be something like:
+For debug purposes, the cmake command should be:
 
 ```
 cmake -DCMAKE_BUILD_TYPE=Debug ..
@@ -171,7 +177,7 @@ Other examples:
 
 ```
 ./lsys ../examples/HilbertCurve.lsd --svg -i 4 | display
-./lsys ../examples/B2.lsd -i 20 --svg B2.svg
+./lsys ../examples/B2.lsd -i 20 --svg ../images
 ```
 
 There is also a small Python module, `lsys.py`, that uses the `lsysgen` library and serves as a Python wrapper for the library (through its class `LSystem` that is able to print the L system and also its 2D render). This python script is also runnable and prints the resulting L system string and the SVG image:
