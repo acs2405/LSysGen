@@ -49,7 +49,7 @@ lsystem DragonCurve {
 
 Executing the program with this file (`lsys examples/Dragon.lsd --svg - | display`) generates:
 
-![Dragon curve](./images/Dragon.svg)
+![Dragon curve](./images/DragonCurve.svg)
 
 ### Other examples
 
@@ -59,7 +59,7 @@ Some parametric random plant (examples/B2.lsd):
 
 Penrose tiling (examples/Penrose.lsd):
 
-![Penrose tiling](./images/Penrose.svg)
+![Penrose tiling](./images/PenroseTiling.svg)
 
 Broccoli (examples/Broccoli.lsd):
 
@@ -67,7 +67,7 @@ Broccoli (examples/Broccoli.lsd):
 
 Cantor set (examples/ParametricCantorSet.lsd):
 
-![Cantor set](./images/Cantor.svg)
+![Cantor set](./images/CantorSet.svg)
 
 ## The program
 
