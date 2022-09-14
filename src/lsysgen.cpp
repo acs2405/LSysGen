@@ -3,6 +3,7 @@
 
 #include <streambuf>
 #include <sstream>
+#include <filesystem>
 
 
 
@@ -14,6 +15,7 @@
  * - Comentario en SVG "Made in LSysGen [VERSION]"
  * - Si se ponen múltiples iteraciones (-i 0:5) y se selecciona una carpeta, crear los archivos *-i#.svg/.txt
  * - Errores HTML? (--html?)
+ * - Parámetros por defecto en LSDL
  * 
  * - line_width relative to SVG width? Parece imposible.
  * - Si un archivo no tiene axioma pero se introduce con -a, que no lance error (warning? notice?)
@@ -25,26 +27,25 @@
  *
  */
 
-lsysgen::LSystem<char> * lsystem_create(lsysgen::Settings const& settings) {
-    lsysgen::LSystem<char> * lsystem = parseLSystem(settings);
+lsysgen::LSystem<char> ** lsystem_create_from_settings(lsysgen::Settings const& settings) {
+    std::list<lsysgen::LSystem<char> *> * lsystems = createLSystems(settings);
 
-    if (lsystem == nullptr)
-        return nullptr;
+    lsysgen::LSystem<char> ** ret = (lsysgen::LSystem<char> **)malloc(sizeof(lsysgen::LSystem<char> *) * lsystems->size());
 
-    lsystem->prepare();
-
-    if (lsystem->messages()->failed()) {
-        lsystem->messages()->dump();
-        return nullptr;
+    int i = 0;
+    for (lsysgen::LSystem<char> * lsystem : *lsystems) {
+        ret[i++] = lsystem;
     }
 
-    return lsystem;
+    delete lsystems;
+
+    return ret;
 }
 
-lsysgen::LSystem<char> * lsystem_create_from_file(char const* file) {
+lsysgen::LSystem<char> ** lsystem_create_from_file(char const* file) {
     Settings settings;
-    settings.inputFile.set(file);
-    return lsystem_create(settings);
+    settings.inputFiles.getRef().push_back(file);
+    return lsystem_create_from_settings(settings);
 }
 
 void lsystem_generate(lsysgen::LSystem<char> * lsystem) {
@@ -89,28 +90,75 @@ char const* lsystem_to_svg(lsysgen::LSystem<char> * lsystem) {
 
 
 
-lsysgen::LSystem<char> * parseLSystem(lsysgen::Settings const& settings) {
-    if (settings.inputFile.isset()) {
-        std::string const& file = settings.inputFile.get();
-        std::string content;
-        if (!readFromFile(file, content)) {
-            std::cerr << "Input file '" << file << "' does not exist." << std::endl;
-            exit(1);
-        }
+std::list<lsysgen::LSystem<char> *> * createLSystems(lsysgen::Settings const& settings) {
+    std::list<lsysgen::LSystem<char> *> * lsystems = parseLSystem(settings);
 
-        switch (settings.inputMode.get()) {
-            case Settings::InputMode::LSD:
-                return parseLSystemFromString(content, settings);
-            case Settings::InputMode::AXIOM:
-                if (settings.axiom.isset())
-                    content = settings.axiom.get();
-                return parseLSystemFromAxiom(content, settings);
-            default:
-                return nullptr;
+    if (lsystems == nullptr)
+        return nullptr;
+
+    std::list<lsysgen::LSystem<char> *> * ret = new std::list<lsysgen::LSystem<char> *>();
+
+    for (lsysgen::LSystem<char> * lsystem : *lsystems) {
+        lsystem->prepare();
+
+        if (lsystem->messages()->failed()) {
+            lsystem->messages()->dump();
+            ret->push_back(nullptr);
+        } else {
+            ret->push_back(lsystem);
         }
+    }
+
+    delete lsystems;
+
+    return ret;
+}
+
+std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& settings) {
+    if (settings.inputFiles.isset()) {
+        std::list<lsysgen::LSystem<char> *> * lsystems = new std::list<lsysgen::LSystem<char> *>();
+        for (std::string const& inputFile : settings.inputFiles.get()) {
+            if (std::filesystem::is_directory(inputFile)) {
+                std::cerr << inputFile << " input file is a directory, not a source file" << std::endl;
+                continue;
+            }
+            std::string content;
+            if (!readFromFile(inputFile, content)) {
+                std::cerr << "Input file '" << inputFile << "' does not exist." << std::endl;
+                exit(1);
+            }
+            std::list<lsysgen::LSystem<char> *> * lsystems2;
+            switch (settings.inputMode.get()) {
+                case Settings::InputMode::LSD:
+                    if (getModuleName(inputFile, "lsd") == "") {
+                        std::cerr << inputFile << " is not a valid LSD file name (must be a valid module name + .lsd)" << std::endl;
+                        continue;
+                    }
+                    lsystems2 = parseLSystemFromString(inputFile, content, settings);
+                    if (lsystems2 != nullptr) {
+                        lsystems->splice(lsystems->end(), *lsystems2);
+                        delete lsystems2;
+                    }
+                    break;
+                case Settings::InputMode::AXIOM:
+                    if (getModuleName(inputFile, "lsd") == "") {
+                        std::cerr << inputFile << " is not a valid LSD file name (must be a valid module name + optional extension)" << std::endl;
+                        continue;
+                    }
+                    if (settings.axiom.isset())
+                        content = settings.axiom.get();
+                    lsystems2 = parseLSystemFromAxiom(inputFile, content, settings);
+                    if (lsystems2 != nullptr) {
+                        lsystems->splice(lsystems->end(), *lsystems2);
+                        delete lsystems2;
+                    }
+                    break;
+            }
+        }
+        return lsystems;
     } else {
         if (settings.axiom.isset()) {
-            return parseLSystemFromAxiom(settings.axiom.get(), settings);
+            return parseLSystemFromAxiom("", settings.axiom.get(), settings);
         } else {
             std::cerr << "You must either specify an input file or an axiom (-a AXIOM)" << std::endl;
             exit(1);
@@ -118,9 +166,9 @@ lsysgen::LSystem<char> * parseLSystem(lsysgen::Settings const& settings) {
     }
 }
 
-lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, lsysgen::Settings const& settings) {
+std::list<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view inputFile, std::string_view lsdContents, lsysgen::Settings const& settings) {
 
-    antlr4::ANTLRInputStream * input = new antlr4::ANTLRInputStream(fileContents);
+    antlr4::ANTLRInputStream * input = new antlr4::ANTLRInputStream(lsdContents);
     LSysDLexer * lexer = new LSysDLexer(input);
 
     if (lexer->getNumberOfSyntaxErrors() != 0)
@@ -134,18 +182,19 @@ lsysgen::LSystem<char> * parseLSystemFromString(std::string_view fileContents, l
     if (parser->getNumberOfSyntaxErrors() != 0)
         exit(1);
 
-    LSysDVisitor visitor(settings);
-    lsysgen::LSystem<char> * lsystem = std::any_cast<lsysgen::LSystem<char> *>(visitor.visit(tree));
+    LSysDVisitor visitor(inputFile, settings);
+    std::list<lsysgen::LSystem<char> *> * lsystems = 
+            std::any_cast<std::list<lsysgen::LSystem<char> *> *>(visitor.visit(tree));
 
     if (visitor.messages()->failed()) {
         visitor.messages()->dump();
         return nullptr;
     }
 
-    return lsystem;
+    return lsystems;
 }
 
-lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen::Settings const& settings) {
+std::list<lsysgen::LSystem<char> *> * parseLSystemFromAxiom(std::string_view inputFile, std::string_view s_axiom, lsysgen::Settings const& settings) {
     antlr4::ANTLRInputStream * axiomInput = new antlr4::ANTLRInputStream(s_axiom);
     LSysDLexer * axiomLexer = new LSysDLexer(axiomInput);
 
@@ -160,13 +209,14 @@ lsysgen::LSystem<char> * parseLSystemFromAxiom(std::string_view s_axiom, lsysgen
     if (axiomParser->getNumberOfSyntaxErrors() != 0)
         exit(1);
 
-    LSysDVisitor visitor(settings);
-    lsysgen::LSystem<char> * lsystem = std::any_cast<lsysgen::LSystem<char> *>(visitor.visit(axiomTree));
+    LSysDVisitor visitor(inputFile, settings);
+    std::list<lsysgen::LSystem<char> *> * lsystems = 
+            std::any_cast<std::list<lsysgen::LSystem<char> *> *>(visitor.visit(axiomTree));
 
     if (visitor.messages()->failed()) {
         visitor.messages()->dump();
         return nullptr;
     }
 
-    return lsystem;
+    return lsystems;
 }

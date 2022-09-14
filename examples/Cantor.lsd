@@ -1,0 +1,71 @@
+
+lsystem CantorSet {
+
+	axiom S;
+
+	set iterations = 4;
+	set rotation = 90;
+	set initial_heading = 0;
+	set background = "#ddd";
+
+	rules {
+
+		S -> [bSaS]AAA
+		a -> aaa
+		A -> AAA
+
+		S => F
+		A => F
+		a => f
+		b => +ff-
+
+	}
+
+}
+
+main lsystem ParametricCantorSet {
+
+	axiom S(0);
+	
+	set iterations = 5;
+	set rotation = 90;
+	set initial_heading = 0;
+	set width = 25.0;
+	set height = .3;
+	set background = "#bbf"
+
+	rules {
+
+		S(n) -> [b(n+1)S(n+1)a((1.0/3)**(n+1))S(n+1)]A((1.0/3)**n)
+		b(n) -> b(n+1)
+
+		S(n) => F(width*(1.0/3)**n)
+		A(l) => F(width*l)
+		a(l) => f(width*l)
+		b(n) => +(90)f(height)-(90)
+
+	}
+
+}
+
+lsystem CantorDust {
+	
+	axiom A
+
+	set iterations = 4
+	set rotation = 90
+	set background = "#af8"
+	set line_width = 0
+
+	rules {
+
+		A -> Af(2)Af(1)+f(2)Af(1)+f(2)Af(1)+f(3)+
+
+		f(l) -> f(3*l)
+		g(l) -> g(3*l)
+
+		A => PF+F+F+F+p
+
+	}
+
+}

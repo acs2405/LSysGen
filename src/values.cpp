@@ -186,6 +186,12 @@ bool Scope::has(std::string const& var) const {
     return false;
 }
 
+bool Scope::thisHas(std::string const& var) const {
+    if (mapping.find(var) != mapping.end())
+        return true;
+    return false;
+}
+
 void Scope::merge(Scope const* scope) {
     mapping.insert(scope->mapping.begin(), scope->mapping.end());
 }

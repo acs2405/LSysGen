@@ -74,6 +74,10 @@ std::string sanitizeXML(std::string const& s) {
 }
 
 std::string getModuleName(std::string const& filename, std::string const& ext) {
+    if (filename == "")
+        return "__inline__";
+    if (filename == "-")
+        return "__stdin__";
     std::smatch sm;
     // std::regex_match(filename, sm, std::regex("^(?:[^/\\\\]*[/\\\\])*([^/\\\\]*)\\.lsd$"));
     // std::regex_search(filename, sm, std::regex("([^/\\\\:*?|]+)\\." + ext + "$"));

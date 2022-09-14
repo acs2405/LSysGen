@@ -1,5 +1,5 @@
 
-lsystem Koch {
+lsystem KochSnowflake {
 
 	# axiom n(255,255,255)P(255,255,255,.4)A--A--AZp
 	axiom PA--A--AZp

@@ -27,7 +27,7 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
     Module<char> * module;
 
     LSystem<char> * currentLSystem;
-    LSystem<char> * selectedLSystem;
+    std::list<LSystem<char> *> * selectedLSystems;
     Scope * currentScope;
     Scope * baseScope;
     Table<char> * currentTable;
@@ -35,6 +35,7 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
 
     ErrorHandler * eh;
     Settings const settings;
+    std::string const inputFile;
 
     template<class R> 
     R * defineRule(// LSysDParser::TagPrefixContext* tagCtx, 
@@ -54,7 +55,7 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
     LSystem<char> * createLSystem(std::string const& name) const;
 
 public:
-    LSysDVisitor(Settings const& settings, Scope * scope=nullptr, StackTrace const* trace=nullptr);
+    LSysDVisitor(std::string_view inputFile, Settings const& settings, Scope * scope=nullptr, StackTrace const* trace=nullptr);
 
     ~LSysDVisitor();
 

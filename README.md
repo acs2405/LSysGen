@@ -47,9 +47,9 @@ lsystem DragonCurve {
 }
 ```
 
-Executing the program with this file (`lsys examples/DragonCurve.lsd --svg - | display`) generates:
+Executing the program with this file (`lsys examples/Dragon.lsd --svg - | display`) generates:
 
-![Dragon curve](./images/DragonCurve.svg)
+![Dragon curve](./images/Dragon.svg)
 
 ### Other examples
 
@@ -57,9 +57,9 @@ Some parametric random plant (examples/B2.lsd):
 
 ![Some parametric random plant](./images/B2.svg)
 
-Penrose tiling (examples/PenroseTiling.lsd):
+Penrose tiling (examples/Penrose.lsd):
 
-![Penrose tiling](./images/PenroseTiling.svg)
+![Penrose tiling](./images/Penrose.svg)
 
 Broccoli (examples/Broccoli.lsd):
 
@@ -67,7 +67,7 @@ Broccoli (examples/Broccoli.lsd):
 
 Cantor set (examples/ParametricCantorSet.lsd):
 
-![Cantor set](./images/ParametricCantorSet.svg)
+![Cantor set](./images/Cantor.svg)
 
 ## The program
 
@@ -131,12 +131,12 @@ Windows target is still not available for this project.
 
 ### Execution
 
-This project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage out L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
+This project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage our L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
 
 To execute the `lsys` program, go to `build/` and run either of:
 
 ```
-./lsys INPUT_FILE [OUTPUT_FILE] [OPTIONS]
+./lsys INPUT_FILE... [OPTIONS]
 ./lsys -a AXIOM [OPTIONS]
 ```
 
@@ -145,7 +145,9 @@ The main options are:
 - `-i N`: sets or overrides the number of iterations
 - `-a AXIOM`: sets or overrides the axiom. `AXIOM` should be quoted.
 - `-r RULES`: adds rules to the L System. `RULES` must be quoted.
-- `--svg [OUTPUT_SVG_FILE]`: outputs a SVG image after the L System result. If not set, the program outputs the result as is. If `OUTPUT_SVG_FILE` is set, that will be the file where the output will be writen, otherwise the output will be printed to the standard output. If `OUTPUT_SVG_FILE` set to a directory, a `FILE.svg` file will be created inside that directory, where `FILE` will be the name of the selected L System.
+- `-l NAME...`, `--all`: selects the L System(s) that will be displayed from the source file (when there are more than one in the same LSD file). `--all` selects all of them.
+- `-o OUTPUT_RESULT_FILE`: outputs the result string of the L System iterations. If `OUTPUT_RESULT_FILE` is set to a directory, a `FILE.txt` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System). If is set to `-`, the program will print the result in the standard output.
+- `--svg [OUTPUT_SVG_FILE]`: outputs a SVG image after the L System result. If `OUTPUT_SVG_FILE` is set to a directory, a `FILE.svg` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System). If `OUTPUT_SVG_FILE` is not set or set to `-`, the program will print the SVG in the standard output.
 
 Run `./lsys --help` to see all options. 
 
@@ -166,7 +168,7 @@ ABBABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBABABBABBABABBABBABABBABABBA
 L System from LSDL file (ImageMagick's `display` opens a window that displays the SVG image output):
 
 ```
-./lsys ../examples/Test1.lsd --svg - | display
+./lsys ../examples/tests.lsd -l Test1 --svg - | display
 ```
 
 Output:
@@ -176,8 +178,9 @@ Output:
 Other examples:
 
 ```
-./lsys ../examples/HilbertCurve.lsd --svg -i 4 | display
+./lsys ../examples/Hilbert.lsd --svg -i 4 | display
 ./lsys ../examples/B2.lsd -i 20 --svg ../images
+./lsys ../examples/classics.lsd --all --svg ../images
 ```
 
 There is also a small Python module, `lsys.py`, that uses the `lsysgen` library and serves as a Python wrapper for the library (through its class `LSystem` that is able to print the L system and also its 2D render). This python script is also runnable and prints the resulting L system string and the SVG image:
@@ -253,7 +256,7 @@ lsystem SierpinskiTriangle {
 If we run:
 
 ```
-./build/lsys examples/SierpinskiTriangle.lsd --svg - | display
+./build/lsys examples/Sierpinski.lsd -l SierpinskiTriangle --svg - | display
 ```
 
 This generates:

@@ -152,6 +152,7 @@ public:
     void set(std::string const& var, Value const& val);
     Value const& get(std::string const& var) const;
     bool has(std::string const& var) const;
+    bool thisHas(std::string const& var) const;
 
     void merge(Scope const* env);
 };

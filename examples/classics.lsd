@@ -1,0 +1,224 @@
+
+set background = "#dad"
+set line_width = .3
+
+main lsystem VicsekH {
+
+	axiom PAp
+
+	set iterations = 4
+	set rotation = 90
+	#set background = "#fca"
+	set line_width = 0
+
+	rules {
+
+		A -> Af(3)A+f(3)-A-f(6)+A+f(3)-f(3)Ag(6)
+
+		f(l) -> f(3*l)
+		g(l) -> g(3*l)
+
+		A => fF+F-F+F+F-F+F+F-F+F+F-F+g
+	}
+
+}
+
+lsystem Vicsek {
+	
+	axiom A
+
+	set iterations = 4
+	set rotation = 90
+	#set background = "#fca"
+	set line_width = 0
+
+	rules {
+
+		A -> Af(2)Af(1)+f(2)Af(1)+f(2)A+f(1)Af(2)+g(1)
+
+		f(l) -> f(3*l)
+		g(l) -> g(3*l)
+
+		A => PF+F+F+F+p
+	}
+
+}
+
+# Seen in [http://paulbourke.net/fractals/lsys/]:
+
+lsystem KochCurve {
+	
+	axiom F+F+F+F
+
+	set iterations = 3
+	set rotation = 90
+
+	F -> F+F-F-FF+F+F-F
+
+}
+
+lsystem Tiles {
+	
+	axiom F+F+F+F
+
+	set iterations = 3
+	set rotation = 90
+	set line_width = .2
+
+	F -> FF+F-F+F+FF
+
+}
+
+lsystem Triangle {
+	
+	axiom F+F+F
+
+	set iterations = 7
+	set rotation = 120
+
+	F -> F-F+F
+
+}
+
+lsystem QuadraticGosper {
+	
+	axiom -YF
+
+	set iterations = 2
+	set rotation = 90
+
+	X -> XFX-YF-YF+FX+FX-YF-YFFX+YF+FXFXYF-FX+YF+FXFX+YF-FXYF-YF-FX+FX+YFYF-
+	Y -> +FXFX-YF-YF+FX+FXYF+FX-YFYF-FX-YF+FXYFYF-FX-YFFX+FX+YF-YF-FX+FX+YFY
+
+}
+
+lsystem HexagonalGosper {
+	
+	axiom XF
+
+	set iterations = 4
+	set rotation = 60
+
+	X -> X+YF++YF-FX--FXFX-YF+
+	Y -> -FX+YFYF++YF+FX--FX-Y
+
+}
+
+lsystem Crystal {
+	
+	axiom F+F+F+F
+
+	set iterations = 5
+	set rotation = 90
+
+	F -> FF+F++F+F
+
+}
+
+lsystem PeanoCurve {
+	
+	axiom X
+
+	set iterations = 3
+	set rotation = 90
+
+	X -> XFYFX+F+YFXFY-F-XFYFX
+	Y -> YFXFY-F-XFYFX+F+YFXFY
+
+}
+
+lsystem QuadraticSnowFlake {
+	
+	axiom F
+
+	set iterations = 5
+	set rotation = 90
+
+	F -> F-F+F+F-F
+
+}
+
+lsystem Board {
+	
+	axiom F+F+F+F
+
+	set iterations = 4
+	set rotation = 90
+
+	F -> FF+F+F+F+FF
+
+}
+
+lsystem CrossFill {
+	
+	axiom F+F+F+F
+
+	set iterations = 5
+	set rotation = 90
+
+	F -> F+FF++F+F
+
+}
+
+lsystem CrossBorder {
+	
+	axiom F+F+F+F
+
+	set iterations = 5
+	set rotation = 90
+
+	F -> F+F-F+F+F
+
+}
+
+lsystem Rings {
+	
+	axiom F+F+F+F
+
+	set iterations = 4
+	set rotation = 90
+
+	F -> FF+F+F+F+F+F-F
+
+}
+
+lsystem LevyCurve {
+	
+	axiom F
+
+	set iterations = 12
+	set rotation = 45
+
+	F -> -F++F-
+
+}
+
+lsystem Kolam {
+	
+	axiom -D--D
+
+	# After 3 iterations, Kolam does nothing
+
+	set iterations = 3
+	set rotation = 45
+
+	A -> F++FFFF--F--FFFF++F++FFFF--F
+	B -> F--FFFF++F++FFFF--F--FFFF++F
+	C -> BFA--BFA
+	D -> CFC--CFC
+
+}
+
+# Seen in [https://onlinemathtools.com/l-system-generator]:
+
+lsystem Pentaplexity {
+	
+	axiom F++F++F++F++F
+
+	set iterations = 4
+	set rotation = 36
+	set line_width = .2
+
+	F -> F++F++F+++++F-F++F
+
+}

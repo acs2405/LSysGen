@@ -1,0 +1,13 @@
+
+set background = "#bff"
+set line_width = .3
+
+main lsystem HilbertCurve {
+	axiom L
+
+	set rotation = 90
+	set iterations = 5
+
+	L -> +RF-LFL-FR+
+	R -> -LF+RFR+FL-
+}

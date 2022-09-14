@@ -45,10 +45,11 @@
 //     this->eh = new ErrorHandler(settings->inputFile.get(), sourceLines, trace);
 // }
 
-LSysDVisitor::LSysDVisitor(Settings const& settings, Scope * scope, StackTrace const* trace): 
-        module(nullptr), currentLSystem(nullptr), selectedLSystem(nullptr), currentTable(nullptr), 
-        parentNode(nullptr), currentScope(nullptr), baseScope(nullptr), settings(settings), eh(nullptr) {
-    this->eh = new ErrorHandler(settings.inputFile.get(), trace);
+LSysDVisitor::LSysDVisitor(std::string_view inputFile, Settings const& settings, Scope * scope, StackTrace const* trace): 
+        module(nullptr), currentLSystem(nullptr), selectedLSystems(new std::list<LSystem<char> *>()), 
+        currentTable(nullptr), parentNode(nullptr), currentScope(nullptr), baseScope(nullptr), 
+        inputFile(inputFile), settings(settings), eh(nullptr) {
+    this->eh = new ErrorHandler(inputFile, trace);
 
     if (scope != nullptr)
         this->baseScope = new Scope(scope); // TODO ??? El padre del padre???
@@ -139,12 +140,8 @@ void LSysDVisitor::setAxiom() {
 
 Module<char> * LSysDVisitor::createModule() const {
     std::string moduleName;
-    if (!settings.inputFile.isset()) {
-        moduleName = eh->fileName(); // == "__inline__"
-    } else if (settings.inputFile.get() == "-") {
-        moduleName = eh->fileName(); // == "__stdin__"
-    } else {
-        moduleName = getModuleName(eh->fileName(), settings.inputMode.get() == Settings::InputMode::AXIOM ? "" : "lsd");
+    moduleName = getModuleName(inputFile, settings.inputMode.get() == Settings::InputMode::AXIOM ? "" : "lsd");
+    if (settings.inputFiles.isset() && inputFile != "-") { // || settings.inputFiles.get().size() == 0) {
         if (moduleName.size() > 0) {
             // std::regex_replace(moduleName, std::regex("[-]"), "_");
             // std::regex_replace(moduleName, std::regex("[^a-zA-Z0-9_]"), "");
@@ -165,6 +162,8 @@ Module<char> * LSysDVisitor::createModule() const {
 
 LSystem<char> * LSysDVisitor::createLSystem(std::string const& name) const {
     LSystem<char> * lsys = new LSystem<char>(module);
+    lsys->_scope->set("i", 0);
+    lsys->_scope->set("n", settings.iterations.get());
     lsys->_name = name;
     module->_lsystems[lsys->_name] = lsys;
     return lsys;
@@ -175,21 +174,20 @@ LSystem<char> * LSysDVisitor::createLSystem(std::string const& name) const {
 std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     module = createModule();
     if (module == nullptr)
-        return static_cast<LSystem<char> *>(nullptr);
+        return static_cast<std::list<LSystem<char> *> *>(nullptr);
     currentScope = module->_scope;
     if (ctx->module()) {
         // Named L Systems(s)
         visitChildren(ctx);
-        if (eh->failed() || module->eh->failed())
-            return static_cast<LSystem<char> *>(nullptr);
+        if (module->_lsystems.size() == 0 || eh->failed() || module->eh->failed())
+            return static_cast<std::list<LSystem<char> *> *>(nullptr);
     } else {
         // Anonymous L System
         currentLSystem = createLSystem(module->_name);
-        if (settings.lsystem.isset())
-            eh->error("Input file is just an anonymous L System. No '" + settings.lsystem.get() + 
-                    "' L System could be selected");
+        if (settings.lsystems.isset() && settings.lsystems.get().size() > 0)
+            eh->error("Input file is just an anonymous L System. L System could not be selected by name");
         module->_mainLSystem = currentLSystem;
-        selectedLSystem = currentLSystem;
+        selectedLSystems->push_back(currentLSystem);
         currentScope = currentLSystem->_scope;
         parseArgs();
         visitChildren(ctx);
@@ -206,7 +204,7 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         if (settings.rules.isset())
             addRules();
         if (eh->failed() || module->eh->failed())
-            return static_cast<LSystem<char> *>(nullptr);
+            return static_cast<std::list<LSystem<char> *> *>(nullptr);
         currentScope = currentScope->parent();
         // eh->traceDown(eh->trace(ctx->stop));
         currentLSystem->populateProperties(settings);
@@ -218,9 +216,9 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     // setMainLSystem();
 
     if (eh->failed() || module->eh->failed())
-            return static_cast<LSystem<char> *>(nullptr);
+            return static_cast<std::list<LSystem<char> *> *>(nullptr);
 
-    return selectedLSystem;
+    return selectedLSystems;
 }
 
 std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
@@ -229,14 +227,13 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
     } else {
         module = createModule();
         if (module == nullptr)
-            return static_cast<LSystem<char> *>(nullptr);
+            return static_cast<std::list<LSystem<char> *> *>(nullptr);
         currentScope = module->_scope;
         currentLSystem = createLSystem(module->_name);
-        if (settings.lsystem.isset())
-            eh->error("Input file is just a word. No '" + settings.lsystem.get() + 
-                    "' L System could be selected");
+        if (settings.lsystems.isset() && settings.lsystems.get().size() > 0)
+            eh->error("Input file is just a word. L System could not be selected by name");
         module->_mainLSystem = currentLSystem;
-        selectedLSystem = currentLSystem;
+        selectedLSystems->push_back(currentLSystem);
         currentScope = currentLSystem->_scope;
         parseArgs();
         currentLSystem->_axiom = std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>(visitWord(ctx->word()));
@@ -247,25 +244,37 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
             currentLSystem->populateProperties(settings);
         currentLSystem = nullptr;
         currentScope = currentScope->parent();
-        return selectedLSystem;
+        return selectedLSystems;
     }
 }
 
 std::any LSysDVisitor::visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) {
+    std::list<std::string> lsystems = settings.lsystems.get();
     for (auto gdef : ctx->globalDef()) {
         if (gdef->lsystem()) {
+            bool selected = false;
             LSysDParser::LsystemContext * lsysdef = gdef->lsystem();
             LSystem<char> * lsys = createLSystem(lsysdef->ID()->getText());
-            if (settings.lsystem.isset() && settings.lsystem.get() == lsys->_name) {
-                if (selectedLSystem == nullptr)
-                    selectedLSystem = lsys;
-                else
-                    eh->error("There is more than one L System with name '" + settings.lsystem.get() + "' in " + eh->fileName(), eh->trace(lsysdef->ID()));
+            if (settings.lsystems.isset()) {
+                if (settings.lsystems.get().size() == 0) {
+                    selectedLSystems->push_back(lsys);
+                    selected = true;
+                } else {
+                    std::list<std::string>::iterator it = std::find(lsystems.begin(), lsystems.end(), lsys->_name);
+                    if (it != lsystems.end()) {
+                        selectedLSystems->push_back(lsys);
+                        lsystems.erase(it);
+                        selected = true;
+                    }
+                }
             }
             if (lsysdef->KWMAIN()) {
-                if (module->_mainLSystem)
-                    eh->error("Only one LSystem must be marked as main", eh->trace(lsysdef->KWMAIN()));
-                else
+                if (module->_mainLSystem) {
+                    if (selected)
+                        eh->warning("Only one LSystem must be marked as main", eh->trace(lsysdef->KWMAIN()));
+                    else
+                        eh->error("Only one LSystem must be marked as main", eh->trace(lsysdef->KWMAIN()));
+                } else
                     module->_mainLSystem = lsys;
             }
             // } else if (lsys->_name == module->_name) {
@@ -273,35 +282,45 @@ std::any LSysDVisitor::visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) {
             // }
         }
     }
-    if (selectedLSystem == nullptr) {
-        if (settings.lsystem.isset()) {
-            eh->error("There is no L System with name '" + settings.lsystem.get() + "' in " + eh->fileName());
-        } else if (module->_mainLSystem != nullptr) {
-            selectedLSystem = module->_mainLSystem;
-        } else if (module->_lsystems.size() == 1) {
-            selectedLSystem = module->_lsystems.begin()->second;
+    if (selectedLSystems->size() == 0) {
+        if (module->_lsystems.size() == 1) {
+            selectedLSystems->push_back(module->_lsystems.begin()->second);
             // eh->warning("You should mark one L system as main");
+        } else if (module->_mainLSystem != nullptr) {
+            selectedLSystems->push_back(module->_mainLSystem);
+        } else if (module->_lsystems.size() > 0) {
+            eh->error("No L system is either selected (-l NAME... / --all) or marked as main in " + eh->fileName()); //, eh->trace(ctx->stop));
         } else {
-            eh->error("No L system is either selected (-l NAME) or marked as main in " + eh->fileName()); //, eh->trace(ctx->stop));
+            eh->warning("No L Systems defined in " + eh->fileName());
         }
     }
+    // if (settings.lsystems.isset()) {
+    if (lsystems.size() > 0) {
+        for (std::string const& name : lsystems)
+            eh->error("No L System with name '" + name + "' in " + eh->fileName());
+    }
+    // }
 
     return visitChildren(ctx);
 }
 
 std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
-    currentLSystem = module->_lsystems[ctx->ID()->getText()];
-    if (currentScope->has(currentLSystem->_name))
-        eh->error("'" + currentLSystem->_name + "' is already defined", eh->trace(ctx->ID()));
+    LSystem<char> * lsys = module->_lsystems[ctx->ID()->getText()];
+    if (currentScope->has(lsys->_name)) {
+        eh->error("'" + lsys->_name + "' is already defined", eh->trace(ctx->ID()));
+        lsys = createLSystem(ctx->ID()->getText());
+    }
+    currentLSystem = lsys;
     currentScope->set(currentLSystem->_name, Value(currentLSystem));
     currentScope = currentLSystem->_scope;
-    if (currentLSystem == selectedLSystem && settings.args.isset())
+    bool selected = std::find(selectedLSystems->begin(), selectedLSystems->end(), currentLSystem) != selectedLSystems->end();
+    if (selected && settings.args.isset())
         parseArgs();
     // eh->traceDown(eh->trace(ctx->ID(), nullptr, "in LSystem:"));
     visitChildren(ctx);
     if (currentLSystem->_axiom == nullptr)
         eh->error("No axiom is defined in the L system " + currentLSystem->_name, eh->trace(ctx->ID()));
-    if (currentLSystem == selectedLSystem) {
+    if (selected) {
         if (settings.axiom.isset())
             setAxiom();
         if (settings.rules.isset())
@@ -310,11 +329,11 @@ std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
     // eh->traceUp();
     currentScope = currentScope->parent();
     // eh->traceDown(eh->trace(ctx->ID()));
-    if (!eh->failed() && currentLSystem == selectedLSystem)
+    if (!eh->failed() && selected)
         currentLSystem->populateProperties(settings);
     // eh->traceUp();
     currentLSystem = nullptr;
-    return nullptr;
+    return lsys;
 }
 
 std::any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
@@ -328,7 +347,7 @@ std::any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
 
 std::any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
-    if (currentScope->has(pname))
+    if (currentScope->thisHas(pname))
         eh->error("'" + pname + "' is already defined", eh->trace(ctx->ID()));
     Value val = module->_evaluator->eval(ctx->expression(), currentScope);
     currentScope->set(pname, val); // TODO: must know it's a constant
@@ -342,7 +361,7 @@ std::any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContex
 
 std::any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationContext *ctx) {
     std::string pname = ctx->ID()->getText();
-    if (currentScope->has(pname))
+    if (currentScope->thisHas(pname))
         eh->error("'" + pname + "' is already defined", eh->trace(ctx->ID()));
     Value val = Value::null();
     if (ctx->expression())
@@ -353,7 +372,7 @@ std::any LSysDVisitor::visitVarDeclaration(LSysDParser::VarDeclarationContext *c
 
 std::any LSysDVisitor::visitAssignment(LSysDParser::AssignmentContext *ctx) {
     std::string pname = ctx->ID()->getText();
-    if (!currentScope->has(pname))
+    if (!currentScope->thisHas(pname))
         eh->error("'" + pname + "' is not defined", eh->trace(ctx->ID()));
     // else if (pname is a constant)
     //     eh->error("'" + pname + "' is a constant and cannot be re-assigned", eh->trace(ctx->ID()));
@@ -364,7 +383,7 @@ std::any LSysDVisitor::visitAssignment(LSysDParser::AssignmentContext *ctx) {
 
 std::any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
     std::string fname = ctx->ID()->getText();
-    if (currentScope->has(fname))
+    if (currentScope->thisHas(fname))
         eh->error("'" + fname + "' is already defined", eh->trace(ctx->ID()));
     // LSysDParser::ExpressionContext* expr = ctx->expression();
     std::list<Parameter*>* params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));

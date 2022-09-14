@@ -10,7 +10,7 @@
 
 
 std::set<std::string> const argNames0 = {
-    "--help", "-X", "--axiom-input"
+    "--help", "-X", "--axiom-input", "--all"
 };
 std::set<std::string> const argNamesOpt = {
     "--svg", "-S", "--seed"
@@ -19,11 +19,11 @@ std::set<std::string> const argNames1 = {
     "-a", "--axiom", "-r", "--rules", "-i", "--iterations", "-I", 
     "--ignore", "-H", "--heading", 
     "-R", "--rotation", "-W", "--line-width", "-B", "--background", 
-    "-C", "--line-color", "-F", "--fill-color", "-l", "--lsystem", 
-    "-w", "--width", "-h", "--height"
+    "-C", "--line-color", "-F", "--fill-color", 
+    "-w", "--width", "-h", "--height", "-o", "--output"
 };
 std::set<std::string> const argNamesN = {
-    "-A", "--args"
+    "-A", "--args", "-l", "--lsystems"
 };
 std::regex const argRegex ("([A-Za-z_][A-Za-z_0-9]*):(.+)");
 
@@ -54,17 +54,18 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             continue;
 
         if (argv[i][0] != '-' || argv[i][1] == '\0') {
-            if (positionalArgs == 0) {
-                // Found first positional argument
-                if (arg.size() > 0)
-                    settings.inputFile.set(arg);
-            } else if (positionalArgs == 1) {
-                // Found second positional argument
-                settings.outputResultFile.set(arg);
-            } else {
-                // Found third positional argument (not expected)
-                argumentError("Error: too many positional arguments", true);
-            }
+            settings.inputFiles.getRef().push_back(arg);
+            // if (positionalArgs == 0) {
+            //     // Found first positional argument
+            //     if (arg.size() > 0)
+            //         settings.inputFile.set(arg);
+            // } else if (positionalArgs == 1) {
+            //     // Found second positional argument
+            //     settings.outputResultFile.set(arg);
+            // } else {
+            //     // Found third positional argument (not expected)
+            //     argumentError("Error: too many positional arguments", true);
+            // }
             ++positionalArgs;
         } else {
             // Found a keyword argument
@@ -84,6 +85,10 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (settings.inputMode.isset())
                     argumentError("input mode argument repeated");
                 settings.inputMode.set(lsysgen::Settings::InputMode::AXIOM);
+            } else if (arg == "--all") {
+                if (settings.lsystems.isset())
+                    argumentError("lsystems argument repeated (" + arg + ")");
+                settings.lsystems.set(); // empty
             } else if (arg == "--help") {
                 printHelp();
                 exit(0);
@@ -115,7 +120,11 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             if (argc == i+1)
                 argumentError(arg + " must be followed by a value");
             std::string arg2 = argv[++i];
-            if (arg == "-a" || arg == "--axiom") {
+            if (arg == "-o" || arg == "--output") {
+                if (settings.outputResultFile.isset())
+                    argumentError("output argument repeated");
+                settings.outputResultFile.set(arg2);
+            } else if (arg == "-a" || arg == "--axiom") {
                 if (settings.axiom.isset())
                     argumentError("axiom argument repeated");
                 settings.axiom.set(arg2);
@@ -128,10 +137,6 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (settings.iterations.isset())
                     argumentError("iterations argument repeated");
                 settings.iterations.set(strict_stoi(arg, arg2));
-            } else if (arg == "-l" || arg == "--lsystem") {
-                if (settings.lsystem.isset())
-                    argumentError("lsystem argument repeated");
-                settings.lsystem.set(arg2);
             } else if (arg == "-I" || arg == "--ignore") {
                 if (settings.ignore.isset())
                     argumentError("ignore argument repeated");
@@ -195,6 +200,13 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                         argumentError(arg + " arguments must be pairs NAME:VALUE");
                     }
                 }
+            } else if (arg == "-l" || arg == "--lsystems") {
+                if (settings.lsystems.isset())
+                    argumentError("lsystems argument repeated (" + arg + ")");
+                if (values.size() == 0)
+                    argumentError(arg + " must be followed by one or more L System names");
+                for (char const* arg2 : values)
+                    settings.lsystems.getRef().push_back(arg2);
             }
         } else {
             if (argv[i][0] != '-' || argv[i][1] == '\0')
@@ -247,7 +259,7 @@ void printUsage() {
 void printHelp() {
     std::cout << "lsys " << LSYSGEN_VERSION << std::endl;
     std::cout << "Usage:" << std::endl;
-    std::cout << "       lsys INPUT_FILE [OUTPUT_FILE] [OPTIONS]" << std::endl;
+    std::cout << "       lsys INPUT_FILE... [OUTPUT_FILE] [OPTIONS]" << std::endl;
     std::cout << "       lsys -a AXIOM [OPTIONS]" << std::endl;
     std::cout << std::endl;
     std::cout << "This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) \
@@ -278,13 +290,10 @@ be replaced by the 'right' string, e.g. \"A -> AB\", \"B->A\", etc." << std::end
 
     std::cout << "Arguments:" << std::endl;
     std::cout << "     INPUT_FILE: the program will read the contents of this .lsd file and will build its main L System (if \
-there is more than one L System defined in the file, the one marked with main is selected). If -X option is set, this file will \
-be expected to only contain a word that will act as an axiom. If INPUT_FILE is set to \"-\" then the program will read from the \
-standard input. Either -a or INPUT_FILE are required." << std::endl;
-    std::cout << "     OUTPUT_FILE: this file is optional and will be used to write the result word of the L System derivations \
-(even if --svg option is set). If OUTPUT_FILE is set to \"-\" then the result will be printed to the standard output. If set to a \
-directory, a FILE.txt file will be created inside that directory, where FILE will be the name of the selected L System. When \
-neither OUTPUT_FILE nor --svg are set then the result will be printed to the standard output." << std::endl;
+there is more than one L System defined in the file, the one marked with main is selected, unless another(s) are selected with \
+-l). There can be multiple input files. If -X option is set, this file will be expected to only contain a word that will act \
+as an axiom. If INPUT_FILE is set to \"-\" then the program will read from the standard input. Either -a or INPUT_FILE are \
+required." << std::endl;
     std::cout << std::endl;
 
     std::cout << "Options:" << std::endl;
@@ -296,8 +305,10 @@ a semicolon (;), but it must be always quoted since it uses > and/or < character
 when unquoted." << std::endl;
     std::cout << "     -i N, --iterations N: sets or overrides the number of iterations that the L System will be applying the \
 rules. Defaults to 0." << std::endl;
-    std::cout << "     -l NAME, --lsystem NAME: this option selects the L System that will be executed (INPUT_FILE required), as \
-LSD files may contain multiple L Systems. If no one is found declared with that name, an error will occur." << std::endl;
+    std::cout << "     -l NAME ..., --lsystems NAME ...: this option selects the L System(s) in the source file that will be \
+executed (in source files with multiple L Systems). If one of the NAMEs is not found declared with that name, an error will \
+occur." << std::endl;
+    std::cout << "     --all: this option selects all the L Systems in the source file." << std::endl;
     std::cout << "     -I CHARS, --ignore CHARS: sets or overrides the characters the L System will ignore when looking for left \
 and right context of a character when checking a rule. Too many iterations may take too much time. Defaults to empty." << std::endl;
     std::cout << "     -S [N], --seed [N]: sets or overrides a seed for a non-deterministic L System. If N is present, N will be \
@@ -310,6 +321,10 @@ executed with the same seed. Default value is -1 (chooses a random seed)." << st
 
     std::cout << "     -X, --axiom-input: when this option is set, the program will read the input file as an axiom rather than as \
 a LSD file." << std::endl;
+    std::cout << "     -o OUTPUT_FILE, --output OUTPUT_FILE: this file will be used to write the result word of the L System derivations \
+(even if --svg option is set). If OUTPUT_FILE is set to \"-\" then the result will be printed to the standard output. If set to a \
+directory, a FILE.txt file will be created inside that directory, where FILE will be the name of the selected L System. When \
+neither OUTPUT_FILE nor --svg are set then the result will be printed to the standard output." << std::endl;
     std::cout << std::endl;
     std::cout << "     --svg [OUTPUT_SVG_FILE]: this option activates SVG image creation after iterating the L System. The program \
 interprets the result of the iterations to build a SVG file and printing it to the standard output, or optionally in the file \

@@ -1,0 +1,107 @@
+
+set background = "#ffbb44"
+
+main lsystem SierpinskiTriangle {
+
+	axiom F-G-G
+
+	set iterations = 6
+	set initial_heading = 0
+	set rotation = -120
+	#set background = "#ffbb00"
+
+	rules {
+		F -> F-G+F+G-F
+		G -> GG
+
+		G => F
+	}
+
+}
+
+lsystem SierpinskiTriangleHex {
+
+	axiom A
+
+	set iterations = 8
+	set initial_heading = 0
+	set rotation = 60
+	#set background = "#ff8800"
+	set line_width = .5
+
+	rules {
+		B -> -A+B+A-
+		A -> +B-A-B+
+
+		A => F
+		B => F
+	}
+
+}
+
+lsystem SierpinskiCarpet1Path {
+	
+	axiom PAp
+
+	set iterations = 4
+	set rotation = 90
+	#set background = "#aff"
+	set line_width = 0
+
+	rules {
+
+		A -> Af(3)Af(3)Af(3)+f(3)Af(3)Af(3)+f(3)Af(3)Af(3)+f(3)Af(3)f(3)+
+		f(l) -> f(3*l)
+
+		A => F(3)+F(3)+F(3)+F(2)+F+F-F-F-F(2)+F+
+
+	}
+
+}
+
+lsystem SierpinskiCarpet {
+	
+	axiom A
+
+	set iterations = 4
+	set rotation = 90
+	#set background = "#aff"
+	set line_width = 0
+
+	rules {
+		#A(l|l==3) -> A(3)+f(1)-A(1)f(1)f(1)A(1)g(2)+f(1)-A(3)-f(2)+ f(3) A(3)+f(1)-A(1)f(1)f(1)A(1)g(2)+f(1)-A(3)-f(2)+ f(3) A(3)+f(1)-A(1)f(1)f(1)A(1)g(2)+f(1)-A(3)-f(2)+ g(6)
+
+
+		A -> Af(3)Af(3)Ag(6)+f(3)-Af(3)f(3)Ag(6)+f(3)-Af(3)Af(3)Ag(6)-f(6)+
+		f(l) -> f(3*l)
+		g(l) -> g(3*l)
+
+		A => PF(3)+F(3)+F(3)+F(2)+F+F-F-F-F(2)+F+p
+
+	}
+
+}
+
+lsystem SquareSierpinski {
+	
+	axiom F+XF+F+XF
+
+	set iterations = 4
+	set rotation = 90
+	set line_width = .3
+
+	X -> XF-F+F-XF+F+XF-F+F-X
+
+}
+
+lsystem ClassicSierpinskiCurve {
+	
+	axiom F--XF--F--XF
+
+	set iterations = 3
+	set rotation = 45
+	set line_width = .3
+
+	X -> XF+F+XF--F--XF+F+X
+
+}

@@ -13,7 +13,7 @@
 
 #include <string>
 #include <map>
-// #include <list>
+#include <list>
 // #include <vector>
 
 namespace lsysgen {
@@ -93,10 +93,10 @@ public:
 
     static Settings              const DEFAULT;
 
-    Setting<std::string> inputFile;
+    Setting<std::list<std::string>> inputFiles;
     Setting<std::string> outputResultFile;
     Setting<std::string> outputRenderFile;
-    Setting<std::string> lsystem;
+    Setting<std::list<std::string>> lsystems;
     Setting<std::string> axiom;
     Setting<Settings::RenderMode> renderMode;
     Setting<Settings::InputMode> inputMode;

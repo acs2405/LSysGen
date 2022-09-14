@@ -16,9 +16,9 @@ ErrorHandler::ErrorHandler(std::string_view const filename, StackTrace const* st
         _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
         _stdin(filename == "-") {
     if (filename.size() == 0)
-        _filename = "__inline__";
+        _filename = "<inline>";
     else if (filename == "-")
-        _filename = "__stdin__";
+        _filename = "<stdin>";
     else
         _filename = filename;
     // if (ErrorHandler::terminalSupportsColors)
@@ -142,12 +142,16 @@ std::string Message::buildMessage() const {
     switch(_type) {
         case Message::Type::FATAL_ERROR:
             msgTypeStr = Message::bold(Message::colored(_type, "FATAL ERROR: ")) + _msg;
+            break;
         case Message::Type::ERROR:
             msgTypeStr = Message::bold(Message::colored(_type, "ERROR: ")) + _msg;
+            break;
         case Message::Type::WARNING:
             msgTypeStr = Message::bold(Message::colored(_type, "WARNING: ")) + _msg;
+            break;
         case Message::Type::NOTICE:
             msgTypeStr = Message::bold(Message::colored(_type, "NOTICE: ")) + _msg;
+            break;
         default:
             msgTypeStr = _msg;
     }

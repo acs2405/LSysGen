@@ -14,7 +14,6 @@ LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), _settings2D()
         _tableFunc(nullptr), _axiom(nullptr), _iterations(Settings::DEFAULT_ITERATIONS), 
         _ignore(), _current(-1), _lastWord(nullptr), _encodedProgression() {
     this->_scope = new Scope(module->scope());
-    this->_scope->set("i", 0);
 
     this->_defaultTable = new Table<char>("<default>");
     this->_tables[this->_defaultTable->name] = this->_defaultTable;
