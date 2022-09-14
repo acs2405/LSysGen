@@ -2,6 +2,7 @@
 #include "interpreter2D.h"
 
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <regex>
 // #include <format>
