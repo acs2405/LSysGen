@@ -93,8 +93,8 @@ std::string getModuleName(std::string const& filename, std::string const& ext) {
 }
 
 bool terminalSupportsColors() {
-    const std::string env_term = std::getenv("TERM");
-    if(env_term.size() > 0) {
+    char const* env_term = std::getenv("TERM");
+    if(env_term != nullptr) {
         const std::list<std::string> terms {"xterm",  "xterm-256", "xterm-256color",
                                          "vt100",  "color",     "ansi",
                                          "cygwin", "linux"};
