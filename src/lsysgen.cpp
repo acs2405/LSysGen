@@ -9,6 +9,7 @@
 
 /*
  * Ideas:
+ * - Documentar con Doxygen (+ Sphinx?)
  * - Optimizar paths SVG de ramas padres e hijas con el mismo formato, uniéndolas en el mismo path
  * - Parámetros por nombre con param, por nombre y posición entre paréntesis?
  * - Números aleatorios en expresiones (rand(), randFloat()) y más funciones para hacer cálculos

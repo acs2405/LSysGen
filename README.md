@@ -630,7 +630,7 @@ inkscape --export-type=png -w 2000 images/*
 
 ## Next steps
 
-- Documentation
+- Documentation (Doxygen + Sphinx)
 - Manage pointers (destructors and deletes)
 - Capture all LSDL syntax errors and expression evaluation errors
 - Debug, unit testing
