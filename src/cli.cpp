@@ -64,7 +64,7 @@ int main(int argc, char** argv) {
             std::filesystem::path outputResultFile = outputResultPath;
             if (std::filesystem::is_directory(outputResultFile))
                 outputResultFile /= lsystem->name() + ".txt";
-            if (!writeToFile(outputResultFile.c_str(), lsystem->current()->toString())) {
+            if (!writeToFile(outputResultFile.string(), lsystem->current()->toString())) {
                 std::cerr << "File " << outputResultFile << " is not writable." << std::endl;
                 exit(1);
             }
@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
             std::filesystem::path outputRenderFile = outputRenderPath;
             if (std::filesystem::is_directory(outputRenderFile))
                 outputRenderFile /= lsystem->name() + ".svg";
-            if (!writeToFile(outputRenderFile.c_str(), node2svg(lsystem->current(), lsystem))) {
+            if (!writeToFile(outputRenderFile.string(), node2svg(lsystem->current(), lsystem))) {
                 std::cerr << "File " << outputRenderFile << " is not writable." << std::endl;
                 exit(1);
             }

@@ -2,6 +2,7 @@
 #include "interpreter2D.h"
 
 
+#define _USE_MATH_DEFINES
 #include <cmath>
 #include <regex>
 // #include <format>
@@ -118,7 +119,8 @@ std::string node2svg(
     float margin = std::max(boundsWidth, boundsHeight) * marginProportion + 1;
     std::string svg = "<svg viewBox=\"0 0 " + std::to_string(desiredWidth) + " " + std::to_string(desiredHeight);
     svg += "\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
-    svg += "<!-- SEED " + std::to_string(lsystem->seed()) + " -->\n";
+    if (lsystem != nullptr)
+        svg += "<!-- SEED " + std::to_string(lsystem->seed()) + " -->\n";
     if (settings2D.background.isset()) {
         Color bg = Color(settings2D.background.get());
         svg += "<rect";
