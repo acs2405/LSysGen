@@ -78,7 +78,7 @@ Cantor set (examples/ParametricCantorSet.lsd):
 This program uses `ANTLR 4.11.1` and `CMake (>=3.15)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program to run, it justs provides the `display` program to be able to easily display SVG outputs in the command line (`./lsys (...) -svg - | display`). To install our dependencies:
 
 ```
-sudo apt install cmake imagemagick
+sudo apt install g++ cmake imagemagick
 ```
 
 If you want to modify grammar files, you will need `Java 11` for `make` to generate C++ outputs automatically with the ANTLR jar file. In this case, also run:
