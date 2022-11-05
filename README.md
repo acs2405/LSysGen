@@ -644,3 +644,7 @@ inkscape --export-type=png -w 2000 images/*
 - Music representation?
 - Optimize expressions (getting rid of strings and transforming trivial expressions into values)
 
+## Known issues
+
+- When trying to compile in windows, doesn't work when java is not found, \<math\>'s M_PI doesn't work (make PI constant!), searches for $ANTLR4_ROOT\\runtime\\Cpp\\dist\\Debug\\antlr4-runtime-static.lib but it should look in dist\\ directly (Debug folder doesn't exist).
+

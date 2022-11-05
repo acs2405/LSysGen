@@ -32,7 +32,7 @@ public:
 
     ~Table();
 
-    int size() const;
+    size_t size() const;
 
     void addRule(Rule<T> * r);
 

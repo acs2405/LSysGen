@@ -82,7 +82,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
             eh->error("iterations property must be a integer number");
     }
     // ignore
-    std::string_view ignore;
+    std::string ignore;
     if (settings.ignore.isset()) {
         ignore = settings.ignore.get();
     } else if (_scope->has("ignore")) {
@@ -94,7 +94,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
     }
     this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
     // seed
-    std::uint_fast32_t seed;
+    std::uint_fast32_t seed = 1;
     if (settings.seed.isset() || !_scope->has("seed")) {
         if (settings.seed.get() < 0)
             seed = Random::randomSeed();
@@ -185,7 +185,7 @@ void LSystem<T>::prepare() {
         std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
         auto duration = now.time_since_epoch();
         auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-        srand(millis);
+        srand(millis); // TODO: ¿esto lo uso para algo?
         if (this->_axiom == nullptr)
             this->_axiom = new ParseTreeNode<InstanceNodeContent, T>();
         if (this->_ignore == nullptr)

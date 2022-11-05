@@ -2,10 +2,12 @@
 #include "interpreter2D.h"
 
 
-#define _USE_MATH_DEFINES
+// #define _USE_MATH_DEFINES
 #include <cmath>
 #include <regex>
 // #include <format>
+
+double const PI = 3.14159265358979323846264338327950288;
 
 using namespace lsysgen;
 
@@ -15,7 +17,7 @@ Point2D::Point2D(): x(0), y(0) {}
 
 std::string Point2D::toString() const {
     char buf[200];
-    sprintf(buf, "%.2f %.2f ", x, y);
+    snprintf(buf, 200, "%.2f %.2f ", x, y);
     return buf;
     // return std::format("{0:.2} {1:.2} ", x, y);
 }
@@ -39,7 +41,7 @@ void Color::parse(std::string const& s) {
                 m[1].str().size() == 6 || m[1].str().size() == 8) {
             // std::cout << m[1] << std::endl;
             size_t n = m[1].str().size() == 3 || m[1].str().size() == 4 ? 1 : 2;
-            double max = n == 1 ? 15.0 : 255.0;
+            float max = n == 1 ? 15.0 : 255.0;
             r = std::stoi(m[1].str().substr(0*n, n), 0, 16) / max;
             g = std::stoi(m[1].str().substr(1*n, n), 0, 16) / max;
             b = std::stoi(m[1].str().substr(2*n, n), 0, 16) / max;
@@ -64,16 +66,16 @@ Color Color::rgb() const {return Color(r, g, b);}
 std::string Color::toString() const {
     char buf[50];
     if (a == 1.0)
-        sprintf(buf, "#%02X%02X%02X", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
+        snprintf(buf, 50, "#%02X%02X%02X", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
     else
-        sprintf(buf, "rgba(%d,%d,%d,%f)", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b), a);
+        snprintf(buf, 50, "rgba(%d,%d,%d,%f)", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b), a);
     return buf;
     // return std::format("#{0:02X}{1:02X}{2:02X}", static_cast<int>(255*r), static_cast<int>(255*g), static_cast<int>(255*b));
 }
 
 std::string Color::alpha() const {
     char buf[10];
-    sprintf(buf, "%.6f", a);
+    snprintf(buf, 10, "%.6f", a);
     return buf;
 }
 
@@ -417,8 +419,8 @@ std::string node2svg(
                 } else if (node->element() == 'v') {
                     state.pos.y -= move;
                 } else {
-                    state.pos.x += move*std::cos(state.dir*M_PI/180);
-                    state.pos.y += move*std::sin(-state.dir*M_PI/180);
+                    state.pos.x += move*std::cos(state.dir*PI/180);
+                    state.pos.y += move*std::sin(-state.dir*PI/180);
                     if (state.pos.x < bounds.p0.x)
                         bounds.p0.x = state.pos.x;
                     if (state.pos.y < bounds.p0.y)

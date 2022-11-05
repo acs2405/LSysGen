@@ -19,7 +19,7 @@ Table<T>::~Table() {
 }
 
 template<typename T>
-int Table<T>::size() const {
+size_t Table<T>::size() const {
     return _rules.size();
 }
 

@@ -30,8 +30,8 @@ LSysDExpressionEvaluator::~LSysDExpressionEvaluator() {
 
 ErrorHandler * LSysDExpressionEvaluator::messages() {return eh;}
 
-Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope* scope) {
-    this->scope = scope;
+Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope* sc) {
+    this->scope = sc;
     Value ret = std::any_cast<Value>(this->visit(expr));
     this->scope = nullptr;
     return ret;

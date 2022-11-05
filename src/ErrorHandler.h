@@ -145,11 +145,11 @@ public:
     std::string getTraceString(Message::Type msgType=Message::Type::NONE, std::string_view const text="") const;
     // std::string getCallTraceString(int msgType=0) const;
 
-    int getLineNumber() const;
-    int getColNumber() const;
-    int getLength() const;
-    int getEndCol() const;
-    int getPos() const;
+    size_t getLineNumber() const;
+    size_t getColNumber() const;
+    size_t getLength() const;
+    size_t getEndCol() const;
+    size_t getPos() const;
     // std::string getTokenText() const;
     StackTrace const* getParent() const;
     // StackTrace* getParent();

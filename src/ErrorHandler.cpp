@@ -177,7 +177,6 @@ std::string Message::colored(Message::Type type, std::string const& content) {
             default:
                 return content;
         }
-        return content;
     } else {
         return content;
     }
@@ -240,8 +239,8 @@ std::string StackTrace::getLine() const {
 
 std::string StackTrace::getMessageLine(Message::Type msgType) const {
     // std::cout << "HERE!" << std::endl;
-    int n = this->getColNumber();
-    int len = this->getLength();
+    size_t n = this->getColNumber();
+    size_t len = this->getLength();
     std::regex retab ("\t");
     std::string line = this->getLine();
     line = std::regex_replace(line, retab, " ");
@@ -251,8 +250,8 @@ std::string StackTrace::getMessageLine(Message::Type msgType) const {
 }
 std::string StackTrace::getMessageMark(Message::Type msgType) const {
     std::string line = this->getLine();
-    int n = this->getColNumber();
-    int len = std::max(0, std::min((int)this->getLength(), (int)line.size() - n));
+    size_t n = this->getColNumber();
+    int len = std::max(0, std::min((int)this->getLength(), (int)(line.size() - n)));
     std::string padBefore(n, ' ');
     std::string mark(len, '~');
     return padBefore + Message::bold(Message::colored(msgType, '^' + mark));
@@ -298,10 +297,10 @@ std::string StackTrace::getTraceString(Message::Type msgType, std::string_view c
 //         ss << _parent->getCallTraceString();
 //     return ss.str();
 // }
-int StackTrace::getLineNumber() const {return _tokInit->getLine();}
-int StackTrace::getColNumber() const {return _tokInit->getCharPositionInLine();}
-int StackTrace::getLength() const {return _tokEnd->getStopIndex() - _tokInit->getStartIndex();}
-int StackTrace::getEndCol() const {return this->getColNumber() + this->getLength();
+size_t StackTrace::getLineNumber() const {return _tokInit->getLine();}
+size_t StackTrace::getColNumber() const {return _tokInit->getCharPositionInLine();}
+size_t StackTrace::getLength() const {return _tokEnd->getStopIndex() - _tokInit->getStartIndex();}
+size_t StackTrace::getEndCol() const {return this->getColNumber() + this->getLength();
     // std::cerr << (*_sourceLines)[this->getLineNumber()] << std::endl;
     // std::cerr << _tokInit->getCharPositionInLine() << ", " << (*_sourceLines)[this->getLineNumber()].size() << std::endl;
     // return std::min(
@@ -309,7 +308,7 @@ int StackTrace::getEndCol() const {return this->getColNumber() + this->getLength
     //         (*_sourceLines)[this->getLineNumber()].size()
     //     );
 }
-int StackTrace::getPos() const {return _tokInit->getStartIndex();}
+size_t StackTrace::getPos() const {return _tokInit->getStartIndex();}
 // std::string StackTrace::getTokenText() const {return _tokInit->getText();}
 StackTrace const* StackTrace::getParent() const {return _parent;}
 // StackTrace* StackTrace::getParent() {return _parent;}

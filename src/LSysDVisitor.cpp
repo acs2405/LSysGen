@@ -705,7 +705,7 @@ std::any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
 }
 
 std::any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) {
-    std::string_view s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
+    std::string s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
     for (char c : s) {
         ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>(c);
         this->parentNode->addChild(node->asGeneric());
@@ -714,7 +714,7 @@ std::any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx
 }
 
 std::any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharContext *ctx) {
-    std::string_view s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
+    std::string s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
     // int pos = 0;
     for (char c : s) {
         if (c == '_')

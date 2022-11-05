@@ -35,7 +35,7 @@ lsysgen::LSystem<char> ** lsystem_create_from_settings(lsysgen::Settings const& 
 
     int i = 0;
     for (lsysgen::LSystem<char> * lsystem : *lsystems) {
-        ret[i++] = lsystem;
+        ret[i++] = lsystem; // TODO: comprobar si satura el buffer ret, Visual Studio se queja
     }
 
     delete lsystems;
@@ -72,7 +72,7 @@ char const* lsystem_get_result_string(lsysgen::LSystem<char> * lsystem) {
         // char * ret = new char[sret.size()+1];
         // strcpy(ret, ret1);
 
-        return sret.c_str();
+        return sret.c_str(); // ERROR: apunta a bytes de la pila
     } else
         return nullptr;
 }
@@ -84,7 +84,7 @@ char const* lsystem_to_svg(lsysgen::LSystem<char> * lsystem) {
         // char * ret = new char[sret.size()+1];
         // strcpy(ret, ret1);
 
-        return sret.c_str();
+        return sret.c_str(); // ERROR: apunta a bytes de la pila
     } else
         return nullptr;
 }

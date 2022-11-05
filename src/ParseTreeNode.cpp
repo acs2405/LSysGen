@@ -33,8 +33,11 @@ ParseTreeNode<C,T>::ParseTreeNode(ParseTreeNode<C,T> const& n):
 
 template<template<typename> typename C, typename T>
 ParseTreeNode<C,T>::~ParseTreeNode() {
-    for (auto node = _leftmostChild; node != nullptr; node = node->_right)
+    ParseTreeNode<C,T> * nodeNext;
+    for (auto node = _leftmostChild; node != nullptr; node = nodeNext) {
+        nodeNext = node->_right;
         delete node;
+    }
     delete _content;
 }
 
@@ -132,15 +135,15 @@ ParseTreeNode<C,T> const* ParseTreeNode<C,T>::root() const {
         return this->_parent->root();
 }
 template<template<typename> typename C, typename T>
-int ParseTreeNode<C,T>::siblingNo() const {
+size_t ParseTreeNode<C,T>::siblingNo() const {
     if (this->_left == nullptr)
         return 0;
     else
         return this->_left->siblingNo() + 1;
 }
 template<template<typename> typename C, typename T>
-int ParseTreeNode<C,T>::size() const {
-    int size = 0;
+size_t ParseTreeNode<C,T>::size() const {
+    size_t size = 0;
     for (ParseTreeNode<C,T> * child = this->_leftmostChild; child != nullptr; child = child->_right)
         ++size;
     return size;

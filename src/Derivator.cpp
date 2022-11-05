@@ -101,7 +101,6 @@ bool Derivator<T>::checkSideContext(ParseTreeNode<LeftSideNodeContent, T> * cont
         if (insNode == nullptr)
             return false;
         if (ctxNode->isLeaf()) {
-            ignore->end();
             while (insNode->isBranch() || 
                     std::find(ignore->begin(), ignore->end(), insNode->element()) != ignore->end()) {
                 insNode = rightSide ? insNode->right() : insNode->nextLeft();

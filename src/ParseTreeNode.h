@@ -86,8 +86,8 @@ public:
     ParseTreeNode<C,T> const* root() const;
 
     // Returns the number of left siblings this node has
-    int siblingNo() const;
-    int size() const;
+    size_t siblingNo() const;
+    size_t size() const;
 
     ParseTreeNode<C,T> * encapsulate();
 
