@@ -13,8 +13,8 @@ namespace lsysgen {
 bool const ErrorHandler::terminalSupportsColors = lsysgen::terminalSupportsColors();
 
 ErrorHandler::ErrorHandler(std::string_view const filename, StackTrace const* st): 
-        _parentTrace(st), _messages(), _errors(), _warnings(), _notices(), _failed(false), 
-        _stdin(filename == "-") {
+        _messages(), _errors(), _warnings(), _notices(), 
+        _failed(false), _stdin(filename == "-"), _parentTrace(st) {
     if (filename.size() == 0)
         _filename = "<inline>";
     else if (filename == "-")
@@ -208,12 +208,12 @@ StackTrace::StackTrace(std::string_view const text,
             antlr4::Token const* tokEnd, 
             StackTrace const* parent, 
             std::string_view const filename):
-        _text(text), _tokInit(tokInit), _tokEnd(tokEnd), _parent(parent), 
-        _filename(filename) {}
+        _tokInit(tokInit), _tokEnd(tokEnd), _parent(parent), 
+        _text(text), _filename(filename) {}
 
 StackTrace::StackTrace(StackTrace const& st): 
-        _text(st._text), _tokInit(st._tokInit), _tokEnd(st._tokEnd), _parent(st._parent), //_parent(new StackTrace(*st._parent)),
-        _filename(st._filename) {}
+        _tokInit(st._tokInit), _tokEnd(st._tokEnd), _parent(st._parent), //_parent(new StackTrace(*st._parent)),
+        _text(st._text), _filename(st._filename) {}
 
 // StackTrace::StackTrace(antlr4::ParserRuleContext* ctx, StackTrace* parent, std::vector<std::string>* sourceLines, std::string filename): 
 //         StackTrace(ctx->start, ctx->stop, parent, sourceLines, filename) {}

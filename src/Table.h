@@ -21,11 +21,13 @@ namespace lsysgen {
 
 template<typename T>
 class Table {
-    std::map<T, std::list<Rule<T> *> *> _rules;
-
 public:
     const std::string name;
 
+private:
+    std::map<T, std::list<Rule<T> *> *> _rules;
+
+public:
     Table(std::string const& name);
 
     ~Table();

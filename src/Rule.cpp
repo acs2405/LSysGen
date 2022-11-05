@@ -19,7 +19,7 @@ Rule<T>::Rule(// std::string const& tag,
         ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond, 
         ParseTreeNode<RightSideNodeContent, T> const* rside):
-            weight(weight), lctx(lctx), lside(lside), rctx(rctx), _cond(cond), rside(rside) {}
+            _cond(cond), weight(weight), lctx(lctx), lside(lside), rctx(rctx), rside(rside) {}
 
 template<typename T>
 Rule<T>::~Rule() {

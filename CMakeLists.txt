@@ -1,5 +1,5 @@
 # minimum required CMAKE version
-CMAKE_MINIMUM_REQUIRED(VERSION 3.15 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.16 FATAL_ERROR)
 
 project("LSysGen")
 
@@ -83,6 +83,27 @@ include_directories(${ANTLR_LSysDParser_OUTPUT_DIR})
 #   set(LSYSGEN_GRAPHICS False)
 # endif()
 
+# file (GLOB lsysgen_HEADERS ${PROJECT_SOURCE_DIR}/src/*.h)
+set(lsysgen_BASE_HEADERS
+  ${PROJECT_SOURCE_DIR}/src/misc.h
+  ${PROJECT_SOURCE_DIR}/src/values.h
+  ${PROJECT_SOURCE_DIR}/src/operations.h
+  ${PROJECT_SOURCE_DIR}/src/ParseTreeNode.h
+  ${PROJECT_SOURCE_DIR}/src/NodeContent.h
+  ${PROJECT_SOURCE_DIR}/src/Rule.h
+  ${PROJECT_SOURCE_DIR}/src/Table.h
+  ${PROJECT_SOURCE_DIR}/src/Derivator.h
+  ${PROJECT_SOURCE_DIR}/src/LSystem.h
+  ${PROJECT_SOURCE_DIR}/src/Module.h
+  ${PROJECT_SOURCE_DIR}/src/ErrorHandler.h
+  ${PROJECT_SOURCE_DIR}/src/LSysDVisitor.h
+  ${PROJECT_SOURCE_DIR}/src/LSysDExpressionEvaluator.h
+  ${PROJECT_SOURCE_DIR}/src/lsysgen.h
+  ${PROJECT_SOURCE_DIR}/src/interpreter2D.h
+  ${PROJECT_SOURCE_DIR}/src/Settings.h
+  ${PROJECT_SOURCE_DIR}/src/cliargs.h
+  )
+
 include_directories(
   ${PROJECT_SOURCE_DIR}/src/
   )
@@ -117,19 +138,28 @@ set(lsysgen_MAIN_SRC
 
 # set(lsysgen_SRC ${lsysgen_BASE_SRC} ${lsysgen_MAIN_SRC})
 
+add_library(lsysantlr STATIC 
+  ${ANTLR_LSysDLexer_CXX_OUTPUTS} 
+  ${ANTLR_LSysDParser_CXX_OUTPUTS}
+  )
+
 # SHARED or STATIC
 add_library(lsysgen STATIC 
   ${lsysgen_BASE_SRC} 
-  ${ANTLR_LSysDLexer_CXX_OUTPUTS} 
-  ${ANTLR_LSysDParser_CXX_OUTPUTS}
+  )
+
+target_precompile_headers(lsysgen PRIVATE
+  # ${PROJECT_SOURCE_DIR}/src/pch.h
+  ${PROJECT_SOURCE_DIR}/src/misc.h
+  # ${lsysgen_BASE_HEADERS}
   )
 
 # This lines prevent std::runtime_error with message "unknown error -1".
 # (See https://github.com/antlr/antlr4/issues/3708 and/or https://stackoverflow.com/q/51584960)
 find_package(Threads REQUIRED)
-target_link_libraries(lsysgen Threads::Threads)
-
-target_link_libraries(lsysgen antlr4_static)
+target_link_libraries(lsysantlr Threads::Threads)
+target_link_libraries(lsysantlr antlr4_static)
+target_link_libraries(lsysgen lsysantlr)
 # target_link_libraries(lsysgen ${SYSTEM_LIBS})
 
 
@@ -141,7 +171,15 @@ target_link_libraries(lsysgen antlr4_static)
 # endif()
 
 add_executable(lsys ${lsysgen_MAIN_SRC})
-target_link_libraries( lsys lsysgen )
+target_link_libraries(lsys lsysgen)
+
+if(MSVC)
+  target_compile_options(lsysgen PRIVATE /W4 /WX)
+  target_compile_options(lsys PRIVATE /W4 /WX)
+else()
+  target_compile_options(lsysgen PRIVATE -Wall -Wextra -Wpedantic) # -Werror)
+  target_compile_options(lsys PRIVATE -Wall -Wextra -Wpedantic) # -Werror)
+endif()
 
 # if(WIN32)
 # endif()

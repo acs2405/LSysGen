@@ -9,7 +9,7 @@ namespace lsysgen {
 
 template<typename T>
 Module<T>::Module(std::string_view name): _name(name), //_settings(settings), 
-        _mainLSystem(nullptr), _lsystems(), _scope(nullptr), eh(nullptr) {}
+        _scope(nullptr), _mainLSystem(nullptr), _lsystems(), eh(nullptr) {}
 
 // template<typename T>
 // Module<T>::Module(): _scope() {}

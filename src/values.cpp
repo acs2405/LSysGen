@@ -73,6 +73,7 @@ Value::Value(std::string_view const value): _type(&ValueType::STRING_TYPE), _val
 Value::Value(Function* value): _type(&ValueType::FUNCTION_TYPE), _value(value) {}
 Value::Value(LSystem<char> * value): _type(&ValueType::LSYSTEM_TYPE), _value(value) {}
 Value::Value(std::nullptr_t value): _type(&ValueType::NULL_TYPE), _value(value) {}
+Value::Value(Value const& value): _type(value._type), _value(value._value) {}
 
 ValueType const* Value::type() const {return this->_type;}
 
@@ -143,11 +144,11 @@ Value& Value::operator=(Value const& t2) {
     return *this;
 }
 
-Value const& Value::error() {return Value::ERROR;}
-Value const& Value::null() {return Value::NIL;}
+Value Value::error() {return Value::ERROR;}
+Value Value::null() {return Value::NIL;}
 
-Value const Value::ERROR = Value(&ValueType::ERROR_TYPE, nullptr);
-Value const Value::NIL = Value(&ValueType::NULL_TYPE, nullptr);
+Value const Value::ERROR (&ValueType::ERROR_TYPE, nullptr);
+Value const Value::NIL (&ValueType::NULL_TYPE, nullptr);
 
 
 
@@ -169,7 +170,7 @@ void Scope::set(std::string const& var, Value const& val) {
     mapping[var] =  val;
 }
 
-Value const& Scope::get(std::string const& var) const {
+Value Scope::get(std::string const& var) const {
     if (mapping.find(var) != mapping.end()) {
         return mapping.find(var)->second;
     } else if (_parent != nullptr) {

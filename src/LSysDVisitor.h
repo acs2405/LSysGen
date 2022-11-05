@@ -28,14 +28,14 @@ class LSysDVisitor: public LSysDParserBaseVisitor {
 
     LSystem<char> * currentLSystem;
     std::list<LSystem<char> *> * selectedLSystems;
-    Scope * currentScope;
-    Scope * baseScope;
     Table<char> * currentTable;
     ParseTreeNode<NodeContent, char> * parentNode;
+    Scope * currentScope;
+    Scope * baseScope;
 
-    ErrorHandler * eh;
-    Settings const settings;
     std::string const inputFile;
+    Settings const settings;
+    ErrorHandler * eh;
 
     template<class R> 
     R * defineRule(// LSysDParser::TagPrefixContext* tagCtx, 

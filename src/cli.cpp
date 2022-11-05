@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
     // else if (lsystems->size() > 1)
     //     outputRenderPath = std::filesystem::current_path();
 
-    if (settings.inputFiles.get().size() > 1 || settings.lsystems.isset() && settings.lsystems.get().size() != 1) {
+    if (settings.inputFiles.get().size() > 1 || (settings.lsystems.isset() && settings.lsystems.get().size() != 1)) {
         if ((settings.outputResultFile.isset() && 
                 !std::filesystem::is_directory(outputResultPath) && 
                 outputResultPath != "-") || 

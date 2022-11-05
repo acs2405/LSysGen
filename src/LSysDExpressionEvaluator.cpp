@@ -9,12 +9,12 @@
 // }
 
 LSysDExpressionEvaluator::LSysDExpressionEvaluator(ErrorHandler * eh): 
-        scope(nullptr), eh(eh) {
+        eh(eh), scope(nullptr) {
     this->ops = new Operations(this->eh);
 }
 
 LSysDExpressionEvaluator::LSysDExpressionEvaluator(LSysDExpressionEvaluator const& ev): 
-        scope(nullptr), eh(ev.eh) {
+        eh(ev.eh), scope(nullptr) {
     this->ops = new Operations(this->eh);
 }
 
@@ -296,14 +296,14 @@ std::any LSysDExpressionEvaluator::visitStringConstant(LSysDParser::StringConsta
     return Value(strUnescape(s.substr(1, s.size()-2)));
 }
 
-std::any LSysDExpressionEvaluator::visitTrueValue(LSysDParser::TrueValueContext *ctx) {
+std::any LSysDExpressionEvaluator::visitTrueValue([[maybe_unused]] LSysDParser::TrueValueContext *ctx) {
     return Value(true);
 }
 
-std::any LSysDExpressionEvaluator::visitFalseValue(LSysDParser::FalseValueContext *ctx) {
+std::any LSysDExpressionEvaluator::visitFalseValue([[maybe_unused]] LSysDParser::FalseValueContext *ctx) {
     return Value(false);
 }
 
-std::any LSysDExpressionEvaluator::visitNullValue(LSysDParser::NullValueContext *ctx) {
+std::any LSysDExpressionEvaluator::visitNullValue([[maybe_unused]] LSysDParser::NullValueContext *ctx) {
     return Value(nullptr);
 }

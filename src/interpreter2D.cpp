@@ -10,8 +10,8 @@
 using namespace lsysgen;
 
 
-Point2D::Point2D(float x, float y): x(x), y(y) {};
-Point2D::Point2D(): x(0), y(0) {};
+Point2D::Point2D(float x, float y): x(x), y(y) {}
+Point2D::Point2D(): x(0), y(0) {}
 
 std::string Point2D::toString() const {
     char buf[200];
@@ -38,7 +38,7 @@ void Color::parse(std::string const& s) {
         if (m[1].str().size() == 3 || m[1].str().size() == 4 || 
                 m[1].str().size() == 6 || m[1].str().size() == 8) {
             // std::cout << m[1] << std::endl;
-            int n = m[1].str().size() == 3 || m[1].str().size() == 4 ? 1 : 2;
+            size_t n = m[1].str().size() == 3 || m[1].str().size() == 4 ? 1 : 2;
             double max = n == 1 ? 15.0 : 255.0;
             r = std::stoi(m[1].str().substr(0*n, n), 0, 16) / max;
             g = std::stoi(m[1].str().substr(1*n, n), 0, 16) / max;
@@ -48,7 +48,7 @@ void Color::parse(std::string const& s) {
         }
     } else if (std::regex_match(s, m, colorRgbRegex)) {
         // std::cout << m.length(5) << std::endl;
-        if (m[1] == "rgb" && m.length(5) == 0 || m[1] == "rgba" && m.length(5) > 0) {
+        if ((m[1] == "rgb" && m.length(5) == 0) || (m[1] == "rgba" && m.length(5) > 0)) {
             r = std::max(0, std::min(std::stoi(m[2]), 255)) / 255.0;
             g = std::max(0, std::min(std::stoi(m[3]), 255)) / 255.0;
             b = std::max(0, std::min(std::stoi(m[4]), 255)) / 255.0;

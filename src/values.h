@@ -75,8 +75,8 @@ public:
 
 class Value { // : antlrcpp::Any {
 public:
-    static Value const& error();
-    static Value const& null();
+    static Value error();
+    static Value null();
 
 private:
     static Value const ERROR;
@@ -96,6 +96,7 @@ public:
     Value(Function * value);
     Value(LSystem<char> * value);
     Value(std::nullptr_t value);
+    Value(Value const& value);
 
     ValueType const* type() const;
     bool is (ValueType const* t) const;
@@ -138,8 +139,8 @@ public:
 
 
 class Scope {
-    std::map<std::string, Value> mapping;
     Scope * _parent;
+    std::map<std::string, Value> mapping;
 public:
     Scope();
     Scope(Scope * parent);
@@ -150,7 +151,7 @@ public:
     Scope const* parent() const;
 
     void set(std::string const& var, Value const& val);
-    Value const& get(std::string const& var) const;
+    Value get(std::string const& var) const;
     bool has(std::string const& var) const;
     bool thisHas(std::string const& var) const;
 

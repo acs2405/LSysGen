@@ -9,10 +9,10 @@
 namespace lsysgen {
 
 template<typename T>
-LSystem<T>::LSystem(Module<T> * module): _module(module), _name(), _settings2D(), 
-        eh(module->messages()), derivator(eh, module->evaluator(), new Random()), _tables(), 
-        _tableFunc(nullptr), _axiom(nullptr), _iterations(Settings::DEFAULT_ITERATIONS), 
-        _ignore(), _current(-1), _lastWord(nullptr), _encodedProgression() {
+LSystem<T>::LSystem(Module<T> * module): _current(-1), _module(module), _name(), _tables(), 
+        _axiom(nullptr), _iterations(Settings::DEFAULT_ITERATIONS), _settings2D(), 
+        _ignore(), _tableFunc(nullptr), _lastWord(nullptr), _encodedProgression(), 
+        eh(module->messages()), derivator(eh, module->evaluator(), new Random()) {
     this->_scope = new Scope(module->scope());
 
     this->_defaultTable = new Table<char>("<default>");

@@ -128,7 +128,6 @@ class StackTrace {
     StackTrace const* _parent;
     std::string _text;
 
-    std::vector<std::string> const* _sourceLines;
     std::string const _filename;
 
 public:
