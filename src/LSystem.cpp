@@ -121,7 +121,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         if (v.isFloat()) {
             this->_settings2D.heading.set(v.asFloat());
         } else if (v.isInt()) {
-            this->_settings2D.heading.set(v.asInt());
+            this->_settings2D.heading.set(static_cast<float>(v.asInt()));
         } else if (!v.isError())
             eh->error("initial_heading property must be a number");
     }
@@ -131,7 +131,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         if (v.isFloat())
             this->_settings2D.rotation.set(v.asFloat());
         else if (v.isInt())
-            this->_settings2D.rotation.set(v.asInt());
+            this->_settings2D.rotation.set(static_cast<float>(v.asInt()));
         else if (!v.isError())
             eh->error("rotation property must be a number");
     }
@@ -141,7 +141,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         if (v.isFloat())
             this->_settings2D.lineWidth.set(v.asFloat());
         else if (v.isInt())
-            this->_settings2D.lineWidth.set(v.asInt());
+            this->_settings2D.lineWidth.set(static_cast<float>(v.asInt()));
         else if (!v.isError())
             eh->error("line_width property must be a number");
     }
@@ -182,10 +182,10 @@ void LSystem<T>::prepare() {
     if (eh->failed())
         return;
     if (this->_current < 0) {
-        std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-        auto duration = now.time_since_epoch();
-        auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-        srand(millis); // TODO: ¿esto lo uso para algo?
+        // std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+        // auto duration = now.time_since_epoch();
+        // auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        // srand(millis); // TODO: ¿esto lo uso para algo?
         if (this->_axiom == nullptr)
             this->_axiom = new ParseTreeNode<InstanceNodeContent, T>();
         if (this->_ignore == nullptr)

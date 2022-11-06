@@ -9,6 +9,7 @@ class LSystem;
 
 }
 
+#include "common.h"
 #include "Module.h"
 #include "ParseTreeNode.h"
 #include "NodeContent.h"
@@ -19,7 +20,7 @@ class LSystem;
 #include "LSysDVisitor.h"
 #include "Derivator.h"
 #include "Settings.h"
-#include "misc.h"
+// #include "misc.h"
 
 #include <string>
 #include <map>

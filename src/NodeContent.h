@@ -18,8 +18,7 @@ class InstanceNodeContent;
 
 }
 
-#include "ParseTreeNode.h"
-
+#include "common.h"
 #include "LSysDParser.h"
 #include "values.h"
 

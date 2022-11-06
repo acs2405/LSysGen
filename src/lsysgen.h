@@ -2,12 +2,13 @@
 #pragma once
 
 
-#include "antlr4-runtime.h"
-#include "LSysDLexer.h"
-#include "LSysDParser.h"
-#include "LSysDVisitor.h"
+#include "common.h"
+// #include "antlr4-runtime.h"
+// #include "LSysDLexer.h"
+// #include "LSysDParser.h"
+// #include "LSysDVisitor.h"
 #include "LSystem.h"
-#include "interpreter2D.h"
+// #include "interpreter2D.h"
 #include "Settings.h"
 // #include "Drawer2D.h"
 

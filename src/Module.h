@@ -9,6 +9,7 @@ class Module;
 
 }
 
+#include "common.h"
 #include "LSystem.h"
 #include "ErrorHandler.h"
 #include "LSysDVisitor.h"

@@ -11,14 +11,12 @@ class StackTrace;
 
 }
 
+#include "common.h"
 #include "antlr4-runtime.h"
 #include "ParserRuleContext.h"
 
-#include <string>
-#include <string_view>
-#include <iostream>
 #include <list>
-#include <vector>
+// #include <vector>
 
 
 namespace lsysgen {

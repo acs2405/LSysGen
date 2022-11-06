@@ -15,14 +15,14 @@ int                   const Settings::DEFAULT_ITERATIONS   = 0;
 std::string           const Settings::DEFAULT_IGNORE       = "";
 int                   const Settings::DEFAULT_SEED         = -1;
 
-double                const Settings2D::DEFAULT_HEADING    = 0.0;
-double                const Settings2D::DEFAULT_ROTATION   = 12.0;
-double                const Settings2D::DEFAULT_LINE_WIDTH = 0.1;
+float                const Settings2D::DEFAULT_HEADING    = 0.0f;
+float                const Settings2D::DEFAULT_ROTATION   = 12.0f;
+float                const Settings2D::DEFAULT_LINE_WIDTH = 0.1f;
 std::string           const Settings2D::DEFAULT_LINE_COLOR = "#000";
 std::string           const Settings2D::DEFAULT_FILL_COLOR = "#000";
 std::string           const Settings2D::DEFAULT_BACKGROUND = "#fff";
-double                const Settings2D::DEFAULT_WIDTH      = 500.0;
-double                const Settings2D::DEFAULT_HEIGHT     = Settings2D::DEFAULT_WIDTH;
+float                const Settings2D::DEFAULT_WIDTH      = 500.0f;
+float                const Settings2D::DEFAULT_HEIGHT     = Settings2D::DEFAULT_WIDTH;
 
 Settings              const Settings::DEFAULT;
 Settings2D            const Settings2D::DEFAULT;
@@ -97,7 +97,7 @@ T & Setting<T>::getRef() {
 
 
 template class Setting<int>;
-template class Setting<double>;
+template class Setting<float>;
 template class Setting<std::string>;
 template class Setting<Settings::InputMode>;
 template class Setting<Settings::RenderMode>;

@@ -81,6 +81,7 @@ bool Value::is (ValueType const* t) const {return t == _type;}
 
 bool Value::isInt () const {return this->is(&ValueType::INT_TYPE);}
 bool Value::isFloat () const {return this->is(&ValueType::FLOAT_TYPE);}
+bool Value::isDouble () const {return this->is(&ValueType::FLOAT_TYPE);}
 bool Value::isBool () const {return this->is(&ValueType::BOOL_TYPE);}
 bool Value::isString () const {return this->is(&ValueType::STRING_TYPE);}
 bool Value::isFunction () const {return this->is(&ValueType::FUNCTION_TYPE);}
@@ -99,7 +100,8 @@ bool Value::isError () const {return this->is(&ValueType::ERROR_TYPE);}
 // }
 
 int Value::asInt () const {return this->as<int>();}
-double Value::asFloat () const {return this->as<double>();}
+float Value::asFloat () const {return static_cast<float>(this->as<double>());}
+double Value::asDouble () const {return this->as<double>();}
 bool Value::asBool () const {return this->as<bool>();}
 std::string Value::asString () const {return this->as<std::string>();}
 std::nullptr_t Value::asNull () const {return this->as<std::nullptr_t>();}

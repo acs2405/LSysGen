@@ -12,15 +12,13 @@ class Scope;
 
 }
 
-#include <string>
-#include <string_view>
-#include <iostream>
-#include <map>
-#include <list>
-
+#include "common.h"
 #include "LSysDParser.h"
 #include "LSysDExpressionEvaluator.h"
 #include "LSystem.h"
+
+#include <map>
+#include <list>
 
 
 namespace lsysgen {
@@ -102,6 +100,7 @@ public:
     bool is (ValueType const* t) const;
     bool isInt () const;
     bool isFloat () const;
+    bool isDouble () const;
     bool isBool () const;
     bool isString () const;
     bool isFunction () const;
@@ -112,7 +111,8 @@ public:
     // bool isTrue () const;
 
     int asInt () const;
-    double asFloat () const;
+    float asFloat () const;
+    double asDouble () const;
     bool asBool () const;
     std::string asString () const;
     Function* asFunction ();

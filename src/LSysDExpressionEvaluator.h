@@ -5,14 +5,12 @@
 class LSysDExpressionEvaluator;
 
 
+#include "common.h"
 #include "LSysDParserBaseVisitor.h"
-#include "antlr4-runtime.h"
+// #include "antlr4-runtime.h"
 #include "values.h"
 #include "operations.h"
 #include "ErrorHandler.h"
-
-#include <string>
-#include <iostream>
 
 using namespace lsysgen;
 

@@ -4,9 +4,10 @@
 
 class LSysDVisitor;
 
+#include "common.h"
 #include "LSysDParserBaseVisitor.h"
 #include "LSysDParser.h"
-#include "LSysDLexer.h"
+// #include "LSysDLexer.h"
 #include "antlr4-runtime.h"
 #include "LSystem.h"
 #include "ErrorHandler.h"

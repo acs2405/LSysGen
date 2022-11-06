@@ -26,7 +26,7 @@ std::uint_fast32_t Random::randomSeed() {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     auto duration = now.time_since_epoch();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
-    std::mt19937 gen(millis);
+    std::mt19937 gen(static_cast<unsigned int>(millis));
     return gen() * millis % gen();
 }
 

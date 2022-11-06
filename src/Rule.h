@@ -13,8 +13,9 @@ class codingRule;
 
 }
 
+#include "common.h"
 #include "ParseTreeNode.h"
-#include "values.h"
+// #include "values.h"
 
 #include <string>
 #include <iostream>

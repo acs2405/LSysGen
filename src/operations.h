@@ -8,6 +8,7 @@ class Operations;
 
 }
 
+#include "common.h"
 #include "values.h"
 #include "ErrorHandler.h"
 

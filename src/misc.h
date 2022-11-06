@@ -2,6 +2,7 @@
 #pragma once
 
 
+#include "common.h"
 // #include "ParseTreeNode.h"
 // #include "Rule.h"
 // #include "Table.h"
@@ -18,10 +19,6 @@
 // #include <vector>
 #include <cstdint>
 #include <random>
-
-#ifndef M_PI
-#define M_PI = 3.14159265358979323846;
-#endif
 
 
 namespace lsysgen {

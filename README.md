@@ -127,7 +127,7 @@ MacOS target is expected to be tested in the future.
 
 #### Windows
 
-Windows target is still not available for this project.
+Windows target is expected to be tested in the future.
 
 ### Execution
 
@@ -632,19 +632,29 @@ inkscape --export-type=png -w 2000 images/*
 
 - Documentation (Doxygen + Sphinx)
 - Manage pointers (destructors and deletes)
-- Capture all LSDL syntax errors and expression evaluation errors
+- Capture all LSDL syntax errors
 - Debug, unit testing
 - Parameters
 - Action symbols
 - Make it a deb package?
-- Compile in windows?
-- Threads?
-- Run in a web page
+- Compile in windows multiplatform (cross-compiling?)
+- Threads? (couldn't ensure determinism in no deterministic L Systems with seed)
+- Run in a web page (emscripten?)
 - 3D representation and model export?
 - Music representation?
 - Optimize expressions (getting rid of strings and transforming trivial expressions into values)
 
 ## Known issues
 
-- When trying to compile in windows, doesn't work when java is not found, \<math\>'s M_PI doesn't work (make PI constant!), searches for $ANTLR4_ROOT\\runtime\\Cpp\\dist\\Debug\\antlr4-runtime-static.lib but it should look in dist\\ directly (Debug folder doesn't exist).
+### From ANTLR
+
+- When trying to configure CMakeLists.txt in windows, `find(ANTLR)` makes the generation fail when java is not found.
+
+### From ANTLR Runtime
+
+- Visual Studio searches for `${ANTLR4_ROOT}\runtime\Cpp\dist\Debug\antlr4-runtime-static.lib` but it should look in `dist\` directly (`Debug\` folder doesn't exist). This is because antlr targets are built in `${ANTLR4_ROOT}\runtime\Cpp\dist` (no `\$(Configuration)`) subdirectory).
+- ExternalProject_add() (in `ExternalAntlr4Cpp.cmake`) should include the arguments `DOWNLOAD_EXTRACT_TIMESTAMP true`, otherwise, newest versions of CMake emit warnings.
+- FetchContent_Declare() (in `runtime/Cpp/runtime/CMakeLists.txt`) should include the arguments `DOWNLOAD_EXTRACT_TIMESTAMP true`, otherwise, newest versions of CMake emit warnings.
+- Deprecation warnings in policies CMP0054, CMP0045, CMP0042, CMP0059 (in `runtime/Cpp/CMakeLists.txt`)
+- `warning D9025: overriding '/W1' with '/w'` (also in antlr4_runtime)
 

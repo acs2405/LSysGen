@@ -2,9 +2,10 @@
 #pragma once
 
 
+#include "common.h"
 #include "LSystem.h"
 #include "ParseTreeNode.h"
-#include "NodeContent.h"
+// #include "NodeContent.h"
 
 #include <string>
 #include <iostream>

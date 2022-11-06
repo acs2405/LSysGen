@@ -2,6 +2,12 @@
 #include "cli.h"
 
 
+#include "lsysgen.h"
+#include "interpreter2D.h"
+#include "Settings.h"
+#include "cliargs.h"
+#include "misc.h"
+
 #include <filesystem>
 
 

@@ -1,6 +1,12 @@
 
 #include "lsysgen.h"
 
+#include "antlr4-runtime.h"
+#include "LSysDLexer.h"
+#include "LSysDParser.h"
+#include "LSysDVisitor.h"
+#include "interpreter2D.h"
+
 #include <streambuf>
 #include <sstream>
 #include <filesystem>

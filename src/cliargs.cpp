@@ -4,13 +4,12 @@
 
 #include <set>
 #include <list>
-
-#define LSYSGEN_VERSION "0.6"
+#include <regex>
 
 
 
 std::set<std::string> const argNames0 = {
-    "--help", "-X", "--axiom-input", "--all"
+    "--help", "--version", "-X", "--axiom-input", "--all"
 };
 std::set<std::string> const argNamesOpt = {
     "--svg", "-S", "--seed"
@@ -92,6 +91,9 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             } else if (arg == "--help") {
                 printHelp();
                 exit(0);
+            } else if (arg == "--version") {
+                printVersion();
+                exit(0);
             }
         } else if (argNamesOpt.find(arg) != argNamesOpt.end()) {
             std::string arg2;
@@ -144,15 +146,15 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             } else if (arg == "-H" || arg == "--heading") {
                 if (settings.settings2D.heading.isset())
                     argumentError("heading argument repeated");
-                settings.settings2D.heading.set(strict_stod(arg, arg2));
+                settings.settings2D.heading.set(strict_stof(arg, arg2));
             } else if (arg == "-R" || arg == "--rotation") {
                 if (settings.settings2D.rotation.isset())
                     argumentError("rotation argument repeated");
-                settings.settings2D.rotation.set(strict_stod(arg, arg2));
+                settings.settings2D.rotation.set(strict_stof(arg, arg2));
             } else if (arg == "-W" || arg == "--line_width") {
                 if (settings.settings2D.lineWidth.isset())
                     argumentError("line width argument repeated");
-                settings.settings2D.lineWidth.set(strict_stod(arg, arg2));
+                settings.settings2D.lineWidth.set(strict_stof(arg, arg2));
             } else if (arg == "-C" || arg == "--line-color") {
                 if (settings.settings2D.lineColor.isset())
                     argumentError("line color argument repeated");
@@ -168,11 +170,11 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             } else if (arg == "-w" || arg == "--width") {
                 if (settings.settings2D.width.isset())
                     argumentError("width argument repeated");
-                settings.settings2D.width.set(strict_stod(arg, arg2));
+                settings.settings2D.width.set(strict_stof(arg, arg2));
             } else if (arg == "-h" || arg == "--height") {
                 if (settings.settings2D.height.isset())
                     argumentError("height argument repeated");
-                settings.settings2D.height.set(strict_stod(arg, arg2));
+                settings.settings2D.height.set(strict_stof(arg, arg2));
             }
         } else if (argNamesN.find(arg) != argNamesN.end()) {
             std::list<char*> values;
@@ -232,18 +234,18 @@ int strict_stoi(std::string const& arg, std::string const& s, int base) {
         int i = std::stoi(s, &pos, base);
         if (pos == s.size())
             return i;
-    } catch (std::invalid_argument const& ex) {}
+    } catch ([[maybe_unused]] std::invalid_argument const& ex) {}
     argumentError(arg + " value must be an integer");
     return 0;
 }
 
-double strict_stod(std::string const& arg, std::string const& s) {
+float strict_stof(std::string const& arg, std::string const& s) {
     try {
         size_t pos;
-        double d = std::stod(s, &pos);
+        float f = std::stof(s, &pos);
         if (pos == s.size())
-            return d;
-    } catch (std::invalid_argument const& ex) {}
+            return f;
+    } catch ([[maybe_unused]] std::invalid_argument const& ex) {}
     argumentError(arg + " value must be a number");
     return 0.0;
 }
@@ -256,7 +258,12 @@ void printUsage() {
     std::cerr << "Run lsys --help for more information" << std::endl;
 }
 
+void printVersion() {
+    std::cout << "lsys " << LSYSGEN_VERSION << std::endl;
+}
+
 void printHelp() {
+    // printVersion();
     std::cout << "lsys " << LSYSGEN_VERSION << std::endl;
     std::cout << "Usage:" << std::endl;
     std::cout << "       lsys INPUT_FILE... [OUTPUT_FILE] [OPTIONS]" << std::endl;

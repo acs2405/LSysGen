@@ -9,6 +9,7 @@ class ParseTreeNode;
 
 }
 
+#include "common.h"
 #include "NodeContent.h"
 
 #include <string>

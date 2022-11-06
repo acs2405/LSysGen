@@ -9,6 +9,7 @@ class Table;
 
 }
 
+#include "common.h"
 #include "Rule.h"
 
 #include <string>

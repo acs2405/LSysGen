@@ -11,7 +11,8 @@
 
 // }
 
-#include <string>
+#include "common.h"
+
 #include <map>
 #include <list>
 // #include <vector>
@@ -46,25 +47,25 @@ public:
 class Settings2D {
 public:
 
-    static double          const DEFAULT_HEADING;
-    static double          const DEFAULT_ROTATION;
-    static double          const DEFAULT_LINE_WIDTH;
+    static float          const DEFAULT_HEADING;
+    static float          const DEFAULT_ROTATION;
+    static float          const DEFAULT_LINE_WIDTH;
     static std::string     const DEFAULT_BACKGROUND;
     static std::string     const DEFAULT_LINE_COLOR;
     static std::string     const DEFAULT_FILL_COLOR;
-    static double          const DEFAULT_WIDTH;
-    static double          const DEFAULT_HEIGHT;
+    static float          const DEFAULT_WIDTH;
+    static float          const DEFAULT_HEIGHT;
 
     static Settings2D      const DEFAULT;
 
-    Setting<double> heading;
-    Setting<double> rotation;
-    Setting<double> lineWidth;
+    Setting<float> heading;
+    Setting<float> rotation;
+    Setting<float> lineWidth;
     Setting<std::string> lineColor;
     Setting<std::string> fillColor;
     Setting<std::string> background;
-    Setting<double> width;
-    Setting<double> height;
+    Setting<float> width;
+    Setting<float> height;
 
     Settings2D();
 

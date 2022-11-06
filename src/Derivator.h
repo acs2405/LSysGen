@@ -9,6 +9,7 @@ class Derivator;
 
 }
 
+#include "common.h"
 #include "ParseTreeNode.h"
 #include "NodeContent.h"
 #include "Table.h"
@@ -17,7 +18,6 @@ class Derivator;
 #include "ErrorHandler.h"
 #include "misc.h"
 
-#include <string>
 #include <list>
 #include <vector>
 

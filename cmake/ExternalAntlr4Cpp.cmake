@@ -20,9 +20,9 @@ endif()
 file(MAKE_DIRECTORY "${ANTLR4_INCLUDE_DIRS}")
 
 if(${CMAKE_GENERATOR} MATCHES "Visual Studio.*")
-  set(ANTLR4_OUTPUT_DIR ${ANTLR4_ROOT}/runtime/Cpp/dist/$(Configuration))
+  set(ANTLR4_OUTPUT_DIR ${ANTLR4_ROOT}/runtime/Cpp/dist) #/$(Configuration))
 elseif(${CMAKE_GENERATOR} MATCHES "Xcode.*")
-  set(ANTLR4_OUTPUT_DIR ${ANTLR4_ROOT}/runtime/Cpp/dist/$(CONFIGURATION))
+  set(ANTLR4_OUTPUT_DIR ${ANTLR4_ROOT}/runtime/Cpp/dist) #/$(CONFIGURATION))
 else()
   set(ANTLR4_OUTPUT_DIR ${ANTLR4_ROOT}/runtime/Cpp/dist)
 endif()
@@ -100,7 +100,8 @@ if(ANTLR4_ZIP_REPOSITORY)
           # -DCMAKE_CXX_STANDARD:STRING=17 # if desired, compile the runtime with a different C++ standard
           -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
       INSTALL_COMMAND ""
-      EXCLUDE_FROM_ALL 1)
+      EXCLUDE_FROM_ALL 1
+      DOWNLOAD_EXTRACT_TIMESTAMP true)
 else()
   ExternalProject_Add(
       antlr4_runtime

@@ -2,12 +2,14 @@
 #include "interpreter2D.h"
 
 
+#include "NodeContent.h"
+
 // #define _USE_MATH_DEFINES
 #include <cmath>
 #include <regex>
 // #include <format>
 
-double const PI = 3.14159265358979323846264338327950288;
+float const fPI = static_cast<float>(M_PI);
 
 using namespace lsysgen;
 
@@ -28,7 +30,7 @@ Color::Color(float r, float g, float b, float a):
         b(std::max(0.0f, std::min(b, 1.0f))), 
         a(std::max(0.0f, std::min(a, 1.0f))) {}
 Color::Color(std::string const& color): Color() {this->parse(color);}
-Color::Color(): r(0.0), g(0.0), b(0.0), a(1.0) {}
+Color::Color(): r(0.0f), g(0.0f), b(0.0f), a(1.0f) {}
 
 std::regex const colorHexRegex ("^ *#([0-9a-fA-F]+) *$");
 std::regex const colorRgbRegex ("^ *(rgba?) *\\( *([0-9]+) *, *([0-9]+) *, *([0-9]+) *(?:, *([0-9]+(?:\\.[0-9]+)?|\\.[0-9]+) *)?\\) *$");
@@ -41,7 +43,7 @@ void Color::parse(std::string const& s) {
                 m[1].str().size() == 6 || m[1].str().size() == 8) {
             // std::cout << m[1] << std::endl;
             size_t n = m[1].str().size() == 3 || m[1].str().size() == 4 ? 1 : 2;
-            float max = n == 1 ? 15.0 : 255.0;
+            float max = n == 1 ? 15.0f : 255.0f;
             r = std::stoi(m[1].str().substr(0*n, n), 0, 16) / max;
             g = std::stoi(m[1].str().substr(1*n, n), 0, 16) / max;
             b = std::stoi(m[1].str().substr(2*n, n), 0, 16) / max;
@@ -51,11 +53,11 @@ void Color::parse(std::string const& s) {
     } else if (std::regex_match(s, m, colorRgbRegex)) {
         // std::cout << m.length(5) << std::endl;
         if ((m[1] == "rgb" && m.length(5) == 0) || (m[1] == "rgba" && m.length(5) > 0)) {
-            r = std::max(0, std::min(std::stoi(m[2]), 255)) / 255.0;
-            g = std::max(0, std::min(std::stoi(m[3]), 255)) / 255.0;
-            b = std::max(0, std::min(std::stoi(m[4]), 255)) / 255.0;
+            r = std::max(0, std::min(std::stoi(m[2]), 255)) / 255.0f;
+            g = std::max(0, std::min(std::stoi(m[3]), 255)) / 255.0f;
+            b = std::max(0, std::min(std::stoi(m[4]), 255)) / 255.0f;
             if (m[1] == "rgba")
-                a = std::max(0.0, std::min(std::stod(m[5]), 1.0));
+                a = std::fmax(0.0f, std::min(std::stof(m[5]), 1.0f));
         }
     }
     // std::cout << toString() << std::endl;
@@ -99,13 +101,13 @@ std::string node2svg(
     initialState.penColor = Color(settings2D.lineColor.get());
     initialState.fillColor = Color(settings2D.fillColor.get());
     std::string svgContent = node2svg(parent, initialState, bounds, lsystem);
-    float marginProportion = 0.05;
+    float marginProportion = 0.05f;
     float boundsWidth = bounds.p1.x - bounds.p0.x,
         boundsHeight = bounds.p1.y - bounds.p0.y;
-    // if (boundsWidth == 0.0)
-    //     boundsWidth = 1.0;
-    // if (boundsHeight == 0.0)
-    //     boundsHeight = 1.0;
+    // if (boundsWidth == 0.0f)
+    //     boundsWidth = 1.0f;
+    // if (boundsHeight == 0.0f)
+    //     boundsHeight = 1.0f;
     float ratio = (boundsWidth + 2) / (boundsHeight + 2);
     float desiredWidth, desiredHeight;
     if (settings2D.height.isset()) {
@@ -159,7 +161,7 @@ std::string node2svg(
     ParseTreeNode<InstanceNodeContent, char>* node;
     std::vector<Value>* values;
     Value v[4];
-    double move;
+    float move;
     bool endPath = false, inPath = false;
     // std::string command = "";
     // bool fill = false;
@@ -198,14 +200,14 @@ std::string node2svg(
             }
             if (node->element() == 'F' || node->element() == 'G' ||
                     node->element() == 'f' || node->element() == 'g') {
-                double sign = (node->element() == 'F' || node->element() == 'f') ? 1.0 : -1.0;
+                float sign = (node->element() == 'F' || node->element() == 'f') ? 1.0f : -1.0f;
                 draw = (node->element() == 'F' || node->element() == 'G') ? true : false;
                 if (values == nullptr || values->size() == 0) {
                     move = sign;
                 } else if(values->size() == 1) {
                     v[0] = values->front();
                     if (v[0].isInt())
-                        move = static_cast<double>(sign*v[0].asInt());
+                        move = static_cast<float>(sign*v[0].asInt());
                     if (v[0].isFloat())
                         move = v[0].asFloat()*sign;
                     // TODO else error
@@ -217,13 +219,13 @@ std::string node2svg(
                 } else if(values->size() == 1) {
                     v[0] = values->front();
                     if (v[0].isInt())
-                        move = static_cast<double>(v[0].asInt());
+                        move = static_cast<float>(v[0].asInt());
                     if (v[0].isFloat())
                         move = v[0].asFloat();
                     // TODO else error
                 } // TODO else error
             } else if (node->element() == '+' || node->element() == '-') {
-                double sign = node->element() == '+' ? 1.0 : -1.0;
+                float sign = node->element() == '+' ? 1.0f : -1.0f;
                 if (values == nullptr || values->size() == 0) {
                     state.dir += sign*(lsystem ? lsystem->settings2D().rotation.get() : Settings2D::DEFAULT_ROTATION);
                 } else if(values->size() == 1) {
@@ -237,7 +239,7 @@ std::string node2svg(
             } else if (node->element() == 'c' || node->element() == 'n' ||
                     node->element() == 'l' || node->element() == 'P') {
                 if (values != nullptr && (values->size() == 3 || values->size() == 4)) {
-                    float r = 1.0, g = 1.0, b = 1.0, a = 1.0;
+                    float r = 1.0f, g = 1.0f, b = 1.0f, a = 1.0f;
                     // if(values->size() == 1) {
                     //     v[0] = values->front();
                     //     r = ((v[0].asInt() & 0xFF0000)>>16) / 255.0;
@@ -249,16 +251,16 @@ std::string node2svg(
                         v[0] = values->at(0);
                         v[1] = values->at(1);
                         v[2] = values->at(2);
-                        a = 1.0;
+                        a = 1.0f;
                         if (values->size() == 4)
                             v[3] = values->at(3);
                         if (v[0].isInt() && v[1].isInt() && v[2].isInt()) {
-                            r = v[0].asInt() / 255.0;
-                            g = v[1].asInt() / 255.0;
-                            b = v[2].asInt() / 255.0;
+                            r = v[0].asInt() / 255.0f;
+                            g = v[1].asInt() / 255.0f;
+                            b = v[2].asInt() / 255.0f;
                             if (values->size() == 4) {
                                 if (v[3].isInt())
-                                    a = v[3].asInt() / 255.0;
+                                    a = v[3].asInt() / 255.0f;
                                 else if (v[3].isFloat())
                                     a = v[3].asFloat();
                                 // TODO else error
@@ -419,8 +421,8 @@ std::string node2svg(
                 } else if (node->element() == 'v') {
                     state.pos.y -= move;
                 } else {
-                    state.pos.x += move*std::cos(state.dir*PI/180);
-                    state.pos.y += move*std::sin(-state.dir*PI/180);
+                    state.pos.x += move*std::cos(state.dir*fPI/180);
+                    state.pos.y += move*std::sin(-state.dir*fPI/180);
                     if (state.pos.x < bounds.p0.x)
                         bounds.p0.x = state.pos.x;
                     if (state.pos.y < bounds.p0.y)
