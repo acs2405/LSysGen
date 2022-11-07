@@ -17,7 +17,7 @@ jobs:
       - name: Requirements
         shell: bash
         run: sudo apt update
-          && sudo apt install -y cmake g++ doxygen default-jre #imagemagick
+          && sudo apt install -y cmake g++ dot doxygen default-jre #imagemagick
 
       - name: Checkout repo
         uses: actions/checkout@v3
