@@ -108,9 +108,10 @@ jobs:
       #     name: build-dir
 
       - name: Build docs
-        run: cd build && make doxygen
-          # && cd docs/doxygen/html
-          # && touch .nojekyll
+        run: cd build 
+          && make doxygen
+          && cd docs/doxygen/html
+          && touch .nojekyll
       - name: Deploy docs
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
