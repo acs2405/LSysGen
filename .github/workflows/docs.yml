@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Requirements
         shell: bash
-        run: sudo apt install cmake g++ doxygen default-jre #imagemagick
+        run: sudo apt install -y cmake g++ doxygen default-jre #imagemagick
 
       - name: Checkout repo
         uses: actions/checkout@1.0.0
@@ -29,24 +29,30 @@ jobs:
 
   make:
     name: Builds executables
+    working-directory: build
     needs: cmake
     runs-on: ubuntu-latest
     steps:
       - name: Requirements
         shell: bash
-        run: sudo apt install g++ default-jre
+        run: sudo apt install -y g++ default-jre
+
+      - name: Where am I
+        run: pwd
+        run: ls -l
 
       - name: Run make for ALL
-        run: cd build && make
+        run: make
 
   makedocs:
     name: Deploy the documentation pages
+    working-directory: build
     needs: cmake
     runs-on: ubuntu-latest
     steps:
     - name: Requirements
-      run: sudo apt install doxygen
-        # && apt install sphinx-doc
+      run: sudo apt install -y doxygen
+        # && apt install -y sphinx-doc
         # && pip3 install sphinx-rtd-theme
         # && pip3 install breathe
         # && pip3 install sphinx-sitemap
@@ -55,9 +61,7 @@ jobs:
     #   uses: actions/checkout@1.0.0
 
     - name: Build docs
-      run: cd build
-        && cmake ..
-        && make doxygen
+      run: make doxygen
         # && cd docs/doxygen/html
         # && touch .nojekyll
     - name: Deploy docs
