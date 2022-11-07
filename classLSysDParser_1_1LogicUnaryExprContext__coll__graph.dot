@@ -7,5 +7,5 @@ digraph "LSysDParser::LogicUnaryExprContext"
   Node2 -> Node1 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
   Node2 [label="LSysDParser::ExpressionContext",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classLSysDParser_1_1ExpressionContext.html",tooltip=" "];
   Node3 -> Node2 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
-  Node3 [label="ParserRuleContext",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
+  Node3 [label="antlr4::ParserRuleContext",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip=" "];
 }

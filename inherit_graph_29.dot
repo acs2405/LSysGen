@@ -4,5 +4,5 @@ digraph "Graphical Class Hierarchy"
   edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
-  Node0 [label="lsysgen::ParseTreeNode\l\< lsysgen::LeftSideNodeContent,\l char \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1ParseTreeNode.html",tooltip=" "];
+  Node0 [label="lsysgen::Setting\< Settings\l::InputMode \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
 }
