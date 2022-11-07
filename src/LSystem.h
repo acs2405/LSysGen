@@ -29,6 +29,9 @@ class LSystem;
 
 namespace lsysgen {
 
+/**
+ * The LSystem class
+ */
 template<typename T>
 class LSystem {
     friend LSysDVisitor;

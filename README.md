@@ -71,7 +71,7 @@ Cantor set (examples/ParametricCantorSet.lsd):
 
 ## The program
 
-### Compilation
+### Build
 
 #### Ubuntu/Debian
 
@@ -128,6 +128,22 @@ MacOS target is expected to be tested in the future.
 #### Windows
 
 Windows target is expected to be tested in the future.
+
+### Make documentation
+
+#### Ubuntu/Debian
+
+Documentation about the code of this project is automatically deployed with `make doxygen`, where `doxygen` is the tool we are using to generate out docs:
+
+```
+sudo apt install doxygen
+mkdir -p build
+cd build
+cmake ..         # if we didn't mkdir and cmake in the build process
+make doxygen
+```
+
+This will create our documentation HTML files in `build/docs/doxygen/html`.
 
 ### Execution
 
