@@ -14,14 +14,19 @@ digraph "lsysgen::Settings"
   Node3 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" DEFAULT" ,fontname="Helvetica"];
   Node5 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" lineColor\nfillColor\nbackground" ,fontname="Helvetica"];
   Node5 [label="lsysgen::Setting\< std\l::string \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
-  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" lsystems\ninputFiles" ,fontname="Helvetica"];
-  Node6 [label="lsysgen::Setting\< std\l::list\< std::string \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
+  Node6 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" DEFAULT_BACKGROUND\nDEFAULT_LINE_COLOR\nDEFAULT_FILL_COLOR" ,fontname="Helvetica"];
+  Node6 [label="std::string",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip="STL class."];
+  Node7 -> Node6 [dir="back",color="midnightblue",fontsize="10",style="solid",fontname="Helvetica"];
+  Node7 [label="std::basic_string\<\l char \>",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled",tooltip="STL class."];
+  Node8 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" lsystems\ninputFiles" ,fontname="Helvetica"];
+  Node8 [label="lsysgen::Setting\< std\l::list\< std::string \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
   Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" rules\noutputRenderFile\nignore\noutputResultFile\naxiom" ,fontname="Helvetica"];
-  Node7 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" seed\niterations" ,fontname="Helvetica"];
-  Node7 [label="lsysgen::Setting\< int \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
+  Node9 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" seed\niterations" ,fontname="Helvetica"];
+  Node9 [label="lsysgen::Setting\< int \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
   Node1 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" DEFAULT" ,fontname="Helvetica"];
-  Node8 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" renderMode" ,fontname="Helvetica"];
-  Node8 [label="lsysgen::Setting\< Settings\l::RenderMode \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
-  Node9 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" args" ,fontname="Helvetica"];
-  Node9 [label="lsysgen::Setting\< std\l::map\< std::string, std\l::string \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
+  Node6 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" DEFAULT_IGNORE" ,fontname="Helvetica"];
+  Node10 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" renderMode" ,fontname="Helvetica"];
+  Node10 [label="lsysgen::Setting\< Settings\l::RenderMode \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
+  Node11 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" args" ,fontname="Helvetica"];
+  Node11 [label="lsysgen::Setting\< std\l::map\< std::string, std\l::string \> \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Setting.html",tooltip=" "];
 }
