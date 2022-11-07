@@ -9,7 +9,7 @@ class Rule;
 template<typename>
 class ProductionRule;
 template<typename>
-class codingRule;
+class CodingRule;
 
 }
 
