@@ -17,7 +17,7 @@ jobs:
       - name: Requirements
         shell: bash
         run: sudo apt update
-          && sudo apt install -y cmake #g++ doxygen default-jre #imagemagick
+          && sudo apt install -y cmake g++ doxygen default-jre #imagemagick
 
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -84,12 +84,12 @@ jobs:
   #   needs: cmake
   #   runs-on: ubuntu-latest
   #   steps:
-      - name: Requirements
-        run: sudo apt install -y doxygen
-        # && apt install -y sphinx-doc
-        # && pip3 install sphinx-rtd-theme
-        # && pip3 install breathe
-        # && pip3 install sphinx-sitemap
+  #     - name: Requirements
+  #       run: sudo apt install -y doxygen
+  #       && apt install -y sphinx-doc
+  #       && pip3 install sphinx-rtd-theme
+  #       && pip3 install breathe
+  #       && pip3 install sphinx-sitemap
     
   #     - name: Checkout repo
   #       uses: actions/checkout@v3
