@@ -108,7 +108,7 @@ jobs:
       #     name: build-dir
 
       - name: Build docs
-        run: pwd && ls -l && make doxygen
+        run: cd build && make doxygen
           # && cd docs/doxygen/html
           # && touch .nojekyll
       - name: Deploy docs
