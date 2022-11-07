@@ -19,28 +19,60 @@ jobs:
         run: sudo apt install -y cmake g++ doxygen default-jre #imagemagick
 
       - name: Checkout repo
-        uses: actions/checkout@1.0.0
+        uses: actions/checkout@v2
 
       - name: Create and go to build folder
         run: mkdir -p build
 
       - name: Run cmake in build
-        run: cd build && cmake ..
+        run: cd build && cmake .. && cd ..
 
-      - name: Where am I
-        run: pwd; ls -l
+      - name: Cache build dir
+        id: cache-cmake
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-cmake-dir
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('Makefile') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+        # use env GITHUB_WORKSPACE for root workspace dir ?
+
+      # - name: Upload build dir
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: build-dir
+      #     path: build
 
   make:
     name: Builds executables
     needs: cmake
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: build
     steps:
       - name: Requirements
         shell: bash
         run: sudo apt install -y g++ default-jre
+
+      - name: Checkout repo
+        uses: actions/checkout@v2
+
+      - name: Cache build dir
+        id: cache-cmake-dir
+        uses: actions/cache@v2
+        with:
+          path: build
+          key: ${{ runner.os }}-build-make
+
+      - run: pwd && ls -l && cd build
+
+      # - name: Download build dir
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: build-dir
 
       - name: Run make for ALL
         run: make
@@ -49,27 +81,38 @@ jobs:
     name: Deploy the documentation pages
     needs: cmake
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: build
     steps:
-    - name: Requirements
-      run: sudo apt install -y doxygen
+      - name: Requirements
+        run: sudo apt install -y doxygen
         # && apt install -y sphinx-doc
         # && pip3 install sphinx-rtd-theme
         # && pip3 install breathe
         # && pip3 install sphinx-sitemap
+    
+      - name: Checkout repo
+        uses: actions/checkout@v2
 
-    # - name: Checkout repo
-    #   uses: actions/checkout@1.0.0
+      - name: Cache build dir
+        id: cache-cmake-dir
+        uses: actions/cache@v2
+        with:
+          path: build
+          key: ${{ runner.os }}-build-make-docs
 
-    - name: Build docs
-      run: make doxygen
-        # && cd docs/doxygen/html
-        # && touch .nojekyll
-    - name: Deploy docs
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: build/docs/doxygen/html # The folder the action should deploy.
+      - run: pwd && ls -l && cd build
+
+      # - name: Download build dir
+      #   uses: actions/download-artifact@v2
+      #   with:
+      #     name: build-dir
+
+      - name: Build docs
+        run: make doxygen
+          # && cd docs/doxygen/html
+          # && touch .nojekyll
+      - name: Deploy docs
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: build/docs/doxygen/html # The folder the action should deploy.
