@@ -12,7 +12,7 @@ on:
 jobs:
   cmake:
     name: Prepares the make files
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Requirements
         shell: bash
@@ -111,8 +111,7 @@ jobs:
       - name: Build docs
         run: cd build 
           && make doxygen
-          && cd docs/doxygen/html
-          && touch .nojekyll
+          && touch docs/doxygen/html/.nojekyll
       - name: Deploy docs
         uses: JamesIves/github-pages-deploy-action@v4
         with:
