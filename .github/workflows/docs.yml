@@ -8,10 +8,11 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
-  
+
 jobs:
   cmake:
     name: Prepares the make files
+    # working-directory: ~
     runs-on: ubuntu-latest
     steps:
       - name: Requirements
@@ -29,9 +30,11 @@ jobs:
 
   make:
     name: Builds executables
-    working-directory: build
     needs: cmake
     runs-on: ubuntu-latest
+    defaults:
+      shell: bash
+      working-directory: build
     steps:
       - name: Requirements
         shell: bash
@@ -46,9 +49,11 @@ jobs:
 
   makedocs:
     name: Deploy the documentation pages
-    working-directory: build
     needs: cmake
     runs-on: ubuntu-latest
+    defaults:
+      shell: bash
+      working-directory: build
     steps:
     - name: Requirements
       run: sudo apt install -y doxygen
