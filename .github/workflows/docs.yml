@@ -40,7 +40,7 @@ jobs:
 
       - name: Run cmake in build
         run: cd build && cmake .. # && cd ..
-        
+
         # use env GITHUB_WORKSPACE for root workspace dir ?
 
       # - name: Upload build dir
@@ -108,7 +108,7 @@ jobs:
       #     name: build-dir
 
       - name: Build docs
-        run: make doxygen
+        run: pwd && ls -l && make doxygen
           # && cd docs/doxygen/html
           # && touch .nojekyll
       - name: Deploy docs
