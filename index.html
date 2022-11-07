@@ -67,8 +67,7 @@ $(function() {
 <div class="title">Extended L System Generator </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a href="https://github.com/acs2405/LSysGen/blob/master/LICENSE"><object type="image/svg+xml" data="https://img.shields.io/github/license/Naereen/StrapDown.js.svg" style="pointer-events: none;">GitHub license</object></a></p>
-<p>This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see <code>Syntax and semantics</code>) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL <code>*.lsd</code> files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see <code>2D rendering</code>). Example:</p>
+<div class="textblock"><p>This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see <code>Syntax and semantics</code>) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL <code>*.lsd</code> files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see <code>2D rendering</code>). Example:</p>
 <div class="fragment"><div class="line">lsys -a &quot;A&quot; -r &quot;A-&gt;F(1.0)[+A][-A]; F(x)-&gt;F(x*1.6)&quot; -H 90 -R 60 -C &quot;#f00&quot; -W 2 -i 11 --svg - -w 1000 | display</div>
 </div><!-- fragment --><p>Shows:</p>
 <div class="image">
