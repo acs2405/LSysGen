@@ -40,8 +40,7 @@ jobs:
         run: sudo apt install -y g++ default-jre
 
       - name: Where am I
-        run: pwd
-        run: ls -l
+        run: pwd; ls -l
 
       - name: Run make for ALL
         run: make
