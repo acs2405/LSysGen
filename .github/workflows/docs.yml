@@ -24,22 +24,23 @@ jobs:
       - name: Create and go to build folder
         run: mkdir -p build
 
-      - name: Run cmake in build
-        run: cd build && cmake .. && cd ..
+      # - name: Cache build dir
+      #   id: cache-cmake
+      #   uses: actions/cache@v3
+      #   env:
+      #     cache-name: cache-cmake-dir
+      #   with:
+      #     # npm cache files are stored in `~/.npm` on Linux/macOS
+      #     path: build
+      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('build/Makefile') }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-build-${{ env.cache-name }}-
+      #       ${{ runner.os }}-build-
+      #       ${{ runner.os }}-
 
-      - name: Cache build dir
-        id: cache-cmake
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-cmake-dir
-        with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: build
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('build/Makefile') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+      - name: Run cmake in build
+        run: cd build && cmake .. # && cd ..
+        
         # use env GITHUB_WORKSPACE for root workspace dir ?
 
       # - name: Upload build dir
@@ -48,58 +49,58 @@ jobs:
       #     name: build-dir
       #     path: build
 
-  make:
-    name: Builds executables
-    needs: cmake
-    runs-on: ubuntu-latest
-    steps:
-      - name: Requirements
-        shell: bash
-        run: sudo apt install -y g++ default-jre
+  # make:
+  #   name: Builds executables
+  #   needs: cmake
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Requirements
+  #       shell: bash
+  #       run: sudo apt install -y g++ default-jre
 
-      - name: Checkout repo
-        uses: actions/checkout@v3
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v3
 
-      - name: Cache build dir
-        id: cache-cmake-dir
-        uses: actions/cache@v3
-        with:
-          path: build
-          key: ${{ runner.os }}-build-make
+  #     - name: Cache build dir
+  #       id: cache-cmake-dir
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: build
+  #         key: ${{ runner.os }}-build-make
 
-      - run: pwd && ls -l && cd build
+  #     - run: pwd && ls -l && cd build
 
-      # - name: Download build dir
-      #   uses: actions/download-artifact@v2
-      #   with:
-      #     name: build-dir
+  #     # - name: Download build dir
+  #     #   uses: actions/download-artifact@v2
+  #     #   with:
+  #     #     name: build-dir
 
-      - name: Run make for ALL
-        run: make
+  #     - name: Run make for ALL
+  #       run: make
 
-  makedocs:
-    name: Deploy the documentation pages
-    needs: cmake
-    runs-on: ubuntu-latest
-    steps:
-      - name: Requirements
-        run: sudo apt install -y doxygen
-        # && apt install -y sphinx-doc
-        # && pip3 install sphinx-rtd-theme
-        # && pip3 install breathe
-        # && pip3 install sphinx-sitemap
+  # makedocs:
+  #   name: Deploy the documentation pages
+  #   needs: cmake
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Requirements
+  #       run: sudo apt install -y doxygen
+  #       # && apt install -y sphinx-doc
+  #       # && pip3 install sphinx-rtd-theme
+  #       # && pip3 install breathe
+  #       # && pip3 install sphinx-sitemap
     
-      - name: Checkout repo
-        uses: actions/checkout@v3
+  #     - name: Checkout repo
+  #       uses: actions/checkout@v3
 
-      - name: Cache build dir
-        id: cache-cmake-dir
-        uses: actions/cache@v3
-        with:
-          path: build
-          key: ${{ runner.os }}-build-make-docs
+  #     - name: Cache build dir
+  #       id: cache-cmake-dir
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: build
+  #         key: ${{ runner.os }}-build-make-docs
 
-      - run: pwd && ls -l && cd build
+  #     - run: pwd && ls -l && cd build
 
       # - name: Download build dir
       #   uses: actions/download-artifact@v2
