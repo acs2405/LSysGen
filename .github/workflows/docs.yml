@@ -31,7 +31,7 @@ jobs:
     name: Builds executables
     needs: cmake
     runs-on: ubuntu-latest
-    stepls:
+    steps:
       - name: Requirements
         shell: bash
         run: apt install g++ default-jre
