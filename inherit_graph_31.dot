@@ -5,6 +5,4 @@ digraph "Graphical Class Hierarchy"
   node [fontname="Helvetica",fontsize="10",shape=record];
   rankdir="LR";
   Node0 [label="lsysgen::Rule\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1Rule.html",tooltip=" "];
-  Node0 -> Node1 [dir="back",color="firebrick4",fontsize="10",style="solid",fontname="Helvetica"];
-  Node1 [label="lsysgen::CodingRule\< T \>",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classlsysgen_1_1CodingRule.html",tooltip=" "];
 }
