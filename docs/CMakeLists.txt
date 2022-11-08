@@ -23,7 +23,7 @@ if (DOXYGEN_FOUND)
                        COMMENT "Generating docs")
 
     # Note: do not put "ALL" - this builds docs together with application EVERY TIME!
-    add_custom_target(doxygen # ALL 
+    add_custom_target(doxygen
                       DEPENDS ${DOXYGEN_INDEX_FILE})
 
     # # request to configure the file
@@ -78,3 +78,6 @@ endif (DOXYGEN_FOUND)
 # else (SPHINX_FOUND)
 #   message("Sphinx need to be installed to style the doxygen documentation")
 # endif (SPHINX_FOUND)
+
+add_custom_target(docs # ALL 
+                  DEPENDS doxygen)

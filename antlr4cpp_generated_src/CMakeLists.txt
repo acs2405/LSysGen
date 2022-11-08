@@ -29,8 +29,24 @@ else()
   file (GLOB ANTLR_LSysDParser_CXX_OUTPUTS ${ANTLR_LSysDParser_OUTPUT_DIR}/*.cpp)
 endif()
 
+# Add sources to libraries:
+target_sources(lsysantlr PRIVATE
+  ${ANTLR_LSysDLexer_CXX_OUTPUTS} 
+  ${ANTLR_LSysDParser_CXX_OUTPUTS}
+  )
+
+# Include directories:
+target_include_directories(lsysantlr PUBLIC
+  ${ANTLR4_INCLUDE_DIRS}
+  )
+
+# This lines prevent std::runtime_error with message "unknown error -1".
+# (See https://github.com/antlr/antlr4/issues/3708 and/or https://stackoverflow.com/q/51584960)
+find_package(Threads REQUIRED)
+target_link_libraries(lsysantlr Threads::Threads)
+# set(THREADS_PREFER_PTHREAD_FLAG ON)
+target_link_libraries(lsysantlr antlr4_static)
+
 # Export variables to parent:
 set(ANTLR_LSysDLexer_OUTPUT_DIR ${ANTLR_LSysDLexer_OUTPUT_DIR} PARENT_SCOPE)
 set(ANTLR_LSysDParser_OUTPUT_DIR ${ANTLR_LSysDParser_OUTPUT_DIR} PARENT_SCOPE)
-set(ANTLR_LSysDLexer_CXX_OUTPUTS ${ANTLR_LSysDLexer_CXX_OUTPUTS} PARENT_SCOPE)
-set(ANTLR_LSysDParser_CXX_OUTPUTS ${ANTLR_LSysDParser_CXX_OUTPUTS} PARENT_SCOPE)

@@ -50,23 +50,16 @@ set(lsysgen_MAIN_SRC
 #   ${PROJECT_SOURCE_DIR}/src/Drawer2D.cpp
 #   )
 
-# Add libraries:
-add_library(lsysantlr STATIC 
-  ${ANTLR_LSysDLexer_CXX_OUTPUTS} 
-  ${ANTLR_LSysDParser_CXX_OUTPUTS}
-  )
-
-add_library(lsysgen STATIC # SHARED or STATIC
+# Add sources to targets:
+target_sources(lsysgen PRIVATE
   ${lsysgen_BASE_SRC} 
   )
 
-# Add executables:
-add_executable(lsys ${lsysgen_MAIN_SRC})
+target_sources(lsys PRIVATE
+  ${lsysgen_MAIN_SRC}
+  )
 
 # Include directories:
-target_include_directories(lsysantlr PUBLIC
-  ${ANTLR4_INCLUDE_DIRS}
-  )
 target_include_directories(lsysgen PUBLIC
   ${PROJECT_SOURCE_DIR}/src/
   ${ANTLR_LSysDLexer_OUTPUT_DIR}
@@ -83,21 +76,15 @@ target_precompile_headers(lsysgen PRIVATE
   # ${lsysgen_BASE_HEADERS}
   )
 
-# This lines prevent std::runtime_error with message "unknown error -1".
-# (See https://github.com/antlr/antlr4/issues/3708 and/or https://stackoverflow.com/q/51584960)
-find_package(Threads REQUIRED)
-target_link_libraries(lsysantlr Threads::Threads)
-target_link_libraries(lsysantlr antlr4_static)
-# target_link_libraries(lsysgen ${SYSTEM_LIBS})
+# Link the project libraries:
+target_link_libraries(lsysgen lsysantlr)
+target_link_libraries(lsys lsysgen)
+
 # if (LSYSGEN_GRAPHICS)
 #   add_executable(lsys2d ${lsysgen_2D_SRC})
 #   target_link_libraries(lsys2d lsysgen)
 #   target_link_libraries(lsys2d ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 # endif()
-
-# Link the project libraries:
-target_link_libraries(lsysgen lsysantlr)
-target_link_libraries(lsys lsysgen)
 
 # Show compilation warnings:
 if(MSVC)

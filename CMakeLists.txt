@@ -37,9 +37,14 @@ set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.11
 include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
 
-add_subdirectory (antlr4cpp_generated_src)
-add_subdirectory (src)
-add_subdirectory (docs EXCLUDE_FROM_ALL)
+# Add libraries:
+add_library(lsysantlr STATIC)
+add_library(lsysgen STATIC) # SHARED or STATIC
+add_executable(lsys)
+
+add_subdirectory(antlr4cpp_generated_src)
+add_subdirectory(src)
+add_subdirectory(docs EXCLUDE_FROM_ALL)
 
 
 # if(WIN32)
