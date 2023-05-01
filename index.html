@@ -120,7 +120,7 @@ The program</h1>
 Build</h2>
 <h3><a class="anchor" id="autotoc_md6"></a>
 Ubuntu/Debian</h3>
-<p>This program uses <code>ANTLR 4.11.1</code> and <code>CMake (&gt;=3.15)</code>. ANTLR4 will later be installed and linked with the <code>make</code> command automatically. <code>imagemagick</code> is not needed for the program to run, it justs provides the <code>display</code> program to be able to easily display SVG outputs in the command line (<code>./lsys (...) -svg - | display</code>). To install our dependencies:</p>
+<p>This program uses <code>ANTLR 4.12.0</code> and <code>CMake (&gt;=3.15)</code>. ANTLR4 will later be installed and linked with the <code>make</code> command automatically. <code>imagemagick</code> is not needed for the program tobuild or run, it justs provides the <code>display</code> command to be able to easily display SVG outputs in the command line (e.g. <code>./lsys (...) -svg - | display</code>). To install our dependencies:</p>
 <div class="fragment"><div class="line">sudo apt install g++ cmake imagemagick</div>
 </div><!-- fragment --><p>If you want to modify grammar files, you will need <code>Java 11</code> for <code>make</code> to generate C++ outputs automatically with the ANTLR jar file. In this case, also run:</p>
 <div class="fragment"><div class="line">sudo apt install default-jre</div>
@@ -128,18 +128,30 @@ Ubuntu/Debian</h3>
 <div class="fragment"><div class="line">mkdir build &amp;&amp; cd build</div>
 <div class="line">cmake ..</div>
 <div class="line">make</div>
-</div><!-- fragment --><p>For debug purposes, the cmake command should be:</p>
+</div><!-- fragment --><p>We have just created a <code>build</code> folder and built the program in it (our executable is <code>build/lsys</code>).</p>
+<p>For debug purposes, the cmake command should be:</p>
 <div class="fragment"><div class="line">cmake -DCMAKE_BUILD_TYPE=Debug ..</div>
 </div><!-- fragment --><p>If everything goes well, you will get the library <code>lsysgen.a</code> (that contains all the functionality of the project) and the executable <code>lsys</code>, the main program. Type <code>./lsys --help</code> for information about usage and arguments.</p>
+<p>No other Linux distributions have been tested yet for this project.</p>
 <h3><a class="anchor" id="autotoc_md7"></a>
 MacOS</h3>
-<p>MacOS target is expected to be tested in the future.</p>
+<p>MacOS target is expected to be tested in the future (but it should work fine with CMake and XCode/CLang++).</p>
 <h3><a class="anchor" id="autotoc_md8"></a>
 Windows</h3>
-<p>Windows target is expected to be tested in the future.</p>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<p>You can compile the project in Windows with CMake GUI (which generates the Visual Studio project) and Visual Studio 2017+ (which builds the project; has some known issues).</p>
+<h3><a class="anchor" id="autotoc_md9"></a>
+Cross-compiling from Linux</h3>
+<p>You can cross-compile Windows binaries from Linux using MinGW:</p>
+<div class="fragment"><div class="line">sudo apt install mingw-w64</div>
+</div><!-- fragment --><p>And compiling it the same way than the Linux section, but adding an extra argument to the <code>cmake</code> command:</p>
+<div class="fragment"><div class="line">mkdir -p build/win32 &amp;&amp; cd build/win32</div>
+<div class="line">cmake -DCMAKE_TOOLCHAIN_FILE=cmake/i686-w64-mingw32.cmake ..</div>
+<div class="line">make</div>
+</div><!-- fragment --><p>The second line builds a 32-bit Windows executable file. If you want a 64-bit executable instead, change <code>-DCMAKE_TOOLCHAIN_FILE</code> argument value to <code>cmake/x86_64-w64-mingw32.cmake</code>.</p>
+<p>This commands will create a <code>build/win32</code> folder and will generate our executable there (<code>build/win32/lsys.exe</code>) that will work in any Intel/AMD (32/64-bit) Windows machine.</p>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Make documentation</h2>
-<h3><a class="anchor" id="autotoc_md10"></a>
+<h3><a class="anchor" id="autotoc_md11"></a>
 Ubuntu/Debian</h3>
 <p>Documentation about the code of this project is automatically deployed with <code>make doxygen</code>, where <code>doxygen</code> is the tool we are using to generate out docs:</p>
 <div class="fragment"><div class="line">sudo apt install doxygen</div>
@@ -148,7 +160,7 @@ Ubuntu/Debian</h3>
 <div class="line">cmake ..         # if we didn&#39;t mkdir and cmake in the build process</div>
 <div class="line">make doxygen</div>
 </div><!-- fragment --><p>This will create our documentation HTML files in <code>build/docs/doxygen/html</code>.</p>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<h2><a class="anchor" id="autotoc_md12"></a>
 Execution</h2>
 <p>This project has two elements for processing L Systems: an executable and a library. The library (<code>lsysgen</code>) provides access to functions to manage our L Systems, Modules and read LSDL files. The executable (<code>lsys</code>) provides many options to create, customize and run your L Systems with command line arguments. The <code>--svg</code> option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see <code>2D rendering</code>).</p>
 <p>To execute the <code>lsys</code> program, go to <code>build/</code> and run either of:</p>
@@ -175,13 +187,13 @@ Execution</h2>
 <p><img src="Test1.svg" alt="" style="pointer-events: none;" class="inline" title="Test1 image"/></p>
 <p>Other examples:</p>
 <div class="fragment"><div class="line">./lsys ../examples/Hilbert.lsd --svg -i 4 | display</div>
-<div class="line">./lsys ../examples/B2.lsd -i 20 --svg ../images</div>
+<div class="line">./lsys ../examples/B2.lsd -i 20 --svg B2-20.svg</div>
 <div class="line">./lsys ../examples/classics.lsd --all --svg ../images</div>
 </div><!-- fragment --><p>There is also a small Python module, <code>lsys.py</code>, that uses the <code>lsysgen</code> library and serves as a Python wrapper for the library (through its class <code>LSystem</code> that is able to print the L system and also its 2D render). This python script is also runnable and prints the resulting L system string and the SVG image:</p>
 <div class="fragment"><div class="line">python lsys.py INPUT_FILE [N_ITERATIONS]</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md12"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md13"></a>
 LSDL Syntax and semantics</h1>
-<h2><a class="anchor" id="autotoc_md13"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 Document structure</h2>
 <p>To define an L system with an axiom and the rules that transform it, I have created the LSDL (L System Defining Language) specific purpose language.</p>
 <p>In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:</p>
@@ -221,23 +233,23 @@ Document structure</h2>
 <p>An example of an anonymous L system:</p>
 <div class="fragment"><div class="line">./build/lsys -a &quot;A&quot; -r &quot;A-&gt;B; B-&gt;AB&quot; -i 5</div>
 </div><!-- fragment --><p>This gives us <code>BABABBAB</code>.</p>
-<h2><a class="anchor" id="autotoc_md14"></a>
+<h2><a class="anchor" id="autotoc_md15"></a>
 Comments</h2>
 <p>Every text (in a line) followed by the character <code>#</code> is a comment and will be ignored by the interpreter:</p>
 <div class="fragment"><div class="line"># Hey I&#39;m a comment</div>
 <div class="line">set notAComment = 3 #aComment</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md15"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md16"></a>
 Axiom</h2>
 <p>The axiom of an L system is the initial string and must be always defined once for each L system. This string is changed by the rules in the first iteration. The result of that is changed again by the rules in the second iteration... and so on.</p>
 <p>We define an axiom:</p>
 <div class="fragment"><div class="line">axiom AB;</div>
 </div><!-- fragment --><p>Semicolons at the end of each definition are only required if you wish to write several definitions in the same line.</p>
-<h2><a class="anchor" id="autotoc_md16"></a>
+<h2><a class="anchor" id="autotoc_md17"></a>
 Number of iterations</h2>
 <p>This is the number of times that rules will be applied to generate the L system. We just have to define the <code>iterations</code> constant as a non-negative integer:</p>
 <div class="fragment"><div class="line">set iterations = 6</div>
 </div><!-- fragment --><p>We can also use the option <code>-i</code> in the program to set it.</p>
-<h2><a class="anchor" id="autotoc_md17"></a>
+<h2><a class="anchor" id="autotoc_md18"></a>
 Production rules</h2>
 <p>Production rules have the syntax:</p>
 <div class="fragment"><div class="line">[weight|] [left_context&lt;] char [&gt;right_context] [:condition] -&gt; replacement</div>
@@ -258,7 +270,7 @@ Production rules</h2>
 <div class="fragment"><div class="line">char &gt; right_context -&gt; replacement</div>
 </div><!-- fragment --><p>both:</p>
 <div class="fragment"><div class="line">left_context &lt; char &gt; right_context -&gt; replacement</div>
-</div><!-- fragment --><p>or none (like DOL's rules). A rule can't be chosen for some character if it doesn't meet the <code>condition</code>. For example, this rule:</p>
+</div><!-- fragment --><p>or none (like DOL's rules). A rule can't be chosen for some character if it doesn't meet the <code>condition</code> and the parameter count (in case of having parenthesis). For example, this rule:</p>
 <div class="fragment"><div class="line">9| A(x) : x &lt; 5 -&gt; A(x+1)</div>
 </div><!-- fragment --><p>cannot match symbols <code>A</code>, <code>A(8)</code> or <code>A(6, 0.2)</code>.</p>
 <p>A probabilistic l-system may have more than one rule available for the same character. Also, a weight can be specified for each rule (when the weight is not defined, a rule has a default weight of <code>1</code>). That weight will determine the probability of the rule to be chosen over other available rules. The syntax of a weighted rule just adds the parenthesized value at the beginning of the rule. For example:</p>
@@ -275,9 +287,9 @@ Production rules</h2>
 <div class="fragment"><div class="line">c(x)d(y) &lt; a(z, w) &gt; d(y_)c(x_): x&lt;=y and y&lt;z and y_&gt;z and y_=y -&gt; a(max(y, y_), w)</div>
 </div><!-- fragment --><p>Bracketed IL-systems (context-sensitive l-systems with branches) have a special treatment for brackets. They are not treated as characters in the left side, so they cannot be replaced. When asking for a character in a left context:</p>
 <div class="fragment"><div class="line">a &lt; b -&gt; bb</div>
-</div><!-- fragment --><p>The <code>b</code> of <code>abc</code> would be accepted, and also the one of <code>a[cc]b</code>, <code>a[bcd]</code> and <code>a[[b]c]</code>, but not <code>[a]b</code>. For right context:</p>
+</div><!-- fragment --><p>The <code>b</code> of <code>abc</code> would be accepted, and also the one of <code>a[cc]b</code>, <code>a[bcd]</code> and <code>a[[b]c]</code>, but not <code>[a]bc</code>. For right context:</p>
 <div class="fragment"><div class="line">b &gt; a -&gt; c</div>
-</div><!-- fragment --><p>The <code>b</code> of <code>cba</code> would be accepted, and also the one of <code>cb[cd]a</code>, <code>b[add]c</code> and <code>b[[a]d]</code>, but not <code>[b]a</code>. When asking for a branch in the left or right context, it is matched if and only if a branch is found starting by the specified elements (at the beginning, on the left). For example:</p>
+</div><!-- fragment --><p>The <code>b</code> of <code>cba</code> would be accepted, and also the one of <code>cb[cd]a</code>, <code>b[add]c</code> and <code>b[[a]d]</code>, but not <code>c[b]a</code>. When asking for a branch in the left or right context, it is matched if and only if a branch is found starting by the specified elements (at the beginning, on the left). For example:</p>
 <div class="fragment"><div class="line">[ab] &lt; c &gt; [ad] -&gt; [cab]</div>
 </div><!-- fragment --><p>matches with the <code>c</code> in <code>[abddd]c[adrst]</code>, <code>[ab]c[ad]</code>, <code>[ab][c[[ad]s]]</code>, but not <code>[ba]c[ad]</code> or <code>[dab]c[ssad]</code>.</p>
 <p>A rule can have in the left hand side the special character <code>_</code> that represents any character. For example:</p>
@@ -287,7 +299,7 @@ Production rules</h2>
 </div><!-- fragment --><p>means that any character surrounded by <code>a</code>s will always be replaced by an <code>a</code>. This one:</p>
 <div class="fragment"><div class="line">b_c &lt; a -&gt; o</div>
 </div><!-- fragment --><p>matches the <code>a</code> of <code>baca</code>, <code>b+ca</code>, <code>bbca</code>, etc.</p>
-<h2><a class="anchor" id="autotoc_md18"></a>
+<h2><a class="anchor" id="autotoc_md19"></a>
 Tables</h2>
 <p>If you plan to use tables, you need to write the line:</p>
 <div class="fragment"><div class="line">set table_func(i) = &lt;expr&gt;</div>
@@ -306,7 +318,7 @@ Tables</h2>
 <div class="line">    a -&gt; ba</div>
 <div class="line">    b -&gt; a</div>
 <div class="line">}</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md19"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md20"></a>
 Coding rules</h2>
 <p>Coding rules can also be specified (better after production rules). These special rules are not applied as production rules. Instead, they apply at the end of an iteration for the string to be interpreted. For example, if you want the character <code>R</code> to be interpreted as a right branch (<code>[-F]</code>), you must not add a production rule for it, because it would not work with the <code>R</code>s generated in the same iteration and you would not be able to replace that <code>R</code> anymore (instead, you would end accumulating <code>[-F]</code>s everywhere). What you would need is:</p>
 <div class="fragment"><div class="line">R =&gt; [-F]</div>
@@ -328,7 +340,7 @@ Coding rules</h2>
 <div class="line">}</div>
 <div class="line">u =&gt; [+F]     # Valid</div>
 </div><!-- fragment --><p>The syntax of the coding rules is the same than production rules', but using double arrow (<code>=&gt;</code>). They also work similarly. Note that coding rules can't belong to tables, but they are global.</p>
-<h2><a class="anchor" id="autotoc_md20"></a>
+<h2><a class="anchor" id="autotoc_md21"></a>
 Variables and constants</h2>
 <p>We have seen the <code>iterations</code> constant and the <code>table_func</code> function to choose which table to choose each iteration. We can define any function, variable or constant inside our L system.</p>
 <p>Axioms and rules share a special variable: <code>i</code>, that equals the current iteration number. In the axiom, <code>i</code> = <code>0</code>, in the production rules, <code>i</code> = <code>1</code> in the first iteration, <code>i</code> = <code>2</code> in the second, etc. and in the coding rules, <code>i</code> always equals the total number of iterations. Example:</p>
@@ -356,7 +368,7 @@ Variables and constants</h2>
 <div class="line">set background = &quot;#FFBB00&quot;    # (optional, defaults transparent) This constant sets the background color of the SVG</div>
 </div><!-- fragment --><p>Every special constant has a special command-line argument in the program to quickly force a value for that constant.</p>
 <p>You can also define any other variable or constant you want, and use them in the expressions of parametric rules.</p>
-<h1><a class="anchor" id="autotoc_md21"></a>
+<h1><a class="anchor" id="autotoc_md22"></a>
 2D rendering</h1>
 <p>The program <code>lsys</code> with the <code>--svg</code> argument renders the output of the L System generation in a 2D SVG image file.</p>
 <p>The special characters that 2D rendering uses are:</p>
@@ -400,45 +412,49 @@ Variables and constants</h2>
 <li><code>s</code> works as <code>z</code> but is always defined just after <code>z</code> and uses its last point for the first point, so <code>s</code> only requires to define two points.</li>
 </ul>
 <p>The rest of the characters will be ignored when displaying.</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
+<h1><a class="anchor" id="autotoc_md23"></a>
 SVG</h1>
 <p><code>lsys</code> with the option <code>--svg</code> converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's <code>display</code>:</p>
 <div class="fragment"><div class="line">lsys examples/B2.lsd --svg - | display</div>
-</div><!-- fragment --><p>If you want to convert a SVG file into a PNG file, you can use inkscape:</p>
+</div><!-- fragment --><p>If you want to convert a SVG file into a PNG file, you can use <code>inkscape</code>:</p>
 <div class="fragment"><div class="line">inkscape -o test.png -w 1000 -b white test.svg</div>
 <div class="line">inkscape --export-type=png -w 2000 images/*</div>
-</div><!-- fragment --><h1><a class="anchor" id="autotoc_md23"></a>
+</div><!-- fragment --><h1><a class="anchor" id="autotoc_md24"></a>
 Next steps</h1>
 <ul>
-<li>Documentation (Doxygen + Sphinx)</li>
-<li>Manage pointers (destructors and deletes)</li>
+<li>Texinfo documentation (GNU)</li>
+<li>Codebase documentation (Doxygen (+ Sphinx?)), document classes and functions</li>
+<li>Manage pointers (destructors and deletes, or even better, rely in vector and unique_ptr and remove old <code>new</code> allocations)</li>
 <li>Capture all LSDL syntax errors</li>
 <li>Debug, unit testing</li>
-<li>Parameters</li>
-<li>Action symbols</li>
-<li>Make it a deb package?</li>
-<li>Compile in windows multiplatform (cross-compiling?)</li>
-<li>Threads? (couldn't ensure determinism in no deterministic L Systems with seed)</li>
+<li>Create deb package (and rpm and wix) with CPack, then publish to official repos/stores</li>
+<li>GPLv3 license? AGPLv3? LGPLv3? BSDv3 (as ANTLR)? Talk to a lawyer</li>
 <li>Run in a web page (emscripten?)</li>
+<li>Custom representations (decouple frontend and backend, make an API for custom backends)</li>
 <li>3D representation and model export?</li>
-<li>Music representation?</li>
+<li>Music representation? (MusicXML)</li>
 <li>Optimize expressions (getting rid of strings and transforming trivial expressions into values)</li>
+<li>L System parameters</li>
+<li>Action symbols</li>
+<li>Threads? (couldn't ensure determinism in non-deterministic L Systems with seed)</li>
+<li>Compile into programs (LLVM) that may accept arguments (L System parameters)</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md24"></a>
+<h1><a class="anchor" id="autotoc_md25"></a>
 Known issues</h1>
-<h2><a class="anchor" id="autotoc_md25"></a>
+<h2><a class="anchor" id="autotoc_md26"></a>
 From ANTLR</h2>
 <ul>
-<li>When trying to configure CMakeLists.txt in windows, <code>find(ANTLR)</code> makes the generation fail when java is not found.</li>
+<li>When trying to configure <code>CMakeLists.txt</code> in Windows, <code>find(ANTLR)</code> makes the generation fail when Java is not found.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md26"></a>
+<h2><a class="anchor" id="autotoc_md27"></a>
 From ANTLR Runtime</h2>
 <ul>
 <li>Visual Studio searches for <code>${ANTLR4_ROOT}\runtime\Cpp\dist\Debug\antlr4-runtime-static.lib</code> but it should look in <code>dist\</code> directly (<code>Debug\</code> folder doesn't exist). This is because antlr targets are built in <code>${ANTLR4_ROOT}\runtime\Cpp\dist</code> (no <code>\</code>) subdirectory).</li>
 <li>ExternalProject_add() (in <code>ExternalAntlr4Cpp.cmake</code>) should include the arguments <code>DOWNLOAD_EXTRACT_TIMESTAMP true</code>, otherwise, newest versions of CMake emit warnings.</li>
 <li>FetchContent_Declare() (in <code>runtime/Cpp/runtime/CMakeLists.txt</code>) should include the arguments <code>DOWNLOAD_EXTRACT_TIMESTAMP true</code>, otherwise, newest versions of CMake emit warnings.</li>
-<li>Deprecation warnings in policies CMP0054, CMP0045, CMP0042, CMP0059 (in <code>runtime/Cpp/CMakeLists.txt</code>)</li>
-<li>&lsquo;warning D9025: overriding &rsquo;/W1' with '/w'` (also in antlr4_runtime) </li>
+<li>Deprecation warnings in policies CMP0054, CMP0045, CMP0042, CMP0059 (in <code>runtime/Cpp/CMakeLists.txt</code>).</li>
+<li>&lsquo;warning D9025: overriding &rsquo;/W1' with '/w'<code>(also in antlr4_runtime).</code></li>
+<li><code>The antlr4_runtime static library file built by MinGW is</code>libantlr4-runtime-static.a<code>, instead of</code>libantlr4-runtime.a<code>(as seen in</code>ExternalAntlr4Cpp.cmake`). </li>
 </ul>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
