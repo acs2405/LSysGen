@@ -48,8 +48,8 @@ include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
 
 # Add libraries:
-add_library(lsysantlr STATIC)
-add_library(lsysgen STATIC) # SHARED or STATIC
+add_library(lsysantlr OBJECT) # OBJECT does not create a library file
+add_library(lsysgen STATIC) # SHARED or STATIC (or OBJECT)
 
 # MinGW/MSVC executables depend on standard libraries that are easier to statically link
 if (WIN32)

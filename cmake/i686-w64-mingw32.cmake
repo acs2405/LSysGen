@@ -7,7 +7,6 @@ set(CMAKE_SYSTEM_NAME Windows)
 # set(CMAKE_SYSTEM_VERSION 1)
 set(CMAKE_SYSTEM_PROCESSOR i686)
 set(TOOLCHAIN_PREFIX i686-w64-mingw32) # for win32, mingw-64
-# set(TOOLCHAIN_PREFIX i686-w64-mingw32msvc) # for win32, mingw-64
 # Requires mingw-w64 package
 
 # which compilers to use for C and C++
