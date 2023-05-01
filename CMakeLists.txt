@@ -8,6 +8,14 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 # compiler must be >=17
 set(CMAKE_CXX_STANDARD 17)
 
+# Disable in-source builds to prevent source tree corruption.
+if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_BINARY_DIR}")
+  message(FATAL_ERROR "
+FATAL: In-source builds are not allowed.
+       You should create a separate directory for build files.
+")
+endif()
+
 # required if linking to static library
 add_definitions(-DANTLR4CPP_STATIC)
 
@@ -22,14 +30,16 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# set(ANTLR_BUILD_CPP_TESTS OFF)
+set(ANTLR_BUILD_CPP_TESTS OFF)
+set(ANTLR_BUILD_SHARED OFF)
+set(ANTLR_BUILD_STATIC ON)
 
 # Specify the version of the antlr4 library needed for this project.
 # By default the latest version of antlr4 will be used.  You can specify a
 # specific, stable version by setting a repository tag value or a link
 # to a zip file containing the libary source.
-# set(ANTLR4_TAG 4.11.1) # Requires git
-set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.11.1.zip)
+# set(ANTLR4_TAG 4.12.0) # Requires git
+set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.12.0.zip)
 
 #find_package(git REQUIRED)
 
@@ -40,6 +50,12 @@ include(ExternalAntlr4Cpp)
 # Add libraries:
 add_library(lsysantlr STATIC)
 add_library(lsysgen STATIC) # SHARED or STATIC
+
+# MinGW/MSVC executables depend on standard libraries that are easier to statically link
+if (WIN32)
+  set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+endif()
+
 add_executable(lsys)
 
 add_subdirectory(antlr4cpp_generated_src)
@@ -54,7 +70,7 @@ add_subdirectory(docs EXCLUDE_FROM_ALL)
 # elseif(UNIX)
 # endif()
 
-# if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+# if(CMAKE_SYSTEM_NAME MATCHES "Linux") # or, more general, if(UNIX)
 # endif()
 
 # # copy the input file next to the generated executable

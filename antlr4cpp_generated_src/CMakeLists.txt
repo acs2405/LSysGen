@@ -5,7 +5,7 @@
 if(NOT WIN32)
   # set variable pointing to the antlr tool that supports C++
   # this is not required if the jar file can be found under PATH environment
-  set(ANTLR_EXECUTABLE ${PROJECT_SOURCE_DIR}/antlr-4.11.1-complete.jar)
+  set(ANTLR_EXECUTABLE ${PROJECT_SOURCE_DIR}/antlr-4.12.0-complete.jar)
   # add macros to generate ANTLR Cpp code from grammar
   find_package(ANTLR)
 endif()
@@ -28,6 +28,10 @@ else()
   file (GLOB ANTLR_LSysDLexer_CXX_OUTPUTS ${ANTLR_LSysDLexer_OUTPUT_DIR}/*.cpp)
   file (GLOB ANTLR_LSysDParser_CXX_OUTPUTS ${ANTLR_LSysDParser_OUTPUT_DIR}/*.cpp)
 endif()
+
+# TODO: `make antlr` to build the grammar files
+# add_custom_target(antlr # ALL 
+#                   DEPENDS lsysantlr)
 
 # Add sources to libraries:
 target_sources(lsysantlr PRIVATE

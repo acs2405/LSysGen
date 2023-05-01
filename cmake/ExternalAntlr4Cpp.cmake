@@ -35,8 +35,13 @@ if(MSVC)
   set(ANTLR4_RUNTIME_LIBRARIES
       ${ANTLR4_OUTPUT_DIR}/antlr4-runtime.dll)
 else()
-  set(ANTLR4_STATIC_LIBRARIES
-      ${ANTLR4_OUTPUT_DIR}/libantlr4-runtime.a)
+  if (WIN32)
+    set(ANTLR4_STATIC_LIBRARIES
+        ${ANTLR4_OUTPUT_DIR}/libantlr4-runtime-static.a)
+  else()
+    set(ANTLR4_STATIC_LIBRARIES
+        ${ANTLR4_OUTPUT_DIR}/libantlr4-runtime.a)
+  endif()
   if(MINGW)
     set(ANTLR4_SHARED_LIBRARIES
         ${ANTLR4_OUTPUT_DIR}/libantlr4-runtime.dll.a)
@@ -46,7 +51,7 @@ else()
     set(ANTLR4_SHARED_LIBRARIES
         ${ANTLR4_OUTPUT_DIR}/libantlr4-runtime.dll.a)
     set(ANTLR4_RUNTIME_LIBRARIES
-        ${ANTLR4_OUTPUT_DIR}/cygantlr4-runtime-4.11.1.dll)
+        ${ANTLR4_OUTPUT_DIR}/cygantlr4-runtime-4.12.0.dll)
   elseif(APPLE)
     set(ANTLR4_RUNTIME_LIBRARIES
         ${ANTLR4_OUTPUT_DIR}/libantlr4-runtime.dylib)
@@ -93,12 +98,15 @@ if(ANTLR4_ZIP_REPOSITORY)
       BUILD_IN_SOURCE 1
       SOURCE_DIR ${ANTLR4_ROOT}
       SOURCE_SUBDIR runtime/Cpp
+      CMAKE_ARGS
+          -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
       CMAKE_CACHE_ARGS
           -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
           -DWITH_STATIC_CRT:BOOL=${ANTLR4_WITH_STATIC_CRT}
           -DDISABLE_WARNINGS:BOOL=ON
           # -DCMAKE_CXX_STANDARD:STRING=17 # if desired, compile the runtime with a different C++ standard
-          -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
+          # -DCMAKE_CXX_STANDARD:STRING=${CMAKE_CXX_STANDARD} # alternatively, compile the runtime with the same C++ standard as the outer project
+          # -DCMAKE_EXE_LINKER_FLAGS:STRING=${CMAKE_EXE_LINKER_FLAGS}
       INSTALL_COMMAND ""
       EXCLUDE_FROM_ALL 1
       DOWNLOAD_EXTRACT_TIMESTAMP true)
@@ -113,6 +121,8 @@ else()
       BUILD_IN_SOURCE 1
       SOURCE_DIR ${ANTLR4_ROOT}
       SOURCE_SUBDIR runtime/Cpp
+      CMAKE_ARGS
+          -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
       CMAKE_CACHE_ARGS
           -DCMAKE_BUILD_TYPE:STRING=${CMAKE_BUILD_TYPE}
           -DWITH_STATIC_CRT:BOOL=${ANTLR4_WITH_STATIC_CRT}

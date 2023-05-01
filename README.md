@@ -81,7 +81,7 @@ Cantor set (examples/ParametricCantorSet.lsd):
 
 #### Ubuntu/Debian
 
-This program uses `ANTLR 4.11.1` and `CMake (>=3.15)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program to run, it justs provides the `display` program to be able to easily display SVG outputs in the command line (`./lsys (...) -svg - | display`). To install our dependencies:
+This program uses `ANTLR 4.12.0` and `CMake (>=3.15)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program tobuild or run, it justs provides the `display` command to be able to easily display SVG outputs in the command line (e.g. `./lsys (...) -svg - | display`). To install our dependencies:
 
 ```
 sudo apt install g++ cmake imagemagick
@@ -101,6 +101,8 @@ cmake ..
 make
 ```
 
+We have just created a `build` folder and built the program in it (our executable is `build/lsys`).
+
 For debug purposes, the cmake command should be:
 
 ```
@@ -108,6 +110,8 @@ cmake -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
 If everything goes well, you will get the library `lsysgen.a` (that contains all the functionality of the project) and the executable `lsys`, the main program. Type `./lsys --help` for information about usage and arguments.
+
+No other Linux distributions have been tested yet for this project.
 
 <!--
 (*Optional*) If you wish to re-build the lexer and parser files from the grammars (`*.g4`), run (in the project root directory):
@@ -129,11 +133,31 @@ antlr4 -Dlanguage=Cpp -o antlr4-generated/ LSysDParser.g4 LSysDLexer.g4 -visitor
 
 #### MacOS
 
-MacOS target is expected to be tested in the future.
+MacOS target is expected to be tested in the future (but it should work fine with CMake and XCode/CLang++).
 
 #### Windows
 
-Windows target is expected to be tested in the future.
+You can compile the project in Windows with CMake GUI (which generates the Visual Studio project) and Visual Studio 2017+ (which builds the project; has some known issues).
+
+#### Cross-compiling from Linux
+
+You can cross-compile Windows binaries from Linux using MinGW:
+
+```
+sudo apt install mingw-w64
+```
+
+And compiling it the same way than the Linux section, but adding an extra argument to the `cmake` command:
+
+```
+mkdir -p build/win32 && cd build/win32
+cmake -DCMAKE_TOOLCHAIN_FILE=cmake/i686-w64-mingw32.cmake ..
+make
+```
+
+The second line builds a 32-bit Windows executable file. If you want a 64-bit executable instead, change `-DCMAKE_TOOLCHAIN_FILE` argument value to `cmake/x86_64-w64-mingw32.cmake`.
+
+This commands will create a `build/win32` folder and will generate our executable there (`build/win32/lsys.exe`) that will work in any Intel/AMD (32/64-bit) Windows machine.
 
 ### Make documentation
 
@@ -201,7 +225,7 @@ Other examples:
 
 ```
 ./lsys ../examples/Hilbert.lsd --svg -i 4 | display
-./lsys ../examples/B2.lsd -i 20 --svg ../images
+./lsys ../examples/B2.lsd -i 20 --svg B2-20.svg
 ./lsys ../examples/classics.lsd --all --svg ../images
 ```
 
@@ -370,7 +394,7 @@ both:
 left_context < char > right_context -> replacement
 ```
 
-or none (like DOL's rules). A rule can't be chosen for some character if it doesn't meet the `condition`. For example, this rule:
+or none (like DOL's rules). A rule can't be chosen for some character if it doesn't meet the `condition` and the parameter count (in case of having parenthesis). For example, this rule:
 
 ```
 9| A(x) : x < 5 -> A(x+1)
@@ -411,14 +435,14 @@ Bracketed IL-systems (context-sensitive l-systems with branches) have a special 
 a < b -> bb
 ```
 
-The `b` of `abc` would be accepted, and also the one of `a[cc]b`, `a[bcd]` and `a[[b]c]`, but not `[a]b`.
+The `b` of `abc` would be accepted, and also the one of `a[cc]b`, `a[bcd]` and `a[[b]c]`, but not `[a]bc`.
 For right context:
 
 ```
 b > a -> c
 ```
 
-The `b` of `cba` would be accepted, and also the one of `cb[cd]a`, `b[add]c` and `b[[a]d]`, but not `[b]a`.
+The `b` of `cba` would be accepted, and also the one of `cb[cd]a`, `b[add]c` and `b[[a]d]`, but not `c[b]a`.
 When asking for a branch in the left or right context, it is matched if and only if a branch is found starting by the specified elements (at the beginning, on the left). For example:
 
 ```
@@ -643,7 +667,7 @@ The rest of the characters will be ignored when displaying.
 lsys examples/B2.lsd --svg - | display
 ```
 
-If you want to convert a SVG file into a PNG file, you can use inkscape:
+If you want to convert a SVG file into a PNG file, you can use `inkscape`:
 
 ```
 inkscape -o test.png -w 1000 -b white test.svg
@@ -652,31 +676,35 @@ inkscape --export-type=png -w 2000 images/*
 
 ## Next steps
 
-- Documentation (Doxygen + Sphinx)
-- Manage pointers (destructors and deletes)
+- Texinfo documentation (GNU)
+- Codebase documentation (Doxygen (+ Sphinx?)), document classes and functions
+- Manage pointers (destructors and deletes, or even better, rely in vector and unique_ptr and remove old `new` allocations)
 - Capture all LSDL syntax errors
 - Debug, unit testing
-- Parameters
-- Action symbols
-- Make it a deb package?
-- Compile in windows multiplatform (cross-compiling?)
-- Threads? (couldn't ensure determinism in no deterministic L Systems with seed)
+- Create deb package (and rpm and wix) with CPack, then publish to official repos/stores
+- GPLv3 license? AGPLv3? LGPLv3? BSDv3 (as ANTLR)? Talk to a lawyer
 - Run in a web page (emscripten?)
+- Custom representations (decouple frontend and backend, make an API for custom backends)
 - 3D representation and model export?
-- Music representation?
+- Music representation? (MusicXML)
 - Optimize expressions (getting rid of strings and transforming trivial expressions into values)
+- L System parameters
+- Action symbols
+- Threads? (couldn't ensure determinism in non-deterministic L Systems with seed)
+- Compile into programs (LLVM) that may accept arguments (L System parameters)
 
 ## Known issues
 
 ### From ANTLR
 
-- When trying to configure CMakeLists.txt in windows, `find(ANTLR)` makes the generation fail when java is not found.
+- When trying to configure `CMakeLists.txt` in Windows, `find(ANTLR)` makes the generation fail when Java is not found.
 
 ### From ANTLR Runtime
 
 - Visual Studio searches for `${ANTLR4_ROOT}\runtime\Cpp\dist\Debug\antlr4-runtime-static.lib` but it should look in `dist\` directly (`Debug\` folder doesn't exist). This is because antlr targets are built in `${ANTLR4_ROOT}\runtime\Cpp\dist` (no `\$(Configuration)`) subdirectory).
 - ExternalProject_add() (in `ExternalAntlr4Cpp.cmake`) should include the arguments `DOWNLOAD_EXTRACT_TIMESTAMP true`, otherwise, newest versions of CMake emit warnings.
 - FetchContent_Declare() (in `runtime/Cpp/runtime/CMakeLists.txt`) should include the arguments `DOWNLOAD_EXTRACT_TIMESTAMP true`, otherwise, newest versions of CMake emit warnings.
-- Deprecation warnings in policies CMP0054, CMP0045, CMP0042, CMP0059 (in `runtime/Cpp/CMakeLists.txt`)
-- `warning D9025: overriding '/W1' with '/w'` (also in antlr4_runtime)
+- Deprecation warnings in policies CMP0054, CMP0045, CMP0042, CMP0059 (in `runtime/Cpp/CMakeLists.txt`).
+- `warning D9025: overriding '/W1' with '/w'` (also in antlr4_runtime).
+- The antlr4_runtime static library file built by MinGW is `libantlr4-runtime-static.a`, instead of `libantlr4-runtime.a` (as seen in `ExternalAntlr4Cpp.cmake`).
 
