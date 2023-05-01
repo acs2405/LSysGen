@@ -81,7 +81,7 @@ Cantor set (examples/ParametricCantorSet.lsd):
 
 #### Ubuntu/Debian
 
-This program uses `ANTLR 4.12.0` and `CMake (>=3.15)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program tobuild or run, it justs provides the `display` command to be able to easily display SVG outputs in the command line (e.g. `./lsys (...) -svg - | display`). To install our dependencies:
+This program uses `ANTLR 4.12.0` and `CMake (>=3.16)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program tobuild or run, it justs provides the `display` command to be able to easily display SVG outputs in the command line (e.g. `./lsys (...) -svg - | display`). To install our dependencies:
 
 ```
 sudo apt install g++ cmake imagemagick
