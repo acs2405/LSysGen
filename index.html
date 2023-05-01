@@ -120,7 +120,7 @@ The program</h1>
 Build</h2>
 <h3><a class="anchor" id="autotoc_md6"></a>
 Ubuntu/Debian</h3>
-<p>This program uses <code>ANTLR 4.12.0</code> and <code>CMake (&gt;=3.15)</code>. ANTLR4 will later be installed and linked with the <code>make</code> command automatically. <code>imagemagick</code> is not needed for the program tobuild or run, it justs provides the <code>display</code> command to be able to easily display SVG outputs in the command line (e.g. <code>./lsys (...) -svg - | display</code>). To install our dependencies:</p>
+<p>This program uses <code>ANTLR 4.12.0</code> and <code>CMake (&gt;=3.16)</code>. ANTLR4 will later be installed and linked with the <code>make</code> command automatically. <code>imagemagick</code> is not needed for the program tobuild or run, it justs provides the <code>display</code> command to be able to easily display SVG outputs in the command line (e.g. <code>./lsys (...) -svg - | display</code>). To install our dependencies:</p>
 <div class="fragment"><div class="line">sudo apt install g++ cmake imagemagick</div>
 </div><!-- fragment --><p>If you want to modify grammar files, you will need <code>Java 11</code> for <code>make</code> to generate C++ outputs automatically with the ANTLR jar file. In this case, also run:</p>
 <div class="fragment"><div class="line">sudo apt install default-jre</div>

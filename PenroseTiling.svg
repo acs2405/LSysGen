@@ -1,7 +1,7 @@
-<svg viewBox="0 0 1000.000000 985.488953" xmlns="http://www.w3.org/2000/svg" version="1.1">
-<!-- SEED 1121647676 -->
-<rect width="1000.000000" height="985.488953" fill="#000000" fill-opacity="1.000000"/>
-<g transform="scale(54.515800,54.450855) translate(9.087088,8.881138) ">
+<svg viewBox="0 0 400.000000 394.195587" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<!-- SEED 168717040 -->
+<rect width="400.000000" height="394.195587" fill="#000000" fill-opacity="1.000000"/>
+<g transform="scale(21.806322,21.780348) translate(9.087086,8.881137) ">
 <path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 0.00 L0.91 -0.41 " />
 <path stroke="#613E00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L0.81 -1.40 " />
 <path stroke="#7C4F00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.81 -1.40 L1.31 -2.27 " />
@@ -32,7 +32,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.95 -5.28 L2.45 -6.14 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.45 -6.14 L3.43 -5.94 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.81 -1.40 L-0.10 -0.99 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L-0.00 -0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L-0.00 0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.40 -1.86 L-0.10 -0.99 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.81 -1.40 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.31 -2.27 L0.40 -1.86 " />
@@ -70,7 +70,7 @@
 <path stroke="#181100" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.65 -0.95 L-1.75 -1.95 " />
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.08 -1.20 " />
 <path stroke="#332200" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.08 -1.20 L-0.10 -0.99 " />
-<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.00 -0.00 "/>
+<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.00 0.00 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.92 -3.55 L-2.03 -4.55 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.03 -4.55 L-1.36 -3.81 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-2.42 -2.69 " />
@@ -97,7 +97,7 @@
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.08 -1.20 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.25 -2.81 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.25 -2.81 L-0.27 -2.60 "/>
-<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 -0.00 L-0.98 -0.21 " />
+<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 0.00 L-0.98 -0.21 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-1.08 -1.20 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.27 -2.60 L-1.25 -2.81 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.25 -2.81 L-0.34 -3.22 "/>
@@ -208,7 +208,7 @@
 <path stroke="#181100" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.89 -0.20 L2.56 0.54 " />
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.56 0.54 L1.58 0.34 " />
 <path stroke="#332200" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.58 0.34 L0.67 0.74 " />
-<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L0.00 -0.00 "/>
+<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L-0.00 0.00 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.62 -4.53 L1.95 -5.28 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.95 -5.28 L2.93 -5.07 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M3.70 -3.33 L2.72 -3.54 " />
@@ -316,9 +316,9 @@
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.56 0.54 L1.58 0.34 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.56 0.54 L2.67 1.54 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.67 1.54 L1.75 1.95 "/>
-<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 -0.00 L0.91 -0.41 " />
+<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L0.91 -0.41 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L1.58 0.34 "/>
-<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 -0.00 L0.91 -0.41 " />
+<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L0.91 -0.41 " />
 <path stroke="#613E00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L0.81 -1.40 " />
 <path stroke="#7C4F00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.81 -1.40 L1.31 -2.27 " />
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.31 -2.27 L0.40 -1.86 " />
@@ -331,7 +331,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.29 -2.06 L3.20 -2.47 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M3.20 -2.47 L3.87 -1.72 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.81 -1.40 L-0.10 -0.99 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.00 -0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L-0.00 0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.40 -1.86 L-0.10 -0.99 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.81 -1.40 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.31 -2.27 L0.40 -1.86 " />
@@ -388,7 +388,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.42 -3.48 L-5.09 -4.23 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-5.09 -4.23 L-4.59 -5.09 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.08 -1.20 L-0.98 -0.21 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L0.00 0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-0.00 -0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.65 -0.95 L-0.98 -0.21 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-1.08 -1.20 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.65 -0.95 " />
@@ -426,7 +426,7 @@
 <path stroke="#181100" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.41 1.27 L-2.39 1.06 " />
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-1.48 0.66 " />
 <path stroke="#332200" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.48 0.66 L-0.98 -0.21 " />
-<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-0.00 0.00 "/>
+<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-0.00 -0.00 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-3.97 0.73 L-4.95 0.52 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.95 0.52 L-4.04 0.11 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-3.31 1.47 " />
@@ -453,7 +453,7 @@
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-1.48 0.66 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-3.06 0.32 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-3.06 0.32 L-2.56 -0.54 "/>
-<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L-0.50 0.87 " />
+<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 -0.00 L-0.50 0.87 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.50 0.87 L-1.48 0.66 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.56 -0.54 L-3.06 0.32 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-3.06 0.32 L-3.17 -0.67 "/>
@@ -564,7 +564,7 @@
 <path stroke="#181100" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.40 -1.86 L1.31 -2.27 " />
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.31 -2.27 L0.81 -1.40 " />
 <path stroke="#332200" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.81 -1.40 L0.91 -0.41 " />
-<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L-0.00 -0.00 "/>
+<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L-0.00 0.00 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-3.50 -3.89 L-4.42 -3.48 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.42 -3.48 L-3.92 -4.35 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.03 -4.55 L-2.53 -3.68 " />
@@ -672,9 +672,9 @@
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.31 -2.27 L0.81 -1.40 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.31 -2.27 L2.29 -2.06 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.29 -2.06 L2.39 -1.06 "/>
-<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 -0.00 L-0.10 -0.99 " />
+<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L-0.10 -0.99 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.81 -1.40 "/>
-<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 -0.00 L-0.10 -0.99 " />
+<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L-0.10 -0.99 " />
 <path stroke="#613E00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L-1.08 -1.20 " />
 <path stroke="#7C4F00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.08 -1.20 L-1.75 -1.95 " />
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.65 -0.95 " />
@@ -687,7 +687,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.25 -2.81 L-1.36 -3.81 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.36 -3.81 L-0.44 -4.21 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.08 -1.20 L-0.98 -0.21 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-0.00 -0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-0.00 0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.65 -0.95 L-0.98 -0.21 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-1.08 -1.20 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.65 -0.95 " />
@@ -920,7 +920,7 @@
 <path stroke="#181100" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.65 -0.95 L-1.75 -1.95 " />
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.08 -1.20 " />
 <path stroke="#332200" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.08 -1.20 L-0.10 -0.99 " />
-<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L-0.00 0.00 "/>
+<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.10 -0.99 L0.00 0.00 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.78 2.13 L-4.68 3.12 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.68 3.12 L-5.35 2.38 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.95 0.52 L-4.28 1.26 " />
@@ -1028,9 +1028,9 @@
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.08 -1.20 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.75 -1.95 L-1.25 -2.81 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.25 -2.81 L-0.27 -2.60 "/>
-<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L-0.98 -0.21 " />
+<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 0.00 L-0.98 -0.21 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-1.08 -1.20 "/>
-<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 0.00 L-0.98 -0.21 " />
+<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 0.00 L-0.98 -0.21 " />
 <path stroke="#613E00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-1.48 0.66 " />
 <path stroke="#7C4F00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.48 0.66 L-2.39 1.06 " />
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-1.41 1.27 " />
@@ -1043,7 +1043,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-3.06 0.32 L-4.04 0.11 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-4.04 0.11 L-4.14 -0.88 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.48 0.66 L-0.50 0.87 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.50 0.87 L-0.00 0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.50 0.87 L0.00 0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.41 1.27 L-0.50 0.87 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.50 0.87 L-1.48 0.66 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-1.41 1.27 " />
@@ -1100,7 +1100,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.53 5.42 L1.63 6.41 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.63 6.41 L0.72 6.82 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.17 1.61 L0.67 0.74 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L0.00 -0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L-0.00 -0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.77 1.74 L0.67 0.74 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L0.17 1.61 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.27 2.60 L0.77 1.74 " />
@@ -1276,7 +1276,7 @@
 <path stroke="#181100" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.41 1.27 L-2.39 1.06 " />
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-1.48 0.66 " />
 <path stroke="#332200" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.48 0.66 L-0.98 -0.21 " />
-<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L0.00 0.00 "/>
+<path stroke="#3C2700" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.98 -0.21 L-0.00 -0.00 "/>
 <path stroke="#211600" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.55 5.21 L1.53 5.42 " />
 <path stroke="#2A1C00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.53 5.42 L0.61 5.82 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.04 4.87 L-0.12 4.46 " />
@@ -1384,9 +1384,9 @@
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-1.48 0.66 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-2.39 1.06 L-3.06 0.32 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-3.06 0.32 L-2.56 -0.54 "/>
-<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 0.00 L-0.50 0.87 " />
+<path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 -0.00 L-0.50 0.87 " />
 <path stroke="#4E3300" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.50 0.87 L-1.48 0.66 "/>
-<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.00 0.00 L-0.50 0.87 " />
+<path stroke="#573800" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.00 -0.00 L-0.50 0.87 " />
 <path stroke="#613E00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.50 0.87 L0.17 1.61 " />
 <path stroke="#7C4F00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.17 1.61 L0.27 2.60 " />
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.27 2.60 L0.77 1.74 " />
@@ -1399,7 +1399,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-0.64 3.01 L-1.14 3.88 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M-1.14 3.88 L-2.12 3.67 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.17 1.61 L0.67 0.74 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L0.00 0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L-0.00 -0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.77 1.74 L0.67 0.74 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.67 0.74 L0.17 1.61 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.27 2.60 L0.77 1.74 " />
@@ -1456,7 +1456,7 @@
 <path stroke="#855400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M5.62 0.22 L6.60 0.43 " />
 <path stroke="#A06500" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M6.60 0.43 L6.70 1.43 "/>
 <path stroke="#6A4400" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.58 0.34 L0.91 -0.41 " />
-<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L-0.00 -0.00 "/>
+<path stroke="#734900" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L0.00 0.00 "/>
 <path stroke="#8E5A00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M1.89 -0.20 L0.91 -0.41 " />
 <path stroke="#976000" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M0.91 -0.41 L1.58 0.34 "/>
 <path stroke="#452D00" stroke-opacity="1.000000" stroke-width="0.100000" fill="none" fill-opacity="1" d="M2.56 0.54 L1.89 -0.20 " />
