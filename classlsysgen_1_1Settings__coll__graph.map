@@ -1,13 +1,13 @@
 <map id="lsysgen::Settings" name="lsysgen::Settings">
-<area shape="rect" id="node1" title=" " alt="" coords="916,449,1049,475"/>
+<area shape="rect" id="node1" title=" " alt="" coords="916,453,1049,479"/>
 <area shape="rect" id="node2" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="591,5,785,47"/>
 <area shape="rect" id="node3" href="$classlsysgen_1_1Settings2D.html" title=" " alt="" coords="613,318,763,345"/>
 <area shape="rect" id="node4" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="193,299,379,326"/>
 <area shape="rect" id="node5" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="205,156,367,197"/>
 <area shape="rect" id="node6" title=" " alt="" coords="243,395,329,422"/>
 <area shape="rect" id="node7" title=" " alt="" coords="5,388,144,429"/>
-<area shape="rect" id="node8" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="601,479,775,506"/>
-<area shape="rect" id="node9" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="591,531,785,572"/>
-<area shape="rect" id="node10" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="605,597,771,653"/>
-<area shape="rect" id="node11" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="597,677,779,719"/>
+<area shape="rect" id="node8" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="607,480,769,521"/>
+<area shape="rect" id="node9" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="601,546,775,573"/>
+<area shape="rect" id="node10" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="591,597,785,639"/>
+<area shape="rect" id="node11" href="$classlsysgen_1_1Setting.html" title=" " alt="" coords="605,663,771,719"/>
 </map>
