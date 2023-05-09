@@ -1,5 +1,7 @@
 <map id="lsysgen::Rule&lt; T &gt;" name="lsysgen::Rule&lt; T &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="364,51,511,77"/>
-<area shape="rect" id="node2" href="$classlsysgen_1_1ParseTreeNode.html" title=" " alt="" coords="11,10,273,51"/>
-<area shape="rect" id="node3" href="$classlsysgen_1_1ParseTreeNode.html" title=" " alt="" coords="5,75,279,117"/>
+<area shape="rect" id="node1" title=" " alt="" coords="565,78,712,105"/>
+<area shape="rect" id="node2" href="$classlsysgen_1_1TreeBranch.html" title=" " alt="" coords="207,5,480,47"/>
+<area shape="rect" id="node3" href="$classlsysgen_1_1TreeNode.html" title=" " alt="" coords="5,71,157,112"/>
+<area shape="rect" id="node4" href="$classlsysgen_1_1TreeLeaf.html" title=" " alt="" coords="217,71,469,112"/>
+<area shape="rect" id="node5" href="$classlsysgen_1_1TreeBranch.html" title=" " alt="" coords="212,136,475,177"/>
 </map>
