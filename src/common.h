@@ -7,6 +7,8 @@
 #include <vector>
 // #include <cstdint>
 // #include <random>
+#include <memory>
+#include <exception>
 
 
 #ifndef M_PI

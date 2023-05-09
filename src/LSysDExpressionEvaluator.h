@@ -19,7 +19,7 @@ class LSysDExpressionEvaluator: public LSysDParserBaseVisitor {
     
     ErrorHandler* eh;
     Operations* ops;
-    Scope* scope;
+    Scope * scope;
 
 public:
     // LSysDExpressionEvaluator(std::string const& filename, std::vector<std::string> const* sourceLines);
@@ -30,7 +30,7 @@ public:
 
     ErrorHandler * messages();
 
-    Value eval(LSysDParser::ExpressionContext* expr, Scope* scope);
+    Value eval(LSysDParser::ExpressionContext* expr, Scope * scope);
 
 private:
     std::any visitConstExpr(LSysDParser::ConstExprContext *ctx) override;

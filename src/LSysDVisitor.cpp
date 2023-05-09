@@ -9,7 +9,7 @@
 // #include <regex>
 
 
-// ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
+// TreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
 //     std::stringstream ss;
 //     ss << s;
 //     antlr4::ANTLRInputStream input(ss);
@@ -28,7 +28,7 @@
 //     Scope* childEnv = new Scope(this->scope);
 //     childEnv->set("i", 0);
 //     LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
-//     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
+//     TreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
 
 //     if (visitor.eh->failed()) {
 //         visitor.eg->dump();
@@ -47,7 +47,7 @@
 // }
 
 LSysDVisitor::LSysDVisitor(std::string_view inputFile, Settings const& settings, Scope * scope, StackTrace const* trace): 
-        module(nullptr), currentLSystem(nullptr), selectedLSystems(new std::list<LSystem<char> *>()), 
+        module(nullptr), currentLSystem(nullptr), selectedLSystems(new std::vector<LSystem<char> *>()), 
         currentTable(nullptr), parentNode(nullptr), currentScope(nullptr), baseScope(nullptr), 
         inputFile(inputFile), settings(settings), eh(nullptr) {
     this->eh = new ErrorHandler(inputFile, trace);
@@ -128,14 +128,14 @@ void LSysDVisitor::setAxiom() {
     LSysDParser * axiomParser = new LSysDParser(axiomTokens);
 
     antlr4::ParserRuleContext * axiomTree = axiomParser->mainWord();
-    // for (auto n : static_cast<LSysDParser::WordContext*>(axiomTree)->rItem())
-    //     std::cout << n->getText() << std::endl;
+    // for (auto n : static_cast<LSysDParser::WordContext *>(axiomTree)->rItem())
+    //     std::cerr << n->getText() << std::endl;
 
     if (axiomParser->getNumberOfSyntaxErrors() != 0)
         exit(1);
 
     currentLSystem->_axiom = 
-            std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>
+            std::any_cast<TreeBranch<InstanceNodeContent, char> *>
             (visit(axiomTree)); //, splitInLines(settings.axiom)));
 }
 
@@ -175,13 +175,13 @@ LSystem<char> * LSysDVisitor::createLSystem(std::string const& name) const {
 std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     module = createModule();
     if (module == nullptr)
-        return static_cast<std::list<LSystem<char> *> *>(nullptr);
+        return static_cast<std::vector<LSystem<char> *> *>(nullptr);
     currentScope = module->_scope;
     if (ctx->module()) {
         // Named L Systems(s)
         visitChildren(ctx);
         if (module->_lsystems.size() == 0 || eh->failed() || module->eh->failed())
-            return static_cast<std::list<LSystem<char> *> *>(nullptr);
+            return static_cast<std::vector<LSystem<char> *> *>(nullptr);
     } else {
         // Anonymous L System
         currentLSystem = createLSystem(module->_name);
@@ -205,7 +205,7 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
         if (settings.rules.isset())
             addRules();
         if (eh->failed() || module->eh->failed())
-            return static_cast<std::list<LSystem<char> *> *>(nullptr);
+            return static_cast<std::vector<LSystem<char> *> *>(nullptr);
         currentScope = currentScope->parent();
         // eh->traceDown(eh->trace(ctx->stop));
         currentLSystem->populateProperties(settings);
@@ -217,7 +217,7 @@ std::any LSysDVisitor::visitMain(LSysDParser::MainContext *ctx) {
     // setMainLSystem();
 
     if (eh->failed() || module->eh->failed())
-            return static_cast<std::list<LSystem<char> *> *>(nullptr);
+            return static_cast<std::vector<LSystem<char> *> *>(nullptr);
 
     return selectedLSystems;
 }
@@ -228,7 +228,7 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
     } else {
         module = createModule();
         if (module == nullptr)
-            return static_cast<std::list<LSystem<char> *> *>(nullptr);
+            return static_cast<std::vector<LSystem<char> *> *>(nullptr);
         currentScope = module->_scope;
         currentLSystem = createLSystem(module->_name);
         if (settings.lsystems.isset() && settings.lsystems.get().size() > 0)
@@ -237,7 +237,7 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
         selectedLSystems->push_back(currentLSystem);
         currentScope = currentLSystem->_scope;
         parseArgs();
-        currentLSystem->_axiom = std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>(visitWord(ctx->word()));
+        currentLSystem->_axiom = std::any_cast<TreeBranch<InstanceNodeContent, char> *>(visitWord(ctx->word()));
         // Ignores settings.axiom, assumes it has been already processed
         if (settings.rules.isset())
             addRules();
@@ -250,7 +250,7 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
 }
 
 std::any LSysDVisitor::visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) {
-    std::list<std::string> lsystems = settings.lsystems.get();
+    std::vector<std::string> lsystems = settings.lsystems.get();
     for (auto gdef : ctx->globalDef()) {
         if (gdef->lsystem()) {
             bool selected = false;
@@ -261,7 +261,7 @@ std::any LSysDVisitor::visitGlobalDefs(LSysDParser::GlobalDefsContext *ctx) {
                     selectedLSystems->push_back(lsys);
                     selected = true;
                 } else {
-                    std::list<std::string>::iterator it = std::find(lsystems.begin(), lsystems.end(), lsys->_name);
+                    std::vector<std::string>::iterator it = std::find(lsystems.begin(), lsystems.end(), lsys->_name);
                     if (it != lsystems.end()) {
                         selectedLSystems->push_back(lsys);
                         lsystems.erase(it);
@@ -339,7 +339,7 @@ std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
 
 std::any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
     if (currentLSystem->_axiom == nullptr) {
-        currentLSystem->_axiom = std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>(this->visitWord(ctx->word()));
+        currentLSystem->_axiom = std::any_cast<TreeBranch<InstanceNodeContent, char> *>(this->visitWord(ctx->word()));
     } else {
         eh->error("The axiom is already defined", eh->trace(ctx));
     }
@@ -352,11 +352,11 @@ std::any LSysDVisitor::visitConstDeclaration(LSysDParser::ConstDeclarationContex
         eh->error("'" + pname + "' is already defined", eh->trace(ctx->ID()));
     Value val = module->_evaluator->eval(ctx->expression(), currentScope);
     currentScope->set(pname, val); // TODO: must know it's a constant
-    // std::cout << "PROP" << std::endl;
-    // std::cout << (val.is<std::string*>()) << std::endl;
-    // std::cout << (val2.is<std::string*>()) << std::endl;
-    // std::cout << (currentScope->get(pname).is<std::string*>()) << std::endl;
-    // std::cout << *(std::any_cast<std::string*>(val2)) << std::endl;
+    // std::cerr << "PROP" << std::endl;
+    // std::cerr << (val.is<std::string*>()) << std::endl;
+    // std::cerr << (val2.is<std::string*>()) << std::endl;
+    // std::cerr << (currentScope->get(pname).is<std::string*>()) << std::endl;
+    // std::cerr << *(std::any_cast<std::string*>(val2)) << std::endl;
     return nullptr;
 }
 
@@ -386,8 +386,8 @@ std::any LSysDVisitor::visitFuncDef(LSysDParser::FuncDefContext *ctx) {
     std::string fname = ctx->ID()->getText();
     if (currentScope->thisHas(fname))
         eh->error("'" + fname + "' is already defined", eh->trace(ctx->ID()));
-    // LSysDParser::ExpressionContext* expr = ctx->expression();
-    std::list<Parameter*>* params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));
+    // LSysDParser::ExpressionContext * expr = ctx->expression();
+    std::vector<Parameter*> * params = std::any_cast<std::vector<Parameter *> *>(this->visitParams(ctx->params()));
     currentScope->set(fname, new Function(params, ctx->expression(), ctx));
     // currentScope->set(fname, new Function(params, ctx->block(), ctx));
     return nullptr;
@@ -468,13 +468,13 @@ std::any LSysDVisitor::visitRuleDef(LSysDParser::RuleDefContext *ctx) {
 
 
 template<class R> 
-R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx, 
-                            LSysDParser::WeightContext* weightCtx, 
-                            LSysDParser::LcontextContext* lctxCtx, 
-                            LSysDParser::LsideContext* lsideCtx, 
-                            LSysDParser::RcontextContext* rctxCtx, 
-                            LSysDParser::CondContext* condCtx, 
-                            LSysDParser::RsideContext* rsideCtx) {
+R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext * tagCtx, 
+                            LSysDParser::WeightContext * weightCtx, 
+                            LSysDParser::LcontextContext * lctxCtx, 
+                            LSysDParser::LsideContext * lsideCtx, 
+                            LSysDParser::RcontextContext * rctxCtx, 
+                            LSysDParser::CondContext * condCtx, 
+                            LSysDParser::RsideContext * rsideCtx) {
     // // Tag:
     // std::string tag;
     // if (tagCtx)
@@ -490,34 +490,34 @@ R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx,
         weight = Rule<char>::WEIGHT_UNSET;
 
     // Left context:
-    ParseTreeNode<LeftSideNodeContent, char>* lctx;
+    TreeBranch<LeftSideNodeContent, char> * lctx;
     if (lctxCtx)
-        lctx = std::any_cast<ParseTreeNode<LeftSideNodeContent, char> *>(this->visitLcontext(lctxCtx));
+        lctx = std::any_cast<TreeBranch<LeftSideNodeContent, char> *>(this->visitLcontext(lctxCtx));
     else
         lctx = nullptr;
 
-    // Left char:
-    ParseTreeNode<LeftSideNodeContent, char>* lnode = std::any_cast<ParseTreeNode<LeftSideNodeContent, char> *>(this->visitLside(lsideCtx));
+    // Left char: // bad any_cast
+    TreeLeaf<LeftSideNodeContent, char> * lnode = std::any_cast<TreeLeaf<LeftSideNodeContent, char> *>(this->visitLside(lsideCtx));
 
     // Right context:
-    ParseTreeNode<LeftSideNodeContent, char>* rctx;
+    TreeBranch<LeftSideNodeContent, char> * rctx;
     if (rctxCtx)
-        rctx = std::any_cast<ParseTreeNode<LeftSideNodeContent, char> *>(this->visitRcontext(rctxCtx));
+        rctx = std::any_cast<TreeBranch<LeftSideNodeContent, char> *>(this->visitRcontext(rctxCtx));
     else
         rctx = nullptr;
 
     // Condition:
-    LSysDParser::ExpressionContext* cond;
+    LSysDParser::ExpressionContext * cond;
     if (condCtx)
         cond = condCtx->expression();
     else
         cond = nullptr;
 
     // Right side:
-    ParseTreeNode<RightSideNodeContent, char>* rside = std::any_cast<ParseTreeNode<RightSideNodeContent, char> *>(this->visitRside(rsideCtx));
+    TreeBranch<RightSideNodeContent, char> * rside = std::any_cast<TreeBranch<RightSideNodeContent, char> *>(this->visitRside(rsideCtx));
 
     // Assemble rule:
-    R* rule = new R(weight, lctx, lnode, rctx, cond, rside);
+    R * rule = new R(weight, lctx, lnode, rctx, cond, rside);
 
     // if (tag != "")
     //     currentLSystem->_taggedRules[tag] = reinterpret_cast<Rule<char>*>(rule);
@@ -595,47 +595,50 @@ std::any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
 }
 
 std::any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
-    ParseTreeNode<LeftSideNodeContent, char>* parent = new ParseTreeNode<LeftSideNodeContent, char>();
-    this->parentNode = parent->asGeneric();
+    TreeBranch<LeftSideNodeContent, char> * parent = new TreeBranch<LeftSideNodeContent, char>();
+    this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(parent);
     this->visitLChar(ctx->lChar());
     this->parentNode = nullptr;
     if (parent->size() != 1)
         eh->error("the left side of the arrow (excluding contexts) must be of length 1", 
                 eh->trace(ctx->lChar()->validLeftChar()));
-    return parent->leftmostChild();
+    auto lChar = reinterpret_cast<TreeLeaf<LeftSideNodeContent, char> *>(parent->firstChild());
+    parent->prune();
+    delete parent;
+    return lChar;
 }
 
 std::any LSysDVisitor::visitLcontext(LSysDParser::LcontextContext *ctx) {
-    ParseTreeNode<LeftSideNodeContent, char>* parent = new ParseTreeNode<LeftSideNodeContent, char>();
-    this->parentNode = parent->asGeneric();
-    for (LSysDParser::LItemContext* lictx : ctx->lItem())
+    TreeBranch<LeftSideNodeContent, char> * parent = new TreeBranch<LeftSideNodeContent, char>();
+    this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(parent);
+    for (LSysDParser::LItemContext * lictx : ctx->lItem())
         this->visitLItem(lictx);
     this->parentNode = nullptr;
     return parent;
 }
 
 std::any LSysDVisitor::visitRcontext(LSysDParser::RcontextContext *ctx) {
-    ParseTreeNode<LeftSideNodeContent, char>* parent = new ParseTreeNode<LeftSideNodeContent, char>();
-    this->parentNode = parent->asGeneric();
-    for (LSysDParser::LItemContext* lictx : ctx->lItem())
+    TreeBranch<LeftSideNodeContent, char> * parent = new TreeBranch<LeftSideNodeContent, char>();
+    this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(parent);
+    for (LSysDParser::LItemContext * lictx : ctx->lItem())
         this->visitLItem(lictx);
     this->parentNode = nullptr;
     return parent;
 }
 
 std::any LSysDVisitor::visitRside(LSysDParser::RsideContext *ctx) {
-    ParseTreeNode<RightSideNodeContent, char>* parent = new ParseTreeNode<RightSideNodeContent, char>();
-    this->parentNode = parent->asGeneric();
-    for (LSysDParser::RItemContext* rictx : ctx->rItem())
+    TreeBranch<RightSideNodeContent, char> * parent = new TreeBranch<RightSideNodeContent, char>();
+    this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(parent);
+    for (LSysDParser::RItemContext * rictx : ctx->rItem())
         this->visitRItem(rictx);
     this->parentNode = nullptr;
     return parent;
 }
 
 std::any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
-    ParseTreeNode<InstanceNodeContent, char>* parent = new ParseTreeNode<InstanceNodeContent, char>();
-    this->parentNode = parent->asGeneric();
-    for (LSysDParser::RItemContext* rictx : ctx->rItem())
+    TreeBranch<InstanceNodeContent, char> * parent = new TreeBranch<InstanceNodeContent, char>();
+    this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(parent);
+    for (LSysDParser::RItemContext * rictx : ctx->rItem())
         this->visitRItem(rictx);
     this->parentNode = nullptr;
     return parent;
@@ -644,11 +647,13 @@ std::any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
 std::any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
     this->visitValidLeftChar(ctx->validLeftChar());
     if (ctx->params()) {
-        std::list<Parameter *> * params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));
-        ParseTreeNode<LeftSideNodeContent, char>* rgt = 
-                reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
-                    this->parentNode->rightmostChild());
-        rgt->content().params = params;
+        std::vector<Parameter *> * params = std::any_cast<std::vector<Parameter *> *>(this->visitParams(ctx->params()));
+        TreeLeaf<LeftSideNodeContent, char>* lft = 
+                reinterpret_cast<TreeLeaf<LeftSideNodeContent, char>*>(
+                    this->parentNode->lastChild());
+        lft->content().createParams();
+        lft->content().params()->swap(*params);
+        delete params;
     }
     return nullptr;
 }
@@ -657,19 +662,21 @@ std::any LSysDVisitor::visitLItem(LSysDParser::LItemContext *ctx) {
     if (ctx->validLeftChar()) {
         this->visitValidLeftChar(ctx->validLeftChar());
         if (ctx->params()) {
-            std::list<Parameter *> * params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));
-            ParseTreeNode<LeftSideNodeContent, char>* rgt = 
-                    reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
-                        this->parentNode->rightmostChild());
-            rgt->content().params = params;
+            auto params = std::any_cast<std::vector<Parameter *> *>(this->visitParams(ctx->params()));
+            TreeLeaf<LeftSideNodeContent, char> * lft = 
+                    reinterpret_cast<TreeLeaf<LeftSideNodeContent, char> *>(
+                        this->parentNode->lastChild());
+            lft->content().createParams();
+            lft->content().params()->swap(*params);
+            delete params;
         }
-    } else {
-        ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>();
-        this->parentNode->addChild(node->asGeneric());
-        this->parentNode = node->asGeneric();
-        for (LSysDParser::LItemContext* lictx : ctx->lItem())
+    } else { // ctx->lItem()
+        TreeBranch<LeftSideNodeContent, char> * node = new TreeBranch<LeftSideNodeContent, char>();
+        this->parentNode->addChild(reinterpret_cast<TreeBranch<NodeContent, char> *>(node));
+        this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(node);
+        for (LSysDParser::LItemContext * lictx : ctx->lItem())
             this->visitLItem(lictx);
-        this->parentNode = node->parent()->asGeneric();
+        this->parentNode = reinterpret_cast<TreeBranch<NodeContent, char> *>(node->parent());
     }
     return nullptr;
 }
@@ -678,38 +685,43 @@ std::any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
     if (ctx->validRightChar()) {
         this->visitValidRightChar(ctx->validRightChar());
         if (ctx->args()) {
-            std::list<LSysDParser::ExpressionContext *> * args = std::any_cast<std::list<LSysDParser::ExpressionContext *> *>(this->visitArgs(ctx->args()));
-            ParseTreeNode<NodeContent, char>* rgt = this->parentNode->rightmostChild();
+            auto args = std::any_cast<std::vector<LSysDParser::ExpressionContext *> *>(this->visitArgs(ctx->args()));
             if (!this->parentNode->isInstance()) {
-                reinterpret_cast<RightSideNodeContent<char>*>(&rgt->content())->args = args;
+                auto rgt = reinterpret_cast<TreeLeaf<RightSideNodeContent, char> *>(this->parentNode->lastChild());
+                rgt->content().createArgs();
+                rgt->content().args()->swap(*args);
             } else {
-                std::vector<Value>* values = new std::vector<Value>();
-                for (LSysDParser::ExpressionContext* exprctx : *args)
+                auto ins = reinterpret_cast<TreeLeaf<InstanceNodeContent, char> *>(this->parentNode->lastChild());
+                ins->content().createValues();
+                std::vector<Value> * values = ins->content().values();
+                values->reserve(args->size());
+                for (LSysDParser::ExpressionContext * exprctx : *args)
                     values->push_back(module->_evaluator->eval(exprctx, currentScope));
-                delete args;
-                reinterpret_cast<InstanceNodeContent<char>*>(&rgt->content())->values = values;
             }
+            delete args;
         }
-    } else {
-        ParseTreeNode<NodeContent, char>* node;
+    } else if (ctx->rItem().size() > 0) {
+        TreeBranch<NodeContent, char> * node;
         if (!this->parentNode->isInstance())
-            node = (new ParseTreeNode<RightSideNodeContent, char>())->asGeneric();
+            node = reinterpret_cast<TreeBranch<NodeContent, char> *>(new TreeBranch<RightSideNodeContent, char>());
+            // node = (new TreeBranch<RightSideNodeContent, char>())->asGeneric();
         else
-            node = (new ParseTreeNode<InstanceNodeContent, char>())->asGeneric();
+            node = reinterpret_cast<TreeBranch<NodeContent, char> *>(new TreeBranch<InstanceNodeContent, char>());
+            // node = (new TreeBranch<InstanceNodeContent, char>())->asGeneric();
         this->parentNode->addChild(node);
         this->parentNode = node;
-        for (LSysDParser::RItemContext* rictx : ctx->rItem())
+        for (LSysDParser::RItemContext * rictx : ctx->rItem())
             this->visitRItem(rictx);
         this->parentNode = node->parent();
-    }
+    } // else {} // block
     return nullptr;
 }
 
 std::any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) {
     std::string s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
     for (char c : s) {
-        ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>(c);
-        this->parentNode->addChild(node->asGeneric());
+        TreeLeaf<LeftSideNodeContent, char> * node = new TreeLeaf<LeftSideNodeContent, char>(c);
+        this->parentNode->addChild(reinterpret_cast<TreeLeaf<NodeContent, char> *>(node)); //->asGeneric());
     }
     return nullptr;
 }
@@ -720,11 +732,13 @@ std::any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharContext *c
     for (char c : s) {
         if (c == '_')
             eh->error("'_' (underscore) character is not valid for the right side of a rule or for an axiom", eh->trace(ctx));
-        ParseTreeNode<NodeContent, char>* node;
+        TreeLeaf<NodeContent, char> * node;
         if (!this->parentNode->isInstance())
-            node = (new ParseTreeNode<RightSideNodeContent, char>(c))->asGeneric();
+            node = reinterpret_cast<TreeLeaf<NodeContent, char> *>(new TreeLeaf<RightSideNodeContent, char>(c));
+            // node = (new TreeLeaf<RightSideNodeContent, char>(c))->asGeneric();
         else
-            node = (new ParseTreeNode<InstanceNodeContent, char>(c))->asGeneric();
+            node = reinterpret_cast<TreeLeaf<NodeContent, char> *>(new TreeLeaf<InstanceNodeContent, char>(c));
+            // node = (new TreeLeaf<InstanceNodeContent, char>(c))->asGeneric();
         this->parentNode->addChild(node);
         // ++pos;
     }
@@ -736,8 +750,9 @@ std::any LSysDVisitor::visitValidChar(LSysDParser::ValidCharContext *ctx) {
 }
 
 std::any LSysDVisitor::visitParams(LSysDParser::ParamsContext *ctx) {
-    std::list<Parameter *> * params = new std::list<Parameter *>();
-    for (LSysDParser::ParamContext* paramctx : ctx->param())
+    std::vector<Parameter *> * params = new std::vector<Parameter *>();
+    params->reserve(ctx->param().size());
+    for (LSysDParser::ParamContext * paramctx : ctx->param())
         params->push_back(std::any_cast<Parameter *>(this->visitParam(paramctx)));
     return params;
 }
@@ -751,8 +766,9 @@ std::any LSysDVisitor::visitCond(LSysDParser::CondContext *ctx) {
 }
 
 std::any LSysDVisitor::visitArgs(LSysDParser::ArgsContext *ctx) {
-    std::list<LSysDParser::ExpressionContext *> * args = new std::list<LSysDParser::ExpressionContext *>();
-    for (LSysDParser::ArgContext* argctx : ctx->arg())
+    std::vector<LSysDParser::ExpressionContext *> * args = new std::vector<LSysDParser::ExpressionContext *>();
+    args->reserve(ctx->arg().size());
+    for (LSysDParser::ArgContext * argctx : ctx->arg())
         args->push_back(std::any_cast<LSysDParser::ExpressionContext *>(this->visitArg(argctx)));
     return args;
 }

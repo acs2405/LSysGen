@@ -20,24 +20,29 @@ class InstanceNodeContent;
 
 #include "common.h"
 #include "LSysDParser.h"
+#include "TreeNode.h"
 #include "values.h"
-
-#include <string>
-#include <iostream>
-#include <list>
-#include <vector>
 
 
 namespace lsysgen {
 
 template<typename T>
 class NodeContent {
+private:
     const T _element;
 
-public:
+protected:
+    std::vector<void *> * _v;
+
+protected:
     NodeContent();
     NodeContent(T const& element);
     NodeContent(NodeContent<T> const& content);
+
+protected:
+    void createV();
+    std::vector<void *> * v();
+    std::vector<void *> const* v() const;
 
 public:
     virtual ~NodeContent();
@@ -49,12 +54,16 @@ public:
     virtual std::string toString() const;
 
     // virtual NodeContent<T>& operator=(NodeContent<T> const& p2);
+
+    friend TreeNode<NodeContent, T>;
+    friend TreeLeaf<NodeContent, T>;
+    friend TreeBranch<NodeContent, T>;
 };
 
 template<typename T>
 class LeftSideNodeContent : public NodeContent<T> {
 public:
-    std::list<Parameter *> * params;
+    // std::vector<Parameter *> * params;
 
     LeftSideNodeContent();
     LeftSideNodeContent(T const& element);
@@ -64,7 +73,11 @@ public:
 
     bool isInstance() const;
 
-    // void setParams(std::list<Parameter *> * params);
+    void createParams();
+    std::vector<Parameter *> * params();
+    std::vector<Parameter *> const* params() const;
+
+    // void setParams(std::vector<Parameter *> * params);
     // void setCond(LSysDParser::ExpressionContext * cond);
 
     // LeftSideNodeContent<T> copy() override;
@@ -77,7 +90,7 @@ public:
 template<typename T>
 class RightSideNodeContent : public NodeContent<T> {
 public:
-    std::list<LSysDParser::ExpressionContext *> * args;
+    // std::vector<LSysDParser::ExpressionContext *> * args;
 
     RightSideNodeContent();
     RightSideNodeContent(T const& element);
@@ -86,6 +99,10 @@ public:
     ~RightSideNodeContent();
 
     bool isInstance () const;
+
+    void createArgs();
+    std::vector<LSysDParser::ExpressionContext *> * args();
+    std::vector<LSysDParser::ExpressionContext *> const* args() const;
 
     // RightSideNodeContent<T> * copy() override;
 
@@ -99,7 +116,7 @@ public:
 template<typename T>
 class InstanceNodeContent : public NodeContent<T> {
 public:
-    std::vector<Value> * values;
+    // std::vector<Value> * values;
 
     InstanceNodeContent();
     InstanceNodeContent(T const& element);
@@ -109,11 +126,15 @@ public:
 
     bool isInstance() const;
 
+    void createValues();
+    std::vector<Value> * values();
+    std::vector<Value> const* values() const;
+
     // InstanceNodeContent<T> * copy() override;
 
     std::string toString() const override;
 
-    // InstanceNodeContent<T> * derive(Table<T> * table, std::list<T> * ignore=nullptr, Environment * env=nullptr);
+    // InstanceNodeContent<T> * derive(Table<T> * table, std::vector<T> * ignore=nullptr, Environment * env=nullptr);
 
     // InstanceNodeContent<T> & operator=(InstanceNodeContent<T> const& p2);
 };

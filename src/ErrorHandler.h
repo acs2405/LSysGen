@@ -15,7 +15,6 @@ class StackTrace;
 #include "antlr4-runtime.h"
 #include "ParserRuleContext.h"
 
-#include <list>
 // #include <vector>
 
 
@@ -69,10 +68,10 @@ public:
     static bool const terminalSupportsColors;
 
 private:
-    std::list<Message const*> _messages;
-    std::list<Message const*> _errors;
-    std::list<Message const*> _warnings;
-    std::list<Message const*> _notices;
+    std::vector<Message const*> _messages;
+    std::vector<Message const*> _errors;
+    std::vector<Message const*> _warnings;
+    std::vector<Message const*> _notices;
 
     bool _failed;
     bool _stdin;
@@ -111,10 +110,10 @@ public:
     bool fromStdin() const;
     // ErrorHandler::Format format() const;
 
-    std::list<Message const*> const& messages() const;
-    std::list<Message const*> const& errors() const;
-    std::list<Message const*> const& warnings() const;
-    std::list<Message const*> const& notices() const;
+    std::vector<Message const*> const& messages() const;
+    std::vector<Message const*> const& errors() const;
+    std::vector<Message const*> const& warnings() const;
+    std::vector<Message const*> const& notices() const;
 
     std::string const& fileName() const;
 };

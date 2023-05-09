@@ -116,10 +116,10 @@ bool ErrorHandler::failed () const {return _failed;}
 bool ErrorHandler::fromStdin() const {return _stdin;}
 // ErrorHandler::Format ErrorHandler::format() const {return _format;}
 
-std::list<Message const*> const& ErrorHandler::messages() const {return _messages;}
-std::list<Message const*> const& ErrorHandler::errors() const {return _errors;}
-std::list<Message const*> const& ErrorHandler::warnings() const {return _warnings;}
-std::list<Message const*> const& ErrorHandler::notices() const {return _notices;}
+std::vector<Message const*> const& ErrorHandler::messages() const {return _messages;}
+std::vector<Message const*> const& ErrorHandler::errors() const {return _errors;}
+std::vector<Message const*> const& ErrorHandler::warnings() const {return _warnings;}
+std::vector<Message const*> const& ErrorHandler::notices() const {return _notices;}
 
 std::string const& ErrorHandler::fileName() const {return _filename;}
 

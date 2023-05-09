@@ -12,11 +12,6 @@ class Table;
 #include "common.h"
 #include "Rule.h"
 
-#include <string>
-#include <iostream>
-#include <map>
-#include <list>
-
 
 namespace lsysgen {
 
@@ -26,7 +21,7 @@ public:
     const std::string name;
 
 private:
-    std::map<T, std::list<Rule<T> *> *> _rules;
+    std::map<T, std::vector<Rule<T> *> *> _rules;
 
 public:
     Table(std::string const& name);
@@ -37,7 +32,7 @@ public:
 
     void addRule(Rule<T> * r);
 
-    std::list<Rule<T> *> const* rulesFor(T c) const;
+    std::vector<Rule<T> *> const* rulesFor(T c) const;
 
     std::string toString() const;
 };

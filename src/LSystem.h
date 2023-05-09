@@ -11,7 +11,7 @@ class LSystem;
 
 #include "common.h"
 #include "Module.h"
-#include "ParseTreeNode.h"
+#include "TreeNode.h"
 #include "NodeContent.h"
 #include "Table.h"
 #include "Rule.h"
@@ -21,11 +21,6 @@ class LSystem;
 #include "Derivator.h"
 #include "Settings.h"
 // #include "misc.h"
-
-#include <string>
-#include <map>
-#include <list>
-#include <vector>
 
 namespace lsysgen {
 
@@ -44,21 +39,21 @@ class LSystem {
 
     std::string _name;
     std::map<std::string, Table<T> *> _tables;
-    // std::list<Table<T> *> * _tablesList;
+    // std::vector<Table<T> *> * _tablesList;
     Table<T> * _defaultTable;
     Table<T> * _codingRules;
     std::map<std::string, Rule<T> *> _taggedRules;
 
-    ParseTreeNode<InstanceNodeContent, T> * _axiom;
+    TreeBranch<InstanceNodeContent, T> * _axiom;
     int _iterations;
     Settings2D _settings2D;
-    std::list<T> * _ignore;
+    std::vector<T> * _ignore;
     Function * _tableFunc;
 
     // bool _main;
 
-    ParseTreeNode<InstanceNodeContent, T> * _lastWord;
-    std::vector<ParseTreeNode<InstanceNodeContent, T> *> _encodedProgression;
+    TreeBranch<InstanceNodeContent, T> * _lastWord;
+    std::vector<TreeBranch<InstanceNodeContent, T> *> _encodedProgression;
 
     ErrorHandler * eh;
     Derivator<T> derivator;
@@ -77,7 +72,7 @@ public:
 
     ~LSystem();
 
-    void setAxiom(ParseTreeNode<InstanceNodeContent, T> * axiom);
+    void setAxiom(TreeBranch<InstanceNodeContent, T> * axiom);
 
     ErrorHandler * messages();
     ErrorHandler const* messages() const;
@@ -90,7 +85,7 @@ public:
     void iterate(int iterations);
     Table<T> * getTable(int i);
 
-    ParseTreeNode<InstanceNodeContent, T> * current();
+    TreeBranch<InstanceNodeContent, T> * current();
     int iteration() const;
     std::uint_fast32_t seed() const;
     std::string const& name() const;

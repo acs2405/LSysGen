@@ -32,7 +32,7 @@ LSysDExpressionEvaluator::~LSysDExpressionEvaluator() {
 
 ErrorHandler * LSysDExpressionEvaluator::messages() {return eh;}
 
-Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope* sc) {
+Value LSysDExpressionEvaluator::eval(LSysDParser::ExpressionContext* expr, Scope * sc) {
     this->scope = sc;
     Value ret = std::any_cast<Value>(this->visit(expr));
     this->scope = nullptr;
@@ -125,7 +125,7 @@ std::any LSysDExpressionEvaluator::visitCmpBinaryExpr(LSysDParser::CmpBinaryExpr
 }
 
 std::any LSysDExpressionEvaluator::visitFunctionCallExpr(LSysDParser::FunctionCallExprContext *ctx) {
-    std::list<Value> * args = std::any_cast<std::list<Value> *>(this->visitArguments(ctx->arguments()));
+    std::vector<Value> * args = std::any_cast<std::vector<Value> *>(this->visitArguments(ctx->arguments()));
     Value vf = std::any_cast<Value>(this->visit(ctx->expression()));
     if (vf.isFunction()) {
         eh->traceDown(eh->trace(ctx, ctx, "called by:"));
@@ -215,7 +215,7 @@ std::any LSysDExpressionEvaluator::visitIfElseExpr(LSysDParser::IfElseExprContex
 }
 
 std::any LSysDExpressionEvaluator::visitArguments(LSysDParser::ArgumentsContext *ctx) {
-    std::list<Value>* args = new std::list<Value>();
+    std::vector<Value>* args = new std::vector<Value>();
     for (LSysDParser::ArgumentContext * argctx : ctx->argument())
         args->push_back(std::any_cast<Value>(this->visitArgument(argctx)));
     return args;

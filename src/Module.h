@@ -16,11 +16,6 @@ class Module;
 #include "values.h"
 // #include "Settings.h"
 
-#include <string>
-#include <iostream>
-#include <map>
-#include <list>
-
 namespace lsysgen {
 
 template<typename T>

@@ -101,7 +101,7 @@ template class Setting<float>;
 template class Setting<std::string>;
 template class Setting<Settings::InputMode>;
 template class Setting<Settings::RenderMode>;
-template class Setting<std::list<std::string>>;
+template class Setting<std::vector<std::string>>;
 template class Setting<std::map<std::string, std::string>>;
 
 }

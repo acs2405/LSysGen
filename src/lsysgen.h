@@ -12,10 +12,6 @@
 #include "Settings.h"
 // #include "Drawer2D.h"
 
-#include <string>
-#include <string_view>
-#include <iostream>
-
 
 
 // extern "C" const char* generateLSystemSVG(const char* file, int iterations=-1);
@@ -31,11 +27,11 @@ extern "C" int lsystem_get_number_of_errors(lsysgen::LSystem<char> * lsystem);
 extern "C" char const* lsystem_get_result_string(lsysgen::LSystem<char> * lsystem);
 extern "C" char const* lsystem_to_svg(lsysgen::LSystem<char> * lsystem);
 
-std::list<lsysgen::LSystem<char> *> * createLSystems(lsysgen::Settings const& settings);
+std::vector<lsysgen::LSystem<char> *> * createLSystems(lsysgen::Settings const& settings);
 
-std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& settings);
+std::vector<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& settings);
 
-std::list<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view inputFile, std::string_view lsdContents, lsysgen::Settings const& settings);
+std::vector<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view inputFile, std::string_view lsdContents, lsysgen::Settings const& settings);
 
-std::list<lsysgen::LSystem<char> *> * parseLSystemFromAxiom(std::string_view inputFile, std::string_view s_axiom, lsysgen::Settings const& settings);
+std::vector<lsysgen::LSystem<char> *> * parseLSystemFromAxiom(std::string_view inputFile, std::string_view s_axiom, lsysgen::Settings const& settings);
 

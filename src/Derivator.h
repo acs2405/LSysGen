@@ -10,16 +10,13 @@ class Derivator;
 }
 
 #include "common.h"
-#include "ParseTreeNode.h"
+#include "TreeNode.h"
 #include "NodeContent.h"
 #include "Table.h"
 #include "Rule.h"
 #include "values.h"
 #include "ErrorHandler.h"
 #include "misc.h"
-
-#include <list>
-#include <vector>
 
 namespace lsysgen {
 
@@ -29,19 +26,19 @@ class Derivator {
     LSysDExpressionEvaluator * evaluator;
     Random * _random;
 
-    bool checkSideContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, bool rightSide, std::list<T> const* ignore, Scope * paramMapping);
-    bool checkLeftContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping);
-    bool checkRightContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping);
-    ParseTreeNode<InstanceNodeContent, T> * evaluateRightNode(ParseTreeNode<RightSideNodeContent, T> const* node, Scope * paramMapping);
-    Scope * mapArgs(std::vector<Value> const* values, std::list<Parameter *> const* params, Scope * paramMapping);
-    Rule<T> const* chooseRule(std::list<Rule<T> *> const& rules);
+    bool checkSideContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, bool rightSide, std::vector<T> const& ignore, Scope * paramMapping);
+    bool checkLeftContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, std::vector<T> const& ignore, Scope * paramMapping);
+    bool checkRightContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, std::vector<T> const& ignore, Scope * paramMapping);
+    TreeNode<InstanceNodeContent, T> * evaluateRightNode(TreeNode<RightSideNodeContent, T> const* rightNode, Scope * paramMapping);
+    bool mapArgs(std::vector<Value> const* values, std::vector<Parameter *> const* params, Scope * paramMapping);
+    Rule<T> const* chooseRule(std::vector<Rule<T> *> const& rules);
 
 public:
 	Derivator(ErrorHandler * eh, LSysDExpressionEvaluator * ee, Random * rnd);
 
 	~Derivator();
 
-    ParseTreeNode<InstanceNodeContent, T> * derive(ParseTreeNode<InstanceNodeContent, T> const* node, Table<T> const* table, std::list<T> const* ignore=nullptr, Scope * scope=nullptr);
+    TreeBranch<InstanceNodeContent, T> * derive(TreeNode<InstanceNodeContent, T> const* node, Table<T> const& table, std::vector<T> const& ignore, Scope * scope=nullptr);
 
     Random * random();
     Random const* random() const;

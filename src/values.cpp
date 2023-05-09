@@ -15,12 +15,12 @@ bool operator==(Parameter const& p1, Parameter const& p2) {return p1.name == p2.
 
 
 
-Function::Function(std::list<Parameter *> * params, 
+Function::Function(std::vector<Parameter *> * params, 
             LSysDParser::ExpressionContext * expr, 
             antlr4::tree::ParseTree * ctx):
         _params(params), expr(expr), ctx(ctx) {}
 
-std::list<Parameter *> const* Function::params() const {return this->_params;}
+std::vector<Parameter *> const* Function::params() const {return this->_params;}
 
 std::string Function::toString() {
     std::string s = "(";
@@ -33,13 +33,13 @@ std::string Function::toString() {
     return s;
 }
 
-Value Function::call(std::list<Value> * args, Scope * scope, LSysDExpressionEvaluator * ee) {
+Value Function::call(std::vector<Value> * args, Scope * scope, LSysDExpressionEvaluator * ee) {
     Scope paramMapping(scope);
     if ((args == nullptr && this->_params != nullptr && this->_params->size() > 0) || 
         (args != nullptr && this->_params != nullptr && this->_params->size() != args->size()))
         return Value::error();
-    std::list<Parameter*>::iterator param;
-    std::list<Value>::iterator arg;
+    std::vector<Parameter*>::iterator param;
+    std::vector<Value>::iterator arg;
     for (param = this->_params->begin(), arg = args->begin();
             param != this->_params->end();
             ++param, ++arg)

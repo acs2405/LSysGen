@@ -17,9 +17,6 @@ class Scope;
 #include "LSysDExpressionEvaluator.h"
 #include "LSystem.h"
 
-#include <map>
-#include <list>
-
 
 namespace lsysgen {
 
@@ -37,15 +34,15 @@ bool operator==(Parameter const& p1, Parameter const& p2);
 
 
 class Function {
-    std::list<Parameter *> * _params;
+    std::vector<Parameter *> * _params;
     LSysDParser::ExpressionContext * expr;
     antlr4::tree::ParseTree * ctx;
 
 public:
-    Function(std::list<Parameter *> * params, LSysDParser::ExpressionContext * expr, antlr4::tree::ParseTree * ctx);
+    Function(std::vector<Parameter *> * params, LSysDParser::ExpressionContext * expr, antlr4::tree::ParseTree * ctx);
     std::string toString();
-    std::list<Parameter *> const* params() const;
-    Value call(std::list<Value> * args, Scope * scope, LSysDExpressionEvaluator * ee);
+    std::vector<Parameter *> const* params() const;
+    Value call(std::vector<Value> * args, Scope * scope, LSysDExpressionEvaluator * ee);
 };
 
 

@@ -35,7 +35,7 @@
  */
 
 lsysgen::LSystem<char> ** lsystem_create_from_settings(lsysgen::Settings const& settings) {
-    std::list<lsysgen::LSystem<char> *> * lsystems = createLSystems(settings);
+    std::vector<lsysgen::LSystem<char> *> * lsystems = createLSystems(settings);
 
     lsysgen::LSystem<char> ** ret = (lsysgen::LSystem<char> **)malloc(sizeof(lsysgen::LSystem<char> *) * lsystems->size());
 
@@ -97,13 +97,13 @@ char const* lsystem_to_svg(lsysgen::LSystem<char> * lsystem) {
 
 
 
-std::list<lsysgen::LSystem<char> *> * createLSystems(lsysgen::Settings const& settings) {
-    std::list<lsysgen::LSystem<char> *> * lsystems = parseLSystem(settings);
+std::vector<lsysgen::LSystem<char> *> * createLSystems(lsysgen::Settings const& settings) {
+    std::vector<lsysgen::LSystem<char> *> * lsystems = parseLSystem(settings);
 
     if (lsystems == nullptr)
         return nullptr;
 
-    std::list<lsysgen::LSystem<char> *> * ret = new std::list<lsysgen::LSystem<char> *>();
+    std::vector<lsysgen::LSystem<char> *> * ret = new std::vector<lsysgen::LSystem<char> *>();
 
     for (lsysgen::LSystem<char> * lsystem : *lsystems) {
         lsystem->prepare();
@@ -121,9 +121,9 @@ std::list<lsysgen::LSystem<char> *> * createLSystems(lsysgen::Settings const& se
     return ret;
 }
 
-std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& settings) {
+std::vector<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& settings) {
     if (settings.inputFiles.isset()) {
-        std::list<lsysgen::LSystem<char> *> * lsystems = new std::list<lsysgen::LSystem<char> *>();
+        std::vector<lsysgen::LSystem<char> *> * lsystems = new std::vector<lsysgen::LSystem<char> *>();
         for (std::string const& inputFile : settings.inputFiles.get()) {
             if (std::filesystem::is_directory(inputFile)) {
                 std::cerr << inputFile << " input file is a directory, not a source file" << std::endl;
@@ -134,7 +134,7 @@ std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& sett
                 std::cerr << "Input file '" << inputFile << "' does not exist." << std::endl;
                 exit(1);
             }
-            std::list<lsysgen::LSystem<char> *> * lsystems2;
+            std::vector<lsysgen::LSystem<char> *> * lsystems2;
             switch (settings.inputMode.get()) {
                 case Settings::InputMode::LSD:
                     if (getModuleName(inputFile, "lsd") == "") {
@@ -143,7 +143,8 @@ std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& sett
                     }
                     lsystems2 = parseLSystemFromString(inputFile, content, settings);
                     if (lsystems2 != nullptr) {
-                        lsystems->splice(lsystems->end(), *lsystems2);
+                        lsystems->reserve(lsystems->size() + lsystems2->size());
+                        lsystems->insert(lsystems->end(), lsystems2->begin(), lsystems2->end());
                         delete lsystems2;
                     }
                     break;
@@ -156,7 +157,8 @@ std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& sett
                         content = settings.axiom.get();
                     lsystems2 = parseLSystemFromAxiom(inputFile, content, settings);
                     if (lsystems2 != nullptr) {
-                        lsystems->splice(lsystems->end(), *lsystems2);
+                        lsystems->reserve(lsystems->size() + lsystems2->size());
+                        lsystems->insert(lsystems->end(), lsystems2->begin(), lsystems2->end());
                         delete lsystems2;
                     }
                     break;
@@ -173,7 +175,7 @@ std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& sett
     }
 }
 
-std::list<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view inputFile, std::string_view lsdContents, lsysgen::Settings const& settings) {
+std::vector<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view inputFile, std::string_view lsdContents, lsysgen::Settings const& settings) {
 
     antlr4::ANTLRInputStream * input = new antlr4::ANTLRInputStream(lsdContents);
     LSysDLexer * lexer = new LSysDLexer(input);
@@ -190,8 +192,8 @@ std::list<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view in
         exit(1);
 
     LSysDVisitor visitor(inputFile, settings);
-    std::list<lsysgen::LSystem<char> *> * lsystems = 
-            std::any_cast<std::list<lsysgen::LSystem<char> *> *>(visitor.visit(tree));
+    std::vector<lsysgen::LSystem<char> *> * lsystems = 
+            std::any_cast<std::vector<lsysgen::LSystem<char> *> *>(visitor.visit(tree));
 
     if (visitor.messages()->failed()) {
         visitor.messages()->dump();
@@ -201,7 +203,7 @@ std::list<lsysgen::LSystem<char> *> * parseLSystemFromString(std::string_view in
     return lsystems;
 }
 
-std::list<lsysgen::LSystem<char> *> * parseLSystemFromAxiom(std::string_view inputFile, std::string_view s_axiom, lsysgen::Settings const& settings) {
+std::vector<lsysgen::LSystem<char> *> * parseLSystemFromAxiom(std::string_view inputFile, std::string_view s_axiom, lsysgen::Settings const& settings) {
     antlr4::ANTLRInputStream * axiomInput = new antlr4::ANTLRInputStream(s_axiom);
     LSysDLexer * axiomLexer = new LSysDLexer(axiomInput);
 
@@ -217,8 +219,8 @@ std::list<lsysgen::LSystem<char> *> * parseLSystemFromAxiom(std::string_view inp
         exit(1);
 
     LSysDVisitor visitor(inputFile, settings);
-    std::list<lsysgen::LSystem<char> *> * lsystems = 
-            std::any_cast<std::list<lsysgen::LSystem<char> *> *>(visitor.visit(axiomTree));
+    std::vector<lsysgen::LSystem<char> *> * lsystems = 
+            std::any_cast<std::vector<lsysgen::LSystem<char> *> *>(visitor.visit(axiomTree));
 
     if (visitor.messages()->failed()) {
         visitor.messages()->dump();

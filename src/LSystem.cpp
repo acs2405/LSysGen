@@ -34,7 +34,7 @@ LSystem<T>::~LSystem() {
     // delete _tableFunc;
     delete _lastWord;
     _encodedProgression.clear();
-    // for (ParseTreeNode<InstanceNodeContent, T> * n : _encodedProgression)
+    // for (TreeBranch<InstanceNodeContent, T> * n : _encodedProgression)
     //     delete n;
     delete _scope;
     // if (_settings != Settings::DEFAULT)
@@ -42,7 +42,7 @@ LSystem<T>::~LSystem() {
 }
 
 template<typename T>
-void LSystem<T>::setAxiom(ParseTreeNode<InstanceNodeContent, T> * axiom) {
+void LSystem<T>::setAxiom(TreeBranch<InstanceNodeContent, T> * axiom) {
     this->_axiom = axiom;
 }
 
@@ -92,7 +92,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         } else if (!v.isError())
             eh->error("ignore property must be a string");
     }
-    this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
+    this->_ignore = new std::vector<char>(ignore.begin(), ignore.end());
     // seed
     std::uint_fast32_t seed = 1;
     if (settings.seed.isset() || !_scope->has("seed")) {
@@ -187,15 +187,15 @@ void LSystem<T>::prepare() {
         // auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         // srand(millis); // TODO: ¿esto lo uso para algo?
         if (this->_axiom == nullptr)
-            this->_axiom = new ParseTreeNode<InstanceNodeContent, T>();
+            this->_axiom = new TreeBranch<InstanceNodeContent, T>();
         if (this->_ignore == nullptr)
-            this->_ignore = new std::list<T>();
+            this->_ignore = new std::vector<T>();
         this->_current = 0;
         // this->_axiom = this->parser.parseWord(this->_axiom, this->_scope());
         this->_scope->set("i", 0);
         // this->_scope->set("r", 0.0);
         this->_lastWord = this->_axiom;  // seed
-        ParseTreeNode<InstanceNodeContent, T> * derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
+        TreeBranch<InstanceNodeContent, T> * derived = derivator.derive(_lastWord, *_codingRules, *_ignore, _scope);
         if (derived == nullptr)
             return;
         this->_encodedProgression.push_back(derived);
@@ -226,14 +226,14 @@ void LSystem<T>::iterate(int iterations) {
         // this->_scope->set("r", static_cast<double>(i)/(this->_iterations));
         // std::cout << "ROUND " << i << std::endl;
         // std::cout << this->_scope->get("i").asInt() << std::endl;
-        ParseTreeNode<InstanceNodeContent, T> * lastWord = this->_lastWord;
-        ParseTreeNode<InstanceNodeContent, T> * derived;
-        derived = derivator.derive(lastWord, table, _ignore, _scope);
+        TreeBranch<InstanceNodeContent, T> * lastWord = this->_lastWord;
+        TreeBranch<InstanceNodeContent, T> * derived;
+        derived = derivator.derive(lastWord, *table, *_ignore, _scope);
         if (derived == nullptr)
             return;
         this->_lastWord = derived;
         delete lastWord;
-        derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
+        derived = derivator.derive(_lastWord, *_codingRules, *_ignore, _scope);
         if (derived == nullptr)
             return;
         this->_encodedProgression.push_back(derived);
@@ -250,7 +250,7 @@ Table<T> * LSystem<T>::getTable(int i) {
     if (this->_tableFunc == nullptr)
         return this->_defaultTable;
     // std::cout << this->_tableFunc->toString() << std::endl;
-    Value val = this->_tableFunc->call(new std::list<Value> {Value(i)}, _scope, _module->evaluator());
+    Value val = this->_tableFunc->call(new std::vector<Value> {Value(i)}, _scope, _module->evaluator());
     if (val.isError())
         return nullptr;
     if (!val.isString()) {
@@ -267,7 +267,7 @@ Table<T> * LSystem<T>::getTable(int i) {
 }
 
 template<typename T>
-ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
+TreeBranch<InstanceNodeContent, T> * LSystem<T>::current() {
     if (_encodedProgression.size() > 0)
         return this->_encodedProgression.at(this->_current);
     else

@@ -90,7 +90,7 @@ Bounds2D::Bounds2D(): p0(), p1() {}
 
 
 std::string node2svg(
-        ParseTreeNode<InstanceNodeContent, char>* parent, 
+        TreeBranch<InstanceNodeContent, char>* parent, 
         LSystem<char>* lsystem) {
     State2D initialState;
     Bounds2D bounds;
@@ -150,35 +150,35 @@ std::string node2svg(
 }
 
 std::string node2svg(
-        ParseTreeNode<InstanceNodeContent, char>* parent, 
+        TreeBranch<InstanceNodeContent, char>* parent, 
         State2D& state, 
         Bounds2D &bounds, 
         LSystem<char>* lsystem) {
     std::string svgContent = "";
 
-    auto stack = new std::list<std::pair<State2D, ParseTreeNode<InstanceNodeContent, char>*>>();
+    auto stack = new std::vector<std::pair<State2D, TreeBranch<InstanceNodeContent, char>*>>();
     // glBegin(GL_POINTS);
-    ParseTreeNode<InstanceNodeContent, char>* node;
+    TreeNode<InstanceNodeContent, char>* node;
     std::vector<Value>* values;
     Value v[4];
     float move;
     bool endPath = false, inPath = false;
     // std::string command = "";
     // bool fill = false;
-    // std::list<Point2D>* fillList = new std::list<Point2D>();
+    // std::vector<Point2D>* fillList = new std::vector<Point2D>();
     bool draw = false, fill = false, drawn = false;
     float globalLineWidth = lsystem ? lsystem->settings2D().lineWidth.get() : Settings2D::DEFAULT_LINE_WIDTH;
     // float lineWidth = globalLineWidth;
     std::string element = "";
     char curve = 0;
     std::list<Point2D> curvePoints;
-    for (node = parent->leftmostChild();
+    for (node = parent->firstChild();
             node != nullptr;
-            node = node->right()) {
+            node = node->nextSibling()) {
         draw = false;
         move = 0.0;
         if (node->isLeaf()) {
-            values = node->content().values;
+            values = node->content().values();
             std::string fillstr, fillopstr;
             if (fill) {
                 fillstr = state.fillColor.rgb().toString();
@@ -473,8 +473,8 @@ std::string node2svg(
                 endPath = false;
                 drawn = false;
             }
-        } else {
-            stack->push_back(std::make_pair(state, node));
+        } else { // node->isBranch()
+            stack->push_back(std::make_pair(state, reinterpret_cast<TreeBranch<InstanceNodeContent, char> *>(node)));
         }
     }
     if (inPath && drawn) {

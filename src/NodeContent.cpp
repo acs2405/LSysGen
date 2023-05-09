@@ -12,13 +12,18 @@ std::string _elementToStr(std::string s) {return s;}
 
 template<typename T>
 NodeContent<T>::NodeContent():
-        _element(0) {}
+        _element(0), _v(nullptr) {}
 template<typename T>
 NodeContent<T>::NodeContent(T const& element):
-        _element(element) {}
+        _element(element), _v(nullptr) {}
 template<typename T>
 NodeContent<T>::NodeContent(NodeContent<T> const& content):
-        _element(content._element) {}
+        _element(content._element) {
+    if (content._v)
+        this->_v = new std::vector<void *>(*content._v);
+    else
+        this->_v = nullptr;
+}
 // template NodeContent<char>::NodeContent(NodeContent<char> * content);
 
 template<typename T>
@@ -30,6 +35,21 @@ T NodeContent<T>::element() const {return this->_element;}
 template<typename T>
 bool NodeContent<T>::isInstance() const {
     return false;
+}
+
+template<typename T>
+void NodeContent<T>::createV() {
+    assert(this->_v == nullptr);
+    this->_v = new std::vector<void *>();
+}
+
+template<typename T>
+std::vector<void *> * NodeContent<T>::v() {
+    return this->_v;
+}
+template<typename T>
+std::vector<void *> const* NodeContent<T>::v() const {
+    return this->_v;
 }
 
 // template<typename T>
@@ -49,30 +69,44 @@ std::string NodeContent<T>::toString() const {
 
 template<typename T>
 LeftSideNodeContent<T>::LeftSideNodeContent(): 
-        NodeContent<T>(), params(nullptr) {}
+        NodeContent<T>() {}
 template<typename T>
 LeftSideNodeContent<T>::LeftSideNodeContent(T const& element):
-        NodeContent<T>(element), params(nullptr) {}
+        NodeContent<T>(element) {}
 template<typename T>
 LeftSideNodeContent<T>::LeftSideNodeContent(LeftSideNodeContent<T> const& content):
-        NodeContent<T>(content.element()) {
-    if (content.params)
-        this->params = new std::list<Parameter *>(*content.params);
-    else
-        this->params = nullptr;
+        NodeContent<T>(content) {
+    // if (content.params)
+    //     this->params = new std::vector<Parameter *>(*content.params);
+    // else
+    //     this->params = nullptr;
 }
 
 template<typename T>
 LeftSideNodeContent<T>::~LeftSideNodeContent() {
     // if (this->params != nullptr) {
     //     this->params->clear();
-    delete this->params;
+    delete this->params();
     // }
 }
 
 template<typename T>
 bool LeftSideNodeContent<T>::isInstance() const {
     return false;
+}
+
+template<typename T>
+void LeftSideNodeContent<T>::createParams() {
+    this->createV();
+}
+
+template<typename T>
+std::vector<Parameter *> * LeftSideNodeContent<T>::params() {
+    return reinterpret_cast<std::vector<Parameter *> *>(this->_v);
+}
+template<typename T>
+std::vector<Parameter *> const* LeftSideNodeContent<T>::params() const {
+    return reinterpret_cast<std::vector<Parameter *> *>(this->_v);
 }
 
 // template<typename T>
@@ -86,10 +120,11 @@ bool LeftSideNodeContent<T>::isInstance() const {
 template<typename T>
 std::string LeftSideNodeContent<T>::toString() const {
     std::string ret;
-    if (this->params) {
+    if (this->params()) {
         ret += "(";
-        for (auto param = this->params->begin(); param != this->params->end(); ++param) {
-            if (param != this->params->begin())
+        // ret += *this->params() | std::views::transform([](auto& param) {return param->name;}) | std::views::join_with(", ");
+        for (auto param = this->params()->begin(); param != this->params()->end(); ++param) {
+            if (param != this->params()->begin())
                 ret += ",";
             ret += (*param)->name;
         }
@@ -109,22 +144,22 @@ std::string LeftSideNodeContent<T>::toString() const {
 
 template<typename T>
 RightSideNodeContent<T>::RightSideNodeContent(): 
-        NodeContent<T>(), args(nullptr) {}
+        NodeContent<T>() {}
 template<typename T>
 RightSideNodeContent<T>::RightSideNodeContent(T const& element):
-        NodeContent<T>(element), args(nullptr) {}
+        NodeContent<T>(element) {}
 template<typename T>
 RightSideNodeContent<T>::RightSideNodeContent(RightSideNodeContent<T> const& content):
-        NodeContent<T>(content.element()) {
-    if (content.args)
-        this->args = new std::list<LSysDParser::ExpressionContext *>(*content.args);
-    else
-        this->args = nullptr;
+        NodeContent<T>(content) {
+    // if (content.args)
+    //     this->args = new std::vector<LSysDParser::ExpressionContext *>(*content.args);
+    // else
+    //     this->args = nullptr;
 }
 
 template<typename T>
 RightSideNodeContent<T>::~RightSideNodeContent() {
-    delete this->args;
+    delete this->args();
 }
 
 template<typename T>
@@ -133,12 +168,27 @@ bool RightSideNodeContent<T>::isInstance() const {
 }
 
 template<typename T>
+void RightSideNodeContent<T>::createArgs() {
+    this->createV();
+}
+
+template<typename T>
+std::vector<LSysDParser::ExpressionContext *> * RightSideNodeContent<T>::args() {
+    return reinterpret_cast<std::vector<LSysDParser::ExpressionContext *> *>(this->_v);
+}
+template<typename T>
+std::vector<LSysDParser::ExpressionContext *> const* RightSideNodeContent<T>::args() const {
+    return reinterpret_cast<std::vector<LSysDParser::ExpressionContext *> *>(this->_v);
+}
+
+template<typename T>
 std::string RightSideNodeContent<T>::toString() const {
     std::string ret;
-    if (this->args) {
+    if (this->args()) {
         ret += "(";
-        for (auto arg = this->args->begin(); arg != this->args->end(); ++arg) {
-            if (arg != this->args->begin())
+        // ret += *this->args() | std::views::transform([](auto& arg) {return arg->getText();}) | std::views::join_with(", ");
+        for (auto arg = this->args()->begin(); arg != this->args()->end(); ++arg) {
+            if (arg != this->args()->begin())
                 ret += ",";
             ret += (*arg)->getText();
         }
@@ -157,17 +207,17 @@ std::string RightSideNodeContent<T>::toString() const {
 
 template<typename T>
 InstanceNodeContent<T>::InstanceNodeContent(): 
-        NodeContent<T>(), values(nullptr) {}
+        NodeContent<T>() {}
 template<typename T>
 InstanceNodeContent<T>::InstanceNodeContent(T const& element):
-        NodeContent<T>(element), values(nullptr) {}
+        NodeContent<T>(element) {}
 template<typename T>
 InstanceNodeContent<T>::InstanceNodeContent(InstanceNodeContent<T> const& content):
-        NodeContent<T>(content.element()) {
-    if (content.values)
-        this->values = new std::vector<Value>(*content.values);
-    else
-        this->values = nullptr;
+        NodeContent<T>(content) {
+    // if (content.values) {
+    //     this->values = new std::vector<Value>(*content.values);
+    // } else
+    //     this->values = nullptr;
 }
 
 template<typename T>
@@ -175,7 +225,7 @@ InstanceNodeContent<T>::~InstanceNodeContent() {
         // std::cerr << "HERE deleting node content of " << this->element() << std::endl;
         // std::cerr << values << std::endl;if(values!=nullptr)
         // std::cerr << values->size() << std::endl;
-    delete values;
+    delete this->values();
 }
 
 template<typename T>
@@ -184,12 +234,27 @@ bool InstanceNodeContent<T>::isInstance() const {
 }
 
 template<typename T>
+void InstanceNodeContent<T>::createValues() {
+    this->createV();
+}
+
+template<typename T>
+std::vector<Value> * InstanceNodeContent<T>::values() {
+    return reinterpret_cast<std::vector<Value> *>(this->_v);
+}
+template<typename T>
+std::vector<Value> const* InstanceNodeContent<T>::values() const {
+    return reinterpret_cast<std::vector<Value> *>(this->_v);
+}
+
+template<typename T>
 std::string InstanceNodeContent<T>::toString() const {
     std::string ret;
-    if (this->values) {
+    if (this->values()) {
         ret += "(";
-        for (auto value = this->values->begin(); value != this->values->end(); ++value) {
-            if (value != this->values->begin())
+        // ret += *this->values() | std::views::transform([](auto& v) {return v.toString();}) | std::views::join_with(", ");
+        for (auto value = this->values()->begin(); value != this->values()->end(); ++value) {
+            if (value != this->values()->begin())
                 ret += ",";
             ret += (*value).toString();
         }

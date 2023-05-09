@@ -15,22 +15,15 @@ class LSysDVisitor;
 #include "values.h"
 #include "Settings.h"
 
-#include <string>
-#include <string_view>
-#include <iostream>
-#include <map>
-#include <list>
-#include <vector>
-
 using namespace lsysgen;
 
 class LSysDVisitor: public LSysDParserBaseVisitor {
     Module<char> * module;
 
     LSystem<char> * currentLSystem;
-    std::list<LSystem<char> *> * selectedLSystems;
+    std::vector<LSystem<char> *> * selectedLSystems;
     Table<char> * currentTable;
-    ParseTreeNode<NodeContent, char> * parentNode;
+    TreeBranch<NodeContent, char> * parentNode;
     Scope * currentScope;
     Scope * baseScope;
 
@@ -60,13 +53,13 @@ public:
 
     ~LSysDVisitor();
 
-    // ParseTreeNode<InstanceNodeContent, char>* parseInstanceNode(std::string s);
+    // TreeNode<InstanceNodeContent, char>* parseInstanceNode(std::string s);
 
     ErrorHandler* messages();
 
     // LSystem<char> * createLSystem(std::string_view name);
     // void finishLSystem();
-    // void setAxiom(lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char> * axiom);
+    // void setAxiom(lsysgen::TreeBranch<lsysgen::InstanceNodeContent, char> * axiom);
     
     std::any visitMain(LSysDParser::MainContext *ctx) override;
     

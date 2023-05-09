@@ -12,9 +12,6 @@ class Operations;
 #include "values.h"
 #include "ErrorHandler.h"
 
-#include <string>
-#include <iostream>
-
 
 namespace lsysgen {
 

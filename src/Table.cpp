@@ -8,7 +8,7 @@ char wildcard() {return '_';}
 
 template<typename T>
 Table<T>::Table(std::string const& name): name(name), _rules() {
-    // this->_rules = new std::map<T, std::list<Rule<T> *> *>();
+    // this->_rules = new std::map<T, std::vector<Rule<T> *> *>();
 }
 
 template<typename T>
@@ -29,13 +29,13 @@ void Table<T>::addRule(Rule<T> * r) {
     if (l != _rules.end()) {
         ( *l).second->push_back(r);
     } else {
-        _rules.emplace(r->leftChar(), new std::list<Rule<T> *> {r});
+        _rules.emplace(r->leftChar(), new std::vector<Rule<T> *> {r});
     }
 }
 
 template<typename T>
-std::list<Rule<T> *> const* Table<T>::rulesFor(T c) const {
-    std::list<Rule<T> *> * ret = new std::list<Rule<T> *>();   
+std::vector<Rule<T> *> const* Table<T>::rulesFor(T c) const {
+    std::vector<Rule<T> *> * ret = new std::vector<Rule<T> *>();
     auto it1 = _rules.find(c);
     if (it1 != _rules.end())
         ret->insert(ret->end(), (*it1).second->begin(), (*it1).second->end());

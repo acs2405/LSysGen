@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::list<lsysgen::LSystem<char> *> * lsystems = createLSystems(settings);
+    std::vector<lsysgen::LSystem<char> *> * lsystems = createLSystems(settings);
 
     if (lsystems == nullptr)
         return 1;

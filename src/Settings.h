@@ -13,10 +13,6 @@
 
 #include "common.h"
 
-#include <map>
-#include <list>
-// #include <vector>
-
 namespace lsysgen {
 
 template<typename T>
@@ -94,10 +90,10 @@ public:
 
     static Settings              const DEFAULT;
 
-    Setting<std::list<std::string>> inputFiles;
+    Setting<std::vector<std::string>> inputFiles;
     Setting<std::string> outputResultFile;
     Setting<std::string> outputRenderFile;
-    Setting<std::list<std::string>> lsystems;
+    Setting<std::vector<std::string>> lsystems;
     Setting<std::string> axiom;
     Setting<Settings::RenderMode> renderMode;
     Setting<Settings::InputMode> inputMode;

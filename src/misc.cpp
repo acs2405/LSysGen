@@ -5,8 +5,8 @@
 // #include <utility>
 // #include <sstream>
 #include <chrono>
-#include <list>
 #include <fstream>
+#include <cstring>
 
 
 namespace lsysgen {
@@ -95,7 +95,7 @@ std::string getModuleName(std::string const& filename, std::string const& ext) {
 bool terminalSupportsColors() {
     char const* env_term = std::getenv("TERM");
     if(env_term != nullptr) {
-        const std::list<std::string> terms {"xterm",  "xterm-256", "xterm-256color",
+        const std::vector<std::string> terms {"xterm",  "xterm-256", "xterm-256color",
                                          "vt100",  "color",     "ansi",
                                          "cygwin", "linux"};
         return std::find(terms.begin(), terms.end(), env_term) != terms.end();
