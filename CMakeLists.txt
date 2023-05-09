@@ -47,6 +47,12 @@ set(ANTLR4_ZIP_REPOSITORY https://github.com/antlr/antlr4/archive/refs/tags/4.12
 include(ExternalAntlr4Cpp)
 # add antrl4cpp artifacts to project environment
 
+# For useful backtraces (with function names), but only in Debug mode
+if(CMAKE_BUILD_TYPE STREQUAL Debug)
+  # add_link_options(-rdynamic)
+  set(CMAKE_ENABLE_EXPORTS TRUE)
+endif()
+
 # Add libraries:
 add_library(lsysantlr OBJECT) # OBJECT does not create a library file
 add_library(lsysgen STATIC) # SHARED or STATIC (or OBJECT)

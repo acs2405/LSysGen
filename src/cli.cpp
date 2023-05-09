@@ -9,10 +9,52 @@
 #include "misc.h"
 
 #include <filesystem>
+#include <csignal>
 
+static std::map<int, std::string> signames {
+    {SIGTERM, "SIGTERM"},
+    {SIGSEGV, "SIGSEGV"},
+    {SIGINT, "SIGINT"},
+    {SIGILL, "SIGILL"},
+    {SIGABRT, "SIGABRT"},
+    {SIGFPE, "SIGFPE"}
+};
+
+#ifndef NDEBUG
+#ifdef __linux__
+#include <execinfo.h>
+void handler(int sig) {
+    size_t const max_size = 64;
+    void * array[max_size];
+    size_t size;
+
+    // get void*'s for all entries on the stack
+    size = backtrace(array, max_size);
+
+    // print out all the frames to stderr
+    fprintf(stderr, "Signal %d (%s):\n", sig, signames[sig].c_str());
+    backtrace_symbols_fd(array, size, STDERR_FILENO);
+    exit(1);
+}
+#endif
+#endif
+
+void handle_signals() {
+    #ifndef NDEBUG
+    #ifdef __linux__
+    signal(SIGTERM, handler);
+    signal(SIGSEGV, handler);
+    signal(SIGINT, handler);
+    signal(SIGILL, handler);
+    signal(SIGABRT, handler);
+    signal(SIGFPE, handler);
+    #endif
+    #endif
+}
 
 
 int main(int argc, char** argv) {
+    handle_signals();
 
     Settings settings;
 
