@@ -45,6 +45,13 @@ public:
     TreeNode ();
     TreeNode (T const& element);
     TreeNode (T const& element, int type);
+    /*
+     * Branch constructor with one element.
+     */
+    TreeNode (TreeNode * node);
+    /*
+     * Copy constructor, except it doesn't copy children.
+     */
     TreeNode (TreeNode<C,T> const& n);
 
     ~TreeNode ();
@@ -87,7 +94,7 @@ public:
     size_t siblingNo() const;
     size_t size() const;
 
-    TreeNode<C,T> * encapsulate();
+    // TreeNode<C,T> * encapsulate();
 
     // virtual std::string elementToString();
     std::string toString(TreeNode<C,T> const* markNode=nullptr) const;

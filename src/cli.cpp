@@ -96,6 +96,13 @@ int main(int argc, char** argv) {
     if (lsystems->size() == 0)
         return 1;
 
+    if (settings.seed.isset()) {
+        if (settings.seed.get() >= 0)
+            std::cerr << "USING SEED " << std::to_string(lsystems->front()->seed()) << std::endl;
+        else
+            std::cerr << "USING RANDOM SEED" << std::endl;
+    }
+
     for (lsysgen::LSystem<char> * lsystem : *lsystems) {
 
         if (lsystem == nullptr)

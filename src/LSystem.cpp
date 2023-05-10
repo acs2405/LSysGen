@@ -110,8 +110,6 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         } else if (!v.isError())
             eh->error("seed property must be a integer number");
     }
-    if (settings.seed.isset())
-        std::cerr << "USING SEED " << std::to_string(seed) << std::endl;
     this->derivator.random()->seed(seed);
     // 2D settings:
     this->_settings2D = settings.settings2D;

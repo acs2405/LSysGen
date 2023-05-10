@@ -15,7 +15,10 @@ template<typename T>
 Derivator<T>::~Derivator() {}
 
 template<typename T>
-TreeNode<InstanceNodeContent, T> * Derivator<T>::derive(TreeNode<InstanceNodeContent, T> const* node, Table<T> const* table, std::list<T> const* ignore, Scope * scope) {
+TreeNode<InstanceNodeContent, T> * Derivator<T>::derive(TreeNode<InstanceNodeContent, T> const* node, 
+        Table<T> const* table, 
+        std::list<T> const* ignore, 
+        Scope * scope) {
     // std::cerr << "Deriving " << node->toStringWithContext() << std::endl;
     if (node->isLeaf()) {
         std::list<Rule<T> *> const* candidateRules = table->rulesFor(node->element());
@@ -63,18 +66,20 @@ TreeNode<InstanceNodeContent, T> * Derivator<T>::derive(TreeNode<InstanceNodeCon
             if (ret == nullptr)
                 return nullptr;
         } else {
-            ret = new TreeNode<InstanceNodeContent, T>(*node);
-            ret = ret->encapsulate();
+            ret = new TreeNode<InstanceNodeContent, T>(*node); // Copy constructor
+            ret = new TreeNode<InstanceNodeContent, T>(ret); // Branch with one element constructor
         }
         return ret;
-    } else {
+    } else { // if (node->isBranch()) {
         TreeNode<InstanceNodeContent, T> * replacement = new TreeNode<InstanceNodeContent, T>();
         for (TreeNode<InstanceNodeContent, T> * child = node->leftmostChild(); 
                 child != nullptr; 
                 child = child->right()) {
             TreeNode<InstanceNodeContent, T> * encapsulatedChildReplacement = derive(child, table, ignore, scope);
-            if (encapsulatedChildReplacement == nullptr)
+            if (encapsulatedChildReplacement == nullptr) {
+                delete replacement;
                 return nullptr;
+            }
             for (TreeNode<InstanceNodeContent, T> * child2 = encapsulatedChildReplacement->leftmostChild(); 
                     child2 != nullptr; 
                     child2 = child2->right())
@@ -82,42 +87,57 @@ TreeNode<InstanceNodeContent, T> * Derivator<T>::derive(TreeNode<InstanceNodeCon
             encapsulatedChildReplacement->prune();
             delete encapsulatedChildReplacement;
         }
-        return node->isRoot() ? replacement : replacement->encapsulate();
+        return node->isRoot() ? replacement : new TreeNode<InstanceNodeContent, T>(replacement);
     }
 }
 
 template<typename T>
-bool Derivator<T>::checkSideContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, bool rightSide, std::list<T> const* ignore, Scope * paramMapping) {
+bool Derivator<T>::checkSideContext(TreeNode<LeftSideNodeContent, T> * contextNode, 
+        TreeNode<InstanceNodeContent, T> * instanceNode, 
+        bool rightSide, 
+        std::list<T> const* ignore, 
+        Scope * paramMapping) {
+    assert(paramMapping != nullptr);
+    // Always true when there is no context to compare
     if (contextNode == nullptr)
         return true;
+    // Always false when there are no instance nodes to compare
     if (instanceNode == nullptr)
         return false;
     TreeNode<LeftSideNodeContent, T> * ctxNode;
     TreeNode<InstanceNodeContent, T> * insNode;
+    // Compare nodes one by one searching for any incompatibility until last ctxNode
     for (ctxNode = contextNode, insNode = instanceNode; 
              ctxNode != nullptr; 
              ctxNode = rightSide ? contextNode->right() : contextNode->left(),
              insNode = rightSide ? instanceNode->right() : instanceNode->nextLeft()) {
+        // Return false if insNode ends before ctxNode
         if (insNode == nullptr)
             return false;
         if (ctxNode->isLeaf()) {
+            // Jump to next leaf insNode (ignore branches and ignored characters)
             while (insNode->isBranch() || 
                     std::find(ignore->begin(), ignore->end(), insNode->element()) != ignore->end()) {
                 insNode = rightSide ? insNode->right() : insNode->nextLeft();
                 if (insNode == nullptr)
                     return false;
             }
+            // Return false if insLeaf char is incompatible with ctxLeaf char
             if (ctxNode->element() != insNode->element() || ctxNode->element() == '_')
                 return false;
-        } else if (ctxNode->isBranch()) {
+            // Return false if insLeaf arity doesn't match ctxLeaf arity
+            if (this->mapArgs(insNode->content().values, ctxNode->content().params, paramMapping) == nullptr)
+                return false;
+        } else { // if (ctxNode->isBranch()) {
+            // Return false if insNode is not another branch
             if (!insNode->isBranch())
                 return false;
+            // Compare both branches from left to right
             if (!this->checkRightContext(ctxNode->leftmostChild(), insNode->leftmostChild(), ignore, paramMapping))
                 return false;
         }
     }
-    if (this->mapArgs(instanceNode->content().values, contextNode->content().params, paramMapping) == nullptr)
-        return false;
+    // If the for loop didn't find incompatibilities, this side context matches
     return true;
 }
 
@@ -141,19 +161,23 @@ TreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(TreeNode<Righ
                 Value ret = evaluator->eval(arg, paramMapping);
                 if (evaluator->messages()->failed()) {
                     evaluator->messages()->dump();
+                    delete values;
+                    delete instanceNode;
                     return nullptr;
                 }
                 values->push_back(ret);
             }
             instanceNode->content().values = values;
         }
-    } else {
+    } else { // if (node->isBranch()) {
         for (TreeNode<RightSideNodeContent, T> * child = node->leftmostChild();
                 child != nullptr;
                 child = child->right()) {
             TreeNode<InstanceNodeContent, T> * childInstanceNode = this->evaluateRightNode(child, paramMapping);
-            if (childInstanceNode == nullptr)
+            if (childInstanceNode == nullptr) {
+                delete instanceNode;
                 return nullptr;
+            }
             instanceNode->addChild(childInstanceNode);
         }
     }

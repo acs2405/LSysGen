@@ -27,6 +27,14 @@ TreeNode<C,T>::TreeNode(T const& element, int type):
         _content(new C<T>(element)), _type(type),
         _parent(nullptr), _left(nullptr), _right(nullptr), _leftmostChild(nullptr), _rightmostChild(nullptr) {}
 template<template<typename> typename C, typename T>
+TreeNode<C,T>::TreeNode(TreeNode<C,T> * node): 
+        _content(new C<T>()), _type(TreeNode::TYPE_BRANCH),
+        _parent(nullptr), _left(nullptr), _right(nullptr), _leftmostChild(node), _rightmostChild(node) {
+    node->_parent = this;
+    node->_left = nullptr;
+    node->_right = nullptr;
+}
+template<template<typename> typename C, typename T>
 TreeNode<C,T>::TreeNode(TreeNode<C,T> const& n): 
         _content(new C<T>(*n._content)), _type(n._type),
         _parent(nullptr), _left(nullptr), _right(nullptr), _leftmostChild(nullptr), _rightmostChild(nullptr) {}
@@ -44,9 +52,13 @@ TreeNode<C,T>::~TreeNode() {
 template<template<typename> typename C, typename T>
 void TreeNode<C,T>::addChild(TreeNode<C,T> * child) {
     child->_parent = this;
+    // child->_left = this->_rightmostChild;
+    // child->_right = nullptr;
     if (this->_leftmostChild == nullptr)
+        // this is empty
         this->_leftmostChild = child;
     else {
+        // this has elements
         this->_rightmostChild->_right = child;
         child->_left = this->_rightmostChild;
     }
@@ -149,12 +161,12 @@ size_t TreeNode<C,T>::size() const {
     return size;
 }
 
-template<template<typename> typename C, typename T>
-TreeNode<C,T> * TreeNode<C,T>::encapsulate() {
-    TreeNode<C,T> * node = new TreeNode<C,T>();
-    node->addChild(this);
-    return node;
-}
+// template<template<typename> typename C, typename T>
+// TreeNode<C,T> * TreeNode<C,T>::encapsulate() {
+//     TreeNode<C,T> * node = new TreeNode<C,T>();
+//     node->addChild(this);
+//     return node;
+// }
 
 // Returns the string representing this node and, if it's a branch, its children.
 // Marks itself with angle brackets (<>) when markNode is equal to this.
