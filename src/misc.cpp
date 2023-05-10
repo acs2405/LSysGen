@@ -7,6 +7,7 @@
 #include <chrono>
 #include <list>
 #include <fstream>
+#include <cstring>
 
 
 namespace lsysgen {
