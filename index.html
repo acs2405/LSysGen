@@ -68,7 +68,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md__home_runner_work_LSysGen_LSysGen_README"></a> This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see <code>Syntax and semantics</code>) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL <code>*.lsd</code> files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see <code>2D rendering</code>). Example:</p>
-<div class="fragment"><div class="line">lsys -a &quot;A&quot; -r &quot;A-&gt;F(1.0)[+A][-A]; F(x)-&gt;F(x*1.6)&quot; -H 90 -R 60 -C &quot;#f00&quot; -W 2 -i 11 --svg - -w 1000 | display</div>
+<div class="fragment"><div class="line">lsys -a &quot;A&quot; -r &quot;A-&gt;F(1.0)[+A][-A]; F(x)-&gt;F(x*1.6)&quot; -H 90 -R 60 -C &quot;#f00&quot; -W 2 -i 11 -o svg -w 1000 | display</div>
 </div><!-- fragment --><p>Shows:</p>
 <p><img src="tree1.svg" alt="" style="pointer-events: none;" class="inline" title="Penrose tiling"/></p>
 <p>An L system or Lindenmayer system is a parallel rewriting system and a type of formal grammar. An L-system consists of an alphabet of symbols that can be used to make strings, a collection of production rules that expand each symbol into some larger string of symbols, an initial "axiom" string from which to begin construction, and a mechanism for translating the generated strings into geometric structures.</p>
@@ -102,7 +102,7 @@ Example L Systems (generated with the program)</h1>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">}</div>
-</div><!-- fragment --><p>Executing the program with this file (<code>lsys examples/Dragon.lsd --svg - | display</code>) generates:</p>
+</div><!-- fragment --><p>Executing the program with this file (<code>lsys examples/Dragon.lsd -o svg | display</code>) generates:</p>
 <p><img src="DragonCurve.svg" alt="" style="pointer-events: none;" class="inline" title="Dragon curve"/></p>
 <h2><a class="anchor" id="autotoc_md3"></a>
 Other examples</h2>
@@ -120,7 +120,7 @@ The program</h1>
 Build</h2>
 <h3><a class="anchor" id="autotoc_md6"></a>
 Ubuntu/Debian</h3>
-<p>This program uses <code>ANTLR 4.12.0</code> and <code>CMake (&gt;=3.16)</code>. ANTLR4 will later be installed and linked with the <code>make</code> command automatically. <code>imagemagick</code> is not needed for the program tobuild or run, it justs provides the <code>display</code> command to be able to easily display SVG outputs in the command line (e.g. <code>./lsys (...) -svg - | display</code>). To install our dependencies:</p>
+<p>This program uses <code>ANTLR 4.12.0</code> and <code>CMake (&gt;=3.16)</code>. ANTLR4 will later be installed and linked with the <code>make</code> command automatically. <code>imagemagick</code> is not needed for the program tobuild or run, it justs provides the <code>display</code> command to be able to easily display SVG outputs in the command line (e.g. <code>./lsys (...) -o svg | display</code>). To install our dependencies:</p>
 <div class="fragment"><div class="line">sudo apt install g++ cmake imagemagick</div>
 </div><!-- fragment --><p>If you want to modify grammar files, you will need <code>Java 11</code> for <code>make</code> to generate C++ outputs automatically with the ANTLR jar file. In this case, also run:</p>
 <div class="fragment"><div class="line">sudo apt install default-jre</div>
@@ -162,7 +162,7 @@ Ubuntu/Debian</h3>
 </div><!-- fragment --><p>This will create our documentation HTML files in <code>build/docs/doxygen/html</code>.</p>
 <h2><a class="anchor" id="autotoc_md12"></a>
 Execution</h2>
-<p>This project has two elements for processing L Systems: an executable and a library. The library (<code>lsysgen</code>) provides access to functions to manage our L Systems, Modules and read LSDL files. The executable (<code>lsys</code>) provides many options to create, customize and run your L Systems with command line arguments. The <code>--svg</code> option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see <code>2D rendering</code>).</p>
+<p>This project has two elements for processing L Systems: an executable and a library. The library (<code>lsysgen</code>) provides access to functions to manage our L Systems, Modules and read LSDL files. The executable (<code>lsys</code>) provides many options to create, customize and run your L Systems with command line arguments. The <code>-o svg</code> option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see <code>2D rendering</code>).</p>
 <p>To execute the <code>lsys</code> program, go to <code>build/</code> and run either of:</p>
 <div class="fragment"><div class="line">./lsys INPUT_FILE... [OPTIONS]</div>
 <div class="line">./lsys -a AXIOM [OPTIONS]</div>
@@ -172,8 +172,7 @@ Execution</h2>
 <li><code>-a AXIOM</code>: sets or overrides the axiom. <code>AXIOM</code> should be quoted.</li>
 <li><code>-r RULES</code>: adds rules to the L System. <code>RULES</code> must be quoted.</li>
 <li><code>-l NAME...</code>, <code>--all</code>: selects the L System(s) that will be displayed from the source file (when there are more than one in the same LSD file). <code>--all</code> selects all of them.</li>
-<li><code>-o OUTPUT_RESULT_FILE</code>: outputs the result string of the L System iterations. If <code>OUTPUT_RESULT_FILE</code> is set to a directory, a <code>FILE.txt</code> will be created inside that directory for every L System that has been selected (replacing <code>FILE</code> by the name of the L System). If is set to <code>-</code>, the program will print the result in the standard output.</li>
-<li><code>--svg [OUTPUT_SVG_FILE]</code>: outputs a SVG image after the L System result. If <code>OUTPUT_SVG_FILE</code> is set to a directory, a <code>FILE.svg</code> will be created inside that directory for every L System that has been selected (replacing <code>FILE</code> by the name of the L System). If <code>OUTPUT_SVG_FILE</code> is not set or set to <code>-</code>, the program will print the SVG in the standard output.</li>
+<li><code>-o FORMAT [OUTPUT_FILE]</code>: outputs the result of the L System iterations as some <code>FORMAT</code>. If <code>OUTPUT_FILE</code> is set to a directory, a <code>FILE.EXT</code> will be created inside that directory for every L System that has been selected (replacing <code>FILE</code> by the name of the L System and <code>EXT</code> by the format extension). If <code>OUTPUT_FILE</code> is not set or set to <code>-</code>, the program will print the result in the standard output. The two currently supported formats are <code>str</code> and <code>svg</code>.</li>
 </ul>
 <p>Run <code>./lsys --help</code> to see all options.</p>
 <p>Examples:</p>
@@ -182,13 +181,13 @@ Execution</h2>
 </div><!-- fragment --><p>Output:</p>
 <div class="fragment"><div class="line">ABBABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBAB</div>
 </div><!-- fragment --><p>L System from LSDL file (ImageMagick's <code>display</code> opens a window that displays the SVG image output):</p>
-<div class="fragment"><div class="line">./lsys ../examples/tests.lsd -l Test1 --svg - | display</div>
+<div class="fragment"><div class="line">./lsys ../examples/tests.lsd -l Test1 -o svg - | display</div>
 </div><!-- fragment --><p>Output:</p>
 <p><img src="Test1.svg" alt="" style="pointer-events: none;" class="inline" title="Test1 image"/></p>
 <p>Other examples:</p>
-<div class="fragment"><div class="line">./lsys ../examples/Hilbert.lsd --svg -i 4 | display</div>
-<div class="line">./lsys ../examples/B2.lsd -i 20 --svg B2-20.svg</div>
-<div class="line">./lsys ../examples/classics.lsd --all --svg ../images</div>
+<div class="fragment"><div class="line">./lsys ../examples/Hilbert.lsd -o svg -i 4 | display</div>
+<div class="line">./lsys ../examples/B2.lsd -i 20 -o svg B2-20.svg</div>
+<div class="line">./lsys ../examples/classics.lsd --all -o svg ../images</div>
 </div><!-- fragment --><p>There is also a small Python module, <code>lsys.py</code>, that uses the <code>lsysgen</code> library and serves as a Python wrapper for the library (through its class <code>LSystem</code> that is able to print the L system and also its 2D render). This python script is also runnable and prints the resulting L system string and the SVG image:</p>
 <div class="fragment"><div class="line">python lsys.py INPUT_FILE [N_ITERATIONS]</div>
 </div><!-- fragment --><h1><a class="anchor" id="autotoc_md13"></a>
@@ -197,7 +196,7 @@ LSDL Syntax and semantics</h1>
 Document structure</h2>
 <p>To define an L system with an axiom and the rules that transform it, I have created the LSDL (L System Defining Language) specific purpose language.</p>
 <p>In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:</p>
-<div class="fragment"><div class="line">./build/lsys -a &quot;F+F+PF+F+F+Fp+F+F&quot; -F &quot;#FF0000&quot; -R 30 --svg images/test.svg</div>
+<div class="fragment"><div class="line">./build/lsys -a &quot;F+F+PF+F+F+Fp+F+F&quot; -F &quot;#FF0000&quot; -R 30 -o svg images/test.svg</div>
 </div><!-- fragment --><p>But this is not the main case. If we want to <em>generate</em> the L system, we create an LSDL document for it or tweak the program's parameters (<code>-r</code> to add rules, etc.).</p>
 <p>The LSDL document consists on a series of definitions inside a name:</p>
 <div class="fragment"><div class="line">lsystem Name {</div>
@@ -227,7 +226,7 @@ Document structure</h2>
 <div class="line"> </div>
 <div class="line">}</div>
 </div><!-- fragment --><p>If we run:</p>
-<div class="fragment"><div class="line">./build/lsys examples/Sierpinski.lsd -l SierpinskiTriangle --svg - | display</div>
+<div class="fragment"><div class="line">./build/lsys examples/Sierpinski.lsd -l SierpinskiTriangle -o svg - | display</div>
 </div><!-- fragment --><p>This generates:</p>
 <p><img src="SierpinskiTriangle.svg" alt="" style="pointer-events: none;" class="inline" title="Sierpinski"/></p>
 <p>An example of an anonymous L system:</p>
@@ -370,7 +369,7 @@ Variables and constants</h2>
 <p>You can also define any other variable or constant you want, and use them in the expressions of parametric rules.</p>
 <h1><a class="anchor" id="autotoc_md22"></a>
 2D rendering</h1>
-<p>The program <code>lsys</code> with the <code>--svg</code> argument renders the output of the L System generation in a 2D SVG image file.</p>
+<p>The program <code>lsys</code> with the <code>-o svg</code> argument renders the output of the L System generation in a 2D SVG image file.</p>
 <p>The special characters that 2D rendering uses are:</p>
 <ul>
 <li><code>F</code> draws a forward line.</li>
@@ -414,8 +413,8 @@ Variables and constants</h2>
 <p>The rest of the characters will be ignored when displaying.</p>
 <h1><a class="anchor" id="autotoc_md23"></a>
 SVG</h1>
-<p><code>lsys</code> with the option <code>--svg</code> converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's <code>display</code>:</p>
-<div class="fragment"><div class="line">lsys examples/B2.lsd --svg - | display</div>
+<p><code>lsys</code> with the option <code>-o svg</code> converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's <code>display</code>:</p>
+<div class="fragment"><div class="line">lsys examples/B2.lsd -o svg | display</div>
 </div><!-- fragment --><p>If you want to convert a SVG file into a PNG file, you can use <code>inkscape</code>:</p>
 <div class="fragment"><div class="line">inkscape -o test.png -w 1000 -b white test.svg</div>
 <div class="line">inkscape --export-type=png -w 2000 images/*</div>
