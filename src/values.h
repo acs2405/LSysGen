@@ -17,9 +17,6 @@ class Scope;
 #include "LSysDExpressionEvaluator.h"
 #include "LSystem.h"
 
-#include <map>
-#include <list>
-
 
 namespace lsysgen {
 

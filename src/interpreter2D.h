@@ -4,11 +4,8 @@
 
 #include "common.h"
 #include "LSystem.h"
-#include "ParseTreeNode.h"
+#include "TreeNode.h"
 // #include "NodeContent.h"
-
-#include <string>
-#include <iostream>
 
 
 class Point2D {
@@ -99,11 +96,11 @@ public:
 // };
 
 std::string node2svg(
-        lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* parent, 
+        lsysgen::TreeNode<lsysgen::InstanceNodeContent, char>* parent, 
         lsysgen::LSystem<char>* lsystem=nullptr);
 
 std::string node2svg(
-        lsysgen::ParseTreeNode<lsysgen::InstanceNodeContent, char>* parent, 
+        lsysgen::TreeNode<lsysgen::InstanceNodeContent, char>* parent, 
         State2D& state, 
         Bounds2D &bounds, 
         lsysgen::LSystem<char>* lsystem);

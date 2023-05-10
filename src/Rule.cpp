@@ -14,11 +14,11 @@ weight_t const Rule<T>::WEIGHT_UNSET = 1.0;
 template<typename T>
 Rule<T>::Rule(// std::string const& tag, 
         weight_t weight, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
-        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        TreeNode<LeftSideNodeContent, T> const* lctx, 
+        TreeNode<LeftSideNodeContent, T> const* lside, 
+        TreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond, 
-        ParseTreeNode<RightSideNodeContent, T> const* rside):
+        TreeNode<RightSideNodeContent, T> const* rside):
             _cond(cond), weight(weight), lctx(lctx), lside(lside), rctx(rctx), rside(rside) {}
 
 template<typename T>
@@ -66,11 +66,11 @@ std::string Rule<T>::toStringBase(std::string arrow) const {
 template<typename T>
 ProductionRule<T>::ProductionRule(// std::string const& tag, 
         weight_t const weight, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
-        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        TreeNode<LeftSideNodeContent, T> const* lctx, 
+        TreeNode<LeftSideNodeContent, T> const* lside, 
+        TreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond, 
-        ParseTreeNode<RightSideNodeContent, T> const* rside):
+        TreeNode<RightSideNodeContent, T> const* rside):
             Rule<T>(weight, lctx, lside, rctx, cond, rside) {}
 
 template<typename T>
@@ -84,11 +84,11 @@ std::string ProductionRule<T>::toString() const {
 template<typename T>
 CodingRule<T>::CodingRule(// std::string const& tag, 
         weight_t const weight, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
-        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        TreeNode<LeftSideNodeContent, T> const* lctx, 
+        TreeNode<LeftSideNodeContent, T> const* lside, 
+        TreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond, 
-        ParseTreeNode<RightSideNodeContent, T> const* rside):
+        TreeNode<RightSideNodeContent, T> const* rside):
             Rule<T>(weight, lctx, lside, rctx, cond, rside) {}
 
 template<typename T>

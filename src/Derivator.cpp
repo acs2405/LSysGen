@@ -15,7 +15,7 @@ template<typename T>
 Derivator<T>::~Derivator() {}
 
 template<typename T>
-ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<InstanceNodeContent, T> const* node, Table<T> const* table, std::list<T> const* ignore, Scope * scope) {
+TreeNode<InstanceNodeContent, T> * Derivator<T>::derive(TreeNode<InstanceNodeContent, T> const* node, Table<T> const* table, std::list<T> const* ignore, Scope * scope) {
     // std::cerr << "Deriving " << node->toStringWithContext() << std::endl;
     if (node->isLeaf()) {
         std::list<Rule<T> *> const* candidateRules = table->rulesFor(node->element());
@@ -53,7 +53,7 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
             }
             applicableRules.push_back(r);
         }
-        ParseTreeNode<InstanceNodeContent, T> * ret;
+        TreeNode<InstanceNodeContent, T> * ret;
         if (applicableRules.size() > 0) {
             Rule<T> const* chosenRule = this->chooseRule(applicableRules);
             if (chosenRule == nullptr)
@@ -63,19 +63,19 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
             if (ret == nullptr)
                 return nullptr;
         } else {
-            ret = new ParseTreeNode<InstanceNodeContent, T>(*node);
+            ret = new TreeNode<InstanceNodeContent, T>(*node);
             ret = ret->encapsulate();
         }
         return ret;
     } else {
-        ParseTreeNode<InstanceNodeContent, T> * replacement = new ParseTreeNode<InstanceNodeContent, T>();
-        for (ParseTreeNode<InstanceNodeContent, T> * child = node->leftmostChild(); 
+        TreeNode<InstanceNodeContent, T> * replacement = new TreeNode<InstanceNodeContent, T>();
+        for (TreeNode<InstanceNodeContent, T> * child = node->leftmostChild(); 
                 child != nullptr; 
                 child = child->right()) {
-            ParseTreeNode<InstanceNodeContent, T> * encapsulatedChildReplacement = derive(child, table, ignore, scope);
+            TreeNode<InstanceNodeContent, T> * encapsulatedChildReplacement = derive(child, table, ignore, scope);
             if (encapsulatedChildReplacement == nullptr)
                 return nullptr;
-            for (ParseTreeNode<InstanceNodeContent, T> * child2 = encapsulatedChildReplacement->leftmostChild(); 
+            for (TreeNode<InstanceNodeContent, T> * child2 = encapsulatedChildReplacement->leftmostChild(); 
                     child2 != nullptr; 
                     child2 = child2->right())
                 replacement->addChild(child2);
@@ -87,13 +87,13 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::derive(ParseTreeNode<Insta
 }
 
 template<typename T>
-bool Derivator<T>::checkSideContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, bool rightSide, std::list<T> const* ignore, Scope * paramMapping) {
+bool Derivator<T>::checkSideContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, bool rightSide, std::list<T> const* ignore, Scope * paramMapping) {
     if (contextNode == nullptr)
         return true;
     if (instanceNode == nullptr)
         return false;
-    ParseTreeNode<LeftSideNodeContent, T> * ctxNode;
-    ParseTreeNode<InstanceNodeContent, T> * insNode;
+    TreeNode<LeftSideNodeContent, T> * ctxNode;
+    TreeNode<InstanceNodeContent, T> * insNode;
     for (ctxNode = contextNode, insNode = instanceNode; 
              ctxNode != nullptr; 
              ctxNode = rightSide ? contextNode->right() : contextNode->left(),
@@ -122,18 +122,18 @@ bool Derivator<T>::checkSideContext(ParseTreeNode<LeftSideNodeContent, T> * cont
 }
 
 template<typename T>
-bool Derivator<T>::checkLeftContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping) {
+bool Derivator<T>::checkLeftContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping) {
     return this->checkSideContext(contextNode, instanceNode, false, ignore, paramMapping);
 }
 
 template<typename T>
-bool Derivator<T>::checkRightContext(ParseTreeNode<LeftSideNodeContent, T> * contextNode, ParseTreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping) {
+bool Derivator<T>::checkRightContext(TreeNode<LeftSideNodeContent, T> * contextNode, TreeNode<InstanceNodeContent, T> * instanceNode, std::list<T> const* ignore, Scope * paramMapping) {
     return this->checkSideContext(contextNode, instanceNode, true, ignore, paramMapping);
 }
 
 template<typename T>
-ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(ParseTreeNode<RightSideNodeContent, T> const* node, Scope * paramMapping) {
-    ParseTreeNode<InstanceNodeContent, T> * instanceNode = new ParseTreeNode<InstanceNodeContent, T>(node->element(), node->type());
+TreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(TreeNode<RightSideNodeContent, T> const* node, Scope * paramMapping) {
+    TreeNode<InstanceNodeContent, T> * instanceNode = new TreeNode<InstanceNodeContent, T>(node->element(), node->type());
     if (node->isLeaf()) {
         if (node->content().args != nullptr) {
             std::vector<Value> * values = new std::vector<Value>();
@@ -148,10 +148,10 @@ ParseTreeNode<InstanceNodeContent, T> * Derivator<T>::evaluateRightNode(ParseTre
             instanceNode->content().values = values;
         }
     } else {
-        for (ParseTreeNode<RightSideNodeContent, T> * child = node->leftmostChild();
+        for (TreeNode<RightSideNodeContent, T> * child = node->leftmostChild();
                 child != nullptr;
                 child = child->right()) {
-            ParseTreeNode<InstanceNodeContent, T> * childInstanceNode = this->evaluateRightNode(child, paramMapping);
+            TreeNode<InstanceNodeContent, T> * childInstanceNode = this->evaluateRightNode(child, paramMapping);
             if (childInstanceNode == nullptr)
                 return nullptr;
             instanceNode->addChild(childInstanceNode);

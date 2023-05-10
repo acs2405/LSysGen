@@ -9,7 +9,7 @@
 // #include <regex>
 
 
-// ParseTreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
+// TreeNode<InstanceNodeContent, char>* LSysDVisitor::parseInstanceNode(std::string s) {
 //     std::stringstream ss;
 //     ss << s;
 //     antlr4::ANTLRInputStream input(ss);
@@ -28,7 +28,7 @@
 //     Scope* childEnv = new Scope(this->scope);
 //     childEnv->set("i", 0);
 //     LSysDVisitor visitor("<axiom>", new std::vector<std::string> {s}, childEnv);
-//     ParseTreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
+//     TreeNode<InstanceNodeContent, char>* node = visitor.visit(tree);
 
 //     if (visitor.eh->failed()) {
 //         visitor.eg->dump();
@@ -135,7 +135,7 @@ void LSysDVisitor::setAxiom() {
         exit(1);
 
     currentLSystem->_axiom = 
-            std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>
+            std::any_cast<TreeNode<InstanceNodeContent, char> *>
             (visit(axiomTree)); //, splitInLines(settings.axiom)));
 }
 
@@ -237,7 +237,7 @@ std::any LSysDVisitor::visitMainWord(LSysDParser::MainWordContext *ctx) {
         selectedLSystems->push_back(currentLSystem);
         currentScope = currentLSystem->_scope;
         parseArgs();
-        currentLSystem->_axiom = std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>(visitWord(ctx->word()));
+        currentLSystem->_axiom = std::any_cast<TreeNode<InstanceNodeContent, char> *>(visitWord(ctx->word()));
         // Ignores settings.axiom, assumes it has been already processed
         if (settings.rules.isset())
             addRules();
@@ -339,7 +339,7 @@ std::any LSysDVisitor::visitLsystem(LSysDParser::LsystemContext *ctx) {
 
 std::any LSysDVisitor::visitAxiomDef(LSysDParser::AxiomDefContext *ctx) {
     if (currentLSystem->_axiom == nullptr) {
-        currentLSystem->_axiom = std::any_cast<ParseTreeNode<InstanceNodeContent, char> *>(this->visitWord(ctx->word()));
+        currentLSystem->_axiom = std::any_cast<TreeNode<InstanceNodeContent, char> *>(this->visitWord(ctx->word()));
     } else {
         eh->error("The axiom is already defined", eh->trace(ctx));
     }
@@ -490,19 +490,19 @@ R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx,
         weight = Rule<char>::WEIGHT_UNSET;
 
     // Left context:
-    ParseTreeNode<LeftSideNodeContent, char>* lctx;
+    TreeNode<LeftSideNodeContent, char>* lctx;
     if (lctxCtx)
-        lctx = std::any_cast<ParseTreeNode<LeftSideNodeContent, char> *>(this->visitLcontext(lctxCtx));
+        lctx = std::any_cast<TreeNode<LeftSideNodeContent, char> *>(this->visitLcontext(lctxCtx));
     else
         lctx = nullptr;
 
     // Left char:
-    ParseTreeNode<LeftSideNodeContent, char>* lnode = std::any_cast<ParseTreeNode<LeftSideNodeContent, char> *>(this->visitLside(lsideCtx));
+    TreeNode<LeftSideNodeContent, char>* lnode = std::any_cast<TreeNode<LeftSideNodeContent, char> *>(this->visitLside(lsideCtx));
 
     // Right context:
-    ParseTreeNode<LeftSideNodeContent, char>* rctx;
+    TreeNode<LeftSideNodeContent, char>* rctx;
     if (rctxCtx)
-        rctx = std::any_cast<ParseTreeNode<LeftSideNodeContent, char> *>(this->visitRcontext(rctxCtx));
+        rctx = std::any_cast<TreeNode<LeftSideNodeContent, char> *>(this->visitRcontext(rctxCtx));
     else
         rctx = nullptr;
 
@@ -514,7 +514,7 @@ R* LSysDVisitor::defineRule(// LSysDParser::TagPrefixContext* tagCtx,
         cond = nullptr;
 
     // Right side:
-    ParseTreeNode<RightSideNodeContent, char>* rside = std::any_cast<ParseTreeNode<RightSideNodeContent, char> *>(this->visitRside(rsideCtx));
+    TreeNode<RightSideNodeContent, char>* rside = std::any_cast<TreeNode<RightSideNodeContent, char> *>(this->visitRside(rsideCtx));
 
     // Assemble rule:
     R* rule = new R(weight, lctx, lnode, rctx, cond, rside);
@@ -595,7 +595,7 @@ std::any LSysDVisitor::visitWeight(LSysDParser::WeightContext *ctx) {
 }
 
 std::any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
-    ParseTreeNode<LeftSideNodeContent, char>* parent = new ParseTreeNode<LeftSideNodeContent, char>();
+    TreeNode<LeftSideNodeContent, char>* parent = new TreeNode<LeftSideNodeContent, char>();
     this->parentNode = parent->asGeneric();
     this->visitLChar(ctx->lChar());
     this->parentNode = nullptr;
@@ -606,7 +606,7 @@ std::any LSysDVisitor::visitLside(LSysDParser::LsideContext *ctx) {
 }
 
 std::any LSysDVisitor::visitLcontext(LSysDParser::LcontextContext *ctx) {
-    ParseTreeNode<LeftSideNodeContent, char>* parent = new ParseTreeNode<LeftSideNodeContent, char>();
+    TreeNode<LeftSideNodeContent, char>* parent = new TreeNode<LeftSideNodeContent, char>();
     this->parentNode = parent->asGeneric();
     for (LSysDParser::LItemContext* lictx : ctx->lItem())
         this->visitLItem(lictx);
@@ -615,7 +615,7 @@ std::any LSysDVisitor::visitLcontext(LSysDParser::LcontextContext *ctx) {
 }
 
 std::any LSysDVisitor::visitRcontext(LSysDParser::RcontextContext *ctx) {
-    ParseTreeNode<LeftSideNodeContent, char>* parent = new ParseTreeNode<LeftSideNodeContent, char>();
+    TreeNode<LeftSideNodeContent, char>* parent = new TreeNode<LeftSideNodeContent, char>();
     this->parentNode = parent->asGeneric();
     for (LSysDParser::LItemContext* lictx : ctx->lItem())
         this->visitLItem(lictx);
@@ -624,7 +624,7 @@ std::any LSysDVisitor::visitRcontext(LSysDParser::RcontextContext *ctx) {
 }
 
 std::any LSysDVisitor::visitRside(LSysDParser::RsideContext *ctx) {
-    ParseTreeNode<RightSideNodeContent, char>* parent = new ParseTreeNode<RightSideNodeContent, char>();
+    TreeNode<RightSideNodeContent, char>* parent = new TreeNode<RightSideNodeContent, char>();
     this->parentNode = parent->asGeneric();
     for (LSysDParser::RItemContext* rictx : ctx->rItem())
         this->visitRItem(rictx);
@@ -633,7 +633,7 @@ std::any LSysDVisitor::visitRside(LSysDParser::RsideContext *ctx) {
 }
 
 std::any LSysDVisitor::visitWord(LSysDParser::WordContext *ctx) {
-    ParseTreeNode<InstanceNodeContent, char>* parent = new ParseTreeNode<InstanceNodeContent, char>();
+    TreeNode<InstanceNodeContent, char>* parent = new TreeNode<InstanceNodeContent, char>();
     this->parentNode = parent->asGeneric();
     for (LSysDParser::RItemContext* rictx : ctx->rItem())
         this->visitRItem(rictx);
@@ -645,8 +645,8 @@ std::any LSysDVisitor::visitLChar(LSysDParser::LCharContext *ctx) {
     this->visitValidLeftChar(ctx->validLeftChar());
     if (ctx->params()) {
         std::list<Parameter *> * params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));
-        ParseTreeNode<LeftSideNodeContent, char>* rgt = 
-                reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
+        TreeNode<LeftSideNodeContent, char>* rgt = 
+                reinterpret_cast<TreeNode<LeftSideNodeContent, char>*>(
                     this->parentNode->rightmostChild());
         rgt->content().params = params;
     }
@@ -658,13 +658,13 @@ std::any LSysDVisitor::visitLItem(LSysDParser::LItemContext *ctx) {
         this->visitValidLeftChar(ctx->validLeftChar());
         if (ctx->params()) {
             std::list<Parameter *> * params = std::any_cast<std::list<Parameter *> *>(this->visitParams(ctx->params()));
-            ParseTreeNode<LeftSideNodeContent, char>* rgt = 
-                    reinterpret_cast<ParseTreeNode<LeftSideNodeContent, char>*>(
+            TreeNode<LeftSideNodeContent, char>* rgt = 
+                    reinterpret_cast<TreeNode<LeftSideNodeContent, char>*>(
                         this->parentNode->rightmostChild());
             rgt->content().params = params;
         }
     } else {
-        ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>();
+        TreeNode<LeftSideNodeContent, char>* node = new TreeNode<LeftSideNodeContent, char>();
         this->parentNode->addChild(node->asGeneric());
         this->parentNode = node->asGeneric();
         for (LSysDParser::LItemContext* lictx : ctx->lItem())
@@ -679,7 +679,7 @@ std::any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
         this->visitValidRightChar(ctx->validRightChar());
         if (ctx->args()) {
             std::list<LSysDParser::ExpressionContext *> * args = std::any_cast<std::list<LSysDParser::ExpressionContext *> *>(this->visitArgs(ctx->args()));
-            ParseTreeNode<NodeContent, char>* rgt = this->parentNode->rightmostChild();
+            TreeNode<NodeContent, char>* rgt = this->parentNode->rightmostChild();
             if (!this->parentNode->isInstance()) {
                 reinterpret_cast<RightSideNodeContent<char>*>(&rgt->content())->args = args;
             } else {
@@ -691,11 +691,11 @@ std::any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
             }
         }
     } else {
-        ParseTreeNode<NodeContent, char>* node;
+        TreeNode<NodeContent, char>* node;
         if (!this->parentNode->isInstance())
-            node = (new ParseTreeNode<RightSideNodeContent, char>())->asGeneric();
+            node = (new TreeNode<RightSideNodeContent, char>())->asGeneric();
         else
-            node = (new ParseTreeNode<InstanceNodeContent, char>())->asGeneric();
+            node = (new TreeNode<InstanceNodeContent, char>())->asGeneric();
         this->parentNode->addChild(node);
         this->parentNode = node;
         for (LSysDParser::RItemContext* rictx : ctx->rItem())
@@ -708,7 +708,7 @@ std::any LSysDVisitor::visitRItem(LSysDParser::RItemContext *ctx) {
 std::any LSysDVisitor::visitValidLeftChar(LSysDParser::ValidLeftCharContext *ctx) {
     std::string s = std::any_cast<std::string>(this->visitValidChar(ctx->validChar()));
     for (char c : s) {
-        ParseTreeNode<LeftSideNodeContent, char>* node = new ParseTreeNode<LeftSideNodeContent, char>(c);
+        TreeNode<LeftSideNodeContent, char>* node = new TreeNode<LeftSideNodeContent, char>(c);
         this->parentNode->addChild(node->asGeneric());
     }
     return nullptr;
@@ -720,11 +720,11 @@ std::any LSysDVisitor::visitValidRightChar(LSysDParser::ValidRightCharContext *c
     for (char c : s) {
         if (c == '_')
             eh->error("'_' (underscore) character is not valid for the right side of a rule or for an axiom", eh->trace(ctx));
-        ParseTreeNode<NodeContent, char>* node;
+        TreeNode<NodeContent, char>* node;
         if (!this->parentNode->isInstance())
-            node = (new ParseTreeNode<RightSideNodeContent, char>(c))->asGeneric();
+            node = (new TreeNode<RightSideNodeContent, char>(c))->asGeneric();
         else
-            node = (new ParseTreeNode<InstanceNodeContent, char>(c))->asGeneric();
+            node = (new TreeNode<InstanceNodeContent, char>(c))->asGeneric();
         this->parentNode->addChild(node);
         // ++pos;
     }

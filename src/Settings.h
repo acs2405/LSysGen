@@ -13,9 +13,6 @@
 
 #include "common.h"
 
-#include <map>
-#include <list>
-// #include <vector>
 
 namespace lsysgen {
 

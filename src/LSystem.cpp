@@ -34,7 +34,7 @@ LSystem<T>::~LSystem() {
     // delete _tableFunc;
     delete _lastWord;
     _encodedProgression.clear();
-    // for (ParseTreeNode<InstanceNodeContent, T> * n : _encodedProgression)
+    // for (TreeNode<InstanceNodeContent, T> * n : _encodedProgression)
     //     delete n;
     delete _scope;
     // if (_settings != Settings::DEFAULT)
@@ -42,7 +42,7 @@ LSystem<T>::~LSystem() {
 }
 
 template<typename T>
-void LSystem<T>::setAxiom(ParseTreeNode<InstanceNodeContent, T> * axiom) {
+void LSystem<T>::setAxiom(TreeNode<InstanceNodeContent, T> * axiom) {
     this->_axiom = axiom;
 }
 
@@ -187,7 +187,7 @@ void LSystem<T>::prepare() {
         // auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         // srand(millis); // TODO: ¿esto lo uso para algo?
         if (this->_axiom == nullptr)
-            this->_axiom = new ParseTreeNode<InstanceNodeContent, T>();
+            this->_axiom = new TreeNode<InstanceNodeContent, T>();
         if (this->_ignore == nullptr)
             this->_ignore = new std::list<T>();
         this->_current = 0;
@@ -195,7 +195,7 @@ void LSystem<T>::prepare() {
         this->_scope->set("i", 0);
         // this->_scope->set("r", 0.0);
         this->_lastWord = this->_axiom;  // seed
-        ParseTreeNode<InstanceNodeContent, T> * derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
+        TreeNode<InstanceNodeContent, T> * derived = derivator.derive(_lastWord, _codingRules, _ignore, _scope);
         if (derived == nullptr)
             return;
         this->_encodedProgression.push_back(derived);
@@ -226,8 +226,8 @@ void LSystem<T>::iterate(int iterations) {
         // this->_scope->set("r", static_cast<double>(i)/(this->_iterations));
         // std::cout << "ROUND " << i << std::endl;
         // std::cout << this->_scope->get("i").asInt() << std::endl;
-        ParseTreeNode<InstanceNodeContent, T> * lastWord = this->_lastWord;
-        ParseTreeNode<InstanceNodeContent, T> * derived;
+        TreeNode<InstanceNodeContent, T> * lastWord = this->_lastWord;
+        TreeNode<InstanceNodeContent, T> * derived;
         derived = derivator.derive(lastWord, table, _ignore, _scope);
         if (derived == nullptr)
             return;
@@ -267,7 +267,7 @@ Table<T> * LSystem<T>::getTable(int i) {
 }
 
 template<typename T>
-ParseTreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
+TreeNode<InstanceNodeContent, T> * LSystem<T>::current() {
     if (_encodedProgression.size() > 0)
         return this->_encodedProgression.at(this->_current);
     else

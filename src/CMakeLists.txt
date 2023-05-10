@@ -5,7 +5,7 @@ set(lsysgen_BASE_HEADERS
   ${PROJECT_SOURCE_DIR}/src/misc.h
   ${PROJECT_SOURCE_DIR}/src/values.h
   ${PROJECT_SOURCE_DIR}/src/operations.h
-  ${PROJECT_SOURCE_DIR}/src/ParseTreeNode.h
+  ${PROJECT_SOURCE_DIR}/src/TreeNode.h
   ${PROJECT_SOURCE_DIR}/src/NodeContent.h
   ${PROJECT_SOURCE_DIR}/src/Rule.h
   ${PROJECT_SOURCE_DIR}/src/Table.h
@@ -26,7 +26,7 @@ set(lsysgen_BASE_SRC
   ${PROJECT_SOURCE_DIR}/src/misc.cpp
   ${PROJECT_SOURCE_DIR}/src/values.cpp
   ${PROJECT_SOURCE_DIR}/src/operations.cpp
-  ${PROJECT_SOURCE_DIR}/src/ParseTreeNode.cpp
+  ${PROJECT_SOURCE_DIR}/src/TreeNode.cpp
   ${PROJECT_SOURCE_DIR}/src/NodeContent.cpp
   ${PROJECT_SOURCE_DIR}/src/Rule.cpp
   ${PROJECT_SOURCE_DIR}/src/Table.cpp

@@ -90,7 +90,7 @@ Bounds2D::Bounds2D(): p0(), p1() {}
 
 
 std::string node2svg(
-        ParseTreeNode<InstanceNodeContent, char>* parent, 
+        TreeNode<InstanceNodeContent, char>* parent, 
         LSystem<char>* lsystem) {
     State2D initialState;
     Bounds2D bounds;
@@ -150,15 +150,15 @@ std::string node2svg(
 }
 
 std::string node2svg(
-        ParseTreeNode<InstanceNodeContent, char>* parent, 
+        TreeNode<InstanceNodeContent, char>* parent, 
         State2D& state, 
         Bounds2D &bounds, 
         LSystem<char>* lsystem) {
     std::string svgContent = "";
 
-    auto stack = new std::list<std::pair<State2D, ParseTreeNode<InstanceNodeContent, char>*>>();
+    auto stack = new std::list<std::pair<State2D, TreeNode<InstanceNodeContent, char>*>>();
     // glBegin(GL_POINTS);
-    ParseTreeNode<InstanceNodeContent, char>* node;
+    TreeNode<InstanceNodeContent, char>* node;
     std::vector<Value>* values;
     Value v[4];
     float move;

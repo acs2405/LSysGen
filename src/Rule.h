@@ -14,11 +14,9 @@ class CodingRule;
 }
 
 #include "common.h"
-#include "ParseTreeNode.h"
+#include "TreeNode.h"
 // #include "values.h"
 
-#include <string>
-#include <iostream>
 
 namespace lsysgen {
 
@@ -34,19 +32,19 @@ public:
 
     // const std::string tag;
     weight_t const weight;
-    ParseTreeNode<LeftSideNodeContent, T> const* lctx;
-    ParseTreeNode<LeftSideNodeContent, T> const* lside;
-    ParseTreeNode<LeftSideNodeContent, T> const* rctx;
-    ParseTreeNode<RightSideNodeContent, T> const* rside;
+    TreeNode<LeftSideNodeContent, T> const* lctx;
+    TreeNode<LeftSideNodeContent, T> const* lside;
+    TreeNode<LeftSideNodeContent, T> const* rctx;
+    TreeNode<RightSideNodeContent, T> const* rside;
 
 protected:
     Rule(// std::string const& tag, 
         weight_t weight, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
-        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        TreeNode<LeftSideNodeContent, T> const* lctx, 
+        TreeNode<LeftSideNodeContent, T> const* lside, 
+        TreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond,
-        ParseTreeNode<RightSideNodeContent, T> const* rside);
+        TreeNode<RightSideNodeContent, T> const* rside);
 
     std::string toStringBase(std::string arrow) const;
 
@@ -68,11 +66,11 @@ class ProductionRule : Rule<T> {
 public:
     ProductionRule(// std::string const& tag, 
         weight_t const weight, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
-        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        TreeNode<LeftSideNodeContent, T> const* lctx, 
+        TreeNode<LeftSideNodeContent, T> const* lside, 
+        TreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond, 
-        ParseTreeNode<RightSideNodeContent, T> const* rside);
+        TreeNode<RightSideNodeContent, T> const* rside);
 
     bool isProductionRule() const;
 
@@ -84,11 +82,11 @@ class CodingRule : Rule<T> {
 public:
     CodingRule(// std::string const& tag, 
         weight_t const weight, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lctx, 
-        ParseTreeNode<LeftSideNodeContent, T> const* lside, 
-        ParseTreeNode<LeftSideNodeContent, T> const* rctx, 
+        TreeNode<LeftSideNodeContent, T> const* lctx, 
+        TreeNode<LeftSideNodeContent, T> const* lside, 
+        TreeNode<LeftSideNodeContent, T> const* rctx, 
         LSysDParser::ExpressionContext * cond, 
-        ParseTreeNode<RightSideNodeContent, T> const* rside);
+        TreeNode<RightSideNodeContent, T> const* rside);
 
     bool isProductionRule() const;
 

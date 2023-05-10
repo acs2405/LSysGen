@@ -12,10 +12,6 @@
 #include "Settings.h"
 // #include "Drawer2D.h"
 
-#include <string>
-#include <string_view>
-#include <iostream>
-
 
 
 // extern "C" const char* generateLSystemSVG(const char* file, int iterations=-1);

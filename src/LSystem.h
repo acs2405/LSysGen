@@ -11,7 +11,7 @@ class LSystem;
 
 #include "common.h"
 #include "Module.h"
-#include "ParseTreeNode.h"
+#include "TreeNode.h"
 #include "NodeContent.h"
 #include "Table.h"
 #include "Rule.h"
@@ -22,10 +22,6 @@ class LSystem;
 #include "Settings.h"
 // #include "misc.h"
 
-#include <string>
-#include <map>
-#include <list>
-#include <vector>
 
 namespace lsysgen {
 
@@ -49,7 +45,7 @@ class LSystem {
     Table<T> * _codingRules;
     std::map<std::string, Rule<T> *> _taggedRules;
 
-    ParseTreeNode<InstanceNodeContent, T> * _axiom;
+    TreeNode<InstanceNodeContent, T> * _axiom;
     int _iterations;
     Settings2D _settings2D;
     std::list<T> * _ignore;
@@ -57,8 +53,8 @@ class LSystem {
 
     // bool _main;
 
-    ParseTreeNode<InstanceNodeContent, T> * _lastWord;
-    std::vector<ParseTreeNode<InstanceNodeContent, T> *> _encodedProgression;
+    TreeNode<InstanceNodeContent, T> * _lastWord;
+    std::vector<TreeNode<InstanceNodeContent, T> *> _encodedProgression;
 
     ErrorHandler * eh;
     Derivator<T> derivator;
@@ -77,7 +73,7 @@ public:
 
     ~LSystem();
 
-    void setAxiom(ParseTreeNode<InstanceNodeContent, T> * axiom);
+    void setAxiom(TreeNode<InstanceNodeContent, T> * axiom);
 
     ErrorHandler * messages();
     ErrorHandler const* messages() const;
@@ -90,7 +86,7 @@ public:
     void iterate(int iterations);
     Table<T> * getTable(int i);
 
-    ParseTreeNode<InstanceNodeContent, T> * current();
+    TreeNode<InstanceNodeContent, T> * current();
     int iteration() const;
     std::uint_fast32_t seed() const;
     std::string const& name() const;

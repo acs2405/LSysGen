@@ -22,11 +22,6 @@ class InstanceNodeContent;
 #include "LSysDParser.h"
 #include "values.h"
 
-#include <string>
-#include <iostream>
-#include <list>
-#include <vector>
-
 
 namespace lsysgen {
 
