@@ -24,8 +24,8 @@ std::set<std::string> const argNames1 = {
 std::set<std::string> const argNamesN = {
     "-o", "--output", "-A", "--args", "-l", "--lsystems"
 };
-std::set<std::string> const outputTypes = {
-    "str", "svg"
+std::set<std::string> const outputFormats = {
+    "raw", "svg"
 };
 std::regex const argRegex ("([A-Za-z_][A-Za-z_0-9]*):(.+)");
 
@@ -186,7 +186,7 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             }
             if (arg == "-o" || arg == "--output") {
                 if (values.size() == 0)
-                    argumentError(arg + " must be followed at least by a format (str or svg)");
+                    argumentError(arg + " must be followed at least by a format (raw or svg)");
                 if (values.size() > 2)
                     argumentError("Too many arguments for " + arg);
                 std::string format, dest;
@@ -198,23 +198,15 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                         format = values[0];
                     }
                 }
-                if (outputTypes.find(format) == outputTypes.end())
-                    argumentError(format + " is not a supported format (must be str or svg)");
-                if (format == "svg") {
-                    if (settings.renderMode.isset()) {
-                        argumentError("SVG output format argument repeated");
-                    }
-                    settings.renderMode.set(lsysgen::Settings::RenderMode::SVG);
-                    if (dest.size() > 0)
-                        settings.outputRenderFile = dest;
-                } else if (format == "str") {
-                    if (settings.outputResultFile.isset())
-                        argumentError("String output format argument repeated");
-                    if (dest.size() > 0)
-                        settings.outputResultFile.set(dest);
-                    else
-                        settings.outputResultFile = "-";
-                }
+                if (outputFormats.find(format) == outputFormats.end())
+                    argumentError(format + " is not a supported format (must be raw or svg)");
+                auto & outputs = settings.outputs.getRef();
+                if (outputs.find(format) != outputs.end())
+                    argumentError(format + " output format argument repeated");
+                if (dest.size() > 0)
+                    outputs[format] = dest;
+                else
+                    outputs[format] = "-";
             } else if (arg == "-A" || arg == "--args") {
                 if (settings.args.isset())
                     argumentError("arguments argument repeated");
@@ -362,8 +354,8 @@ and EXT will vary depending on the selected format. More than one format may be 
 option is not set then the result string will be printed to the standard output." << std::endl;
     std::cout << std::endl;
     std::cout << "Currently supported output formats:" << std::endl;
-    std::cout << "     * str: this format creates a plain TXT file after the L System result. The program just prints the result of \
-the iterated L System." << std::endl;
+    std::cout << "     * raw: this format creates a plain TXT file after the raw L System result. The program just prints the result \
+of the iterated L System." << std::endl;
     std::cout << "     * svg: this format creates an SVG image after the L System result. The program interprets the result of the \
 iterated L System to build a SVG image. The procedure of the creation of the image is: a \"turtle\" head with a pen is heading left \
 (by default) and the result string symbols (only the special characters) will draw lines, move or change the state of the turtle, \

@@ -8,24 +8,35 @@
 
 namespace lsysgen {
 
-Settings::RenderMode  const Settings::DEFAULT_RENDER_MODE  = Settings::RenderMode::NONE;
-Settings::InputMode   const Settings::DEFAULT_INPUT_MODE   = Settings::InputMode::LSD;
+// std::map<std::string, Settings::backend_t> Settings::_formats;
 
-int                   const Settings::DEFAULT_ITERATIONS   = 0;
-std::string           const Settings::DEFAULT_IGNORE       = "";
-int                   const Settings::DEFAULT_SEED         = -1;
+Settings::InputMode   const Settings::DEFAULT_INPUT_MODE    = Settings::InputMode::LSD;
 
-float                const Settings2D::DEFAULT_HEADING    = 0.0f;
-float                const Settings2D::DEFAULT_ROTATION   = 12.0f;
-float                const Settings2D::DEFAULT_LINE_WIDTH = 0.1f;
-std::string           const Settings2D::DEFAULT_LINE_COLOR = "#000";
-std::string           const Settings2D::DEFAULT_FILL_COLOR = "#000";
-std::string           const Settings2D::DEFAULT_BACKGROUND = "#fff";
-float                const Settings2D::DEFAULT_WIDTH      = 500.0f;
-float                const Settings2D::DEFAULT_HEIGHT     = Settings2D::DEFAULT_WIDTH;
+int                   const Settings::DEFAULT_ITERATIONS    = 0;
+std::string           const Settings::DEFAULT_IGNORE        = "";
+int                   const Settings::DEFAULT_SEED          = -1;
+std::string           const Settings::DEFAULT_OUTPUT_FORMAT = "raw";
+
+std::map<std::string, std::string> 
+                      const Settings::DEFAULT_OUTPUTS       {};
+
+float                 const Settings2D::DEFAULT_HEADING     = 0.0f;
+float                 const Settings2D::DEFAULT_ROTATION    = 12.0f;
+float                 const Settings2D::DEFAULT_LINE_WIDTH  = 0.1f;
+std::string           const Settings2D::DEFAULT_LINE_COLOR  = "#000";
+std::string           const Settings2D::DEFAULT_FILL_COLOR  = "#000";
+std::string           const Settings2D::DEFAULT_BACKGROUND  = "#fff";
+float                 const Settings2D::DEFAULT_WIDTH       = 500.0f;
+float                 const Settings2D::DEFAULT_HEIGHT      = Settings2D::DEFAULT_WIDTH;
 
 Settings              const Settings::DEFAULT;
 Settings2D            const Settings2D::DEFAULT;
+
+// void Settings::addFormat(std::string const& name, Settings::backend_t func) {return Settings::_formats[name] = func;}
+// Settings::backend_t Settings::getFormat(std::string const& name) const {return Settings::_formats[name];}
+
+// Settings::addFormat("str", node2text);
+// Settings::addFormat("svg", node2svg);
 
 Settings2D::Settings2D(): 
         heading(Settings2D::DEFAULT_HEADING), 
@@ -42,7 +53,8 @@ Settings2D::~Settings2D() {}
 // Settings2D::unset() {}
 
 Settings::Settings(): 
-        renderMode(Settings::RenderMode::NONE), 
+        // renderMode(Settings::RenderMode::NONE), 
+        outputs(Settings::DEFAULT_OUTPUTS),
         inputMode(Settings::InputMode::LSD), 
         iterations(Settings::DEFAULT_ITERATIONS), 
         ignore(Settings::DEFAULT_IGNORE), 
@@ -89,6 +101,11 @@ T & Setting<T>::getRef() {
     return this->_value;
 }
 
+template<typename T>
+T const& Setting<T>::getRef() const {
+    return this->_value;
+}
+
 // template<typename T>
 // T & operator=(T & v1, Setting<T> & v2) {
 //     return v1 = v2.value();
@@ -100,7 +117,6 @@ template class Setting<int>;
 template class Setting<float>;
 template class Setting<std::string>;
 template class Setting<Settings::InputMode>;
-template class Setting<Settings::RenderMode>;
 template class Setting<std::list<std::string>>;
 template class Setting<std::map<std::string, std::string>>;
 

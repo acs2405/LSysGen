@@ -36,6 +36,7 @@ public:
     bool isset() const;
     T get() const;
     T & getRef();
+    T const& getRef() const;
 };
 
 // template<typename T>
@@ -72,31 +73,43 @@ public:
 
 class Settings {
 public:
-    typedef enum {
-        NONE,
-        SVG
-    } RenderMode;
+    // typedef std::string (*)(TreeNode<lsysgen::InstanceNodeContent, char>* parent, LSystem<char>* lsystem) backend_t;
 
     typedef enum {
         LSD,
         AXIOM
     } InputMode;
 
-    static Settings::RenderMode  const DEFAULT_RENDER_MODE;
+private:
+    // static std::map<std::string, backend_t> _formats;
+
+public:
     static Settings::InputMode   const DEFAULT_INPUT_MODE;
 
     static int                   const DEFAULT_ITERATIONS;
     static std::string           const DEFAULT_IGNORE;
     static int                   const DEFAULT_SEED;
+    static std::string           const DEFAULT_OUTPUT_FORMAT;
+
+    static std::map<std::string, std::string> 
+                                 const DEFAULT_OUTPUTS;
 
     static Settings              const DEFAULT;
 
+    // static std::map<std::string, backend_t> formats();
+    // static std::map<std::string, backend_t> const formats() const;
+
+    // void addFormat(std::string const& name, backend_t func);
+    // backend_t getFormat(std::string const& name) const;
+
+public:
     Setting<std::list<std::string>> inputFiles;
-    Setting<std::string> outputResultFile;
-    Setting<std::string> outputRenderFile;
+    // Setting<std::string> outputResultFile;
+    // Setting<std::string> outputRenderFile;
     Setting<std::list<std::string>> lsystems;
     Setting<std::string> axiom;
-    Setting<Settings::RenderMode> renderMode;
+    Setting<std::map<std::string, std::string>> outputs;
+    // Setting<Settings::RenderMode> renderMode;
     Setting<Settings::InputMode> inputMode;
     Setting<std::string> rules;
     Setting<std::map<std::string, std::string>> args;

@@ -192,7 +192,7 @@ The main options are:
 - `-a AXIOM`: sets or overrides the axiom. `AXIOM` should be quoted.
 - `-r RULES`: adds rules to the L System. `RULES` must be quoted.
 - `-l NAME...`, `--all`: selects the L System(s) that will be displayed from the source file (when there are more than one in the same LSD file). `--all` selects all of them.
-- `-o FORMAT [OUTPUT_FILE]`: outputs the result of the L System iterations as some `FORMAT`. If `OUTPUT_FILE` is set to a directory, a `FILE.EXT` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System and `EXT` by the format extension). If `OUTPUT_FILE` is not set or set to `-`, the program will print the result in the standard output. The two currently supported formats are `str` and `svg`.
+- `-o FORMAT [OUTPUT_FILE]`: outputs the result of the L System iterations as some `FORMAT`. If `OUTPUT_FILE` is set to a directory, a `FILE.EXT` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System and `EXT` by the format extension). If `OUTPUT_FILE` is not set or set to `-`, the program will print the result in the standard output. The two currently supported formats are `raw` (raw text output) and `svg` (SVG representation of the result).
 
 Run `./lsys --help` to see all options. 
 

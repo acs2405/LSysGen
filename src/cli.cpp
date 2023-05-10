@@ -60,31 +60,34 @@ int main(int argc, char** argv) {
 
     parseCLIArgs(argc, argv, settings);
 
-    std::filesystem::path outputResultPath;
-    if (settings.outputResultFile.isset())
-        outputResultPath = settings.outputResultFile.get();
-    else if (settings.renderMode.get() == Settings::RenderMode::NONE)
-        outputResultPath = "-";
-    // else if (lsystems->size() > 1)
-    //     outputResultPath = std::filesystem::current_path();
+    std::map<std::string, std::filesystem::path> outputPaths;
 
-    std::filesystem::path outputRenderPath;
-    if (settings.outputRenderFile.isset())
-        outputRenderPath = settings.outputRenderFile.get();
-    else // if (lsystems->size() == 1) // && outputResultPath.string() != "-")
-        outputRenderPath = "-";
-    // else if (lsystems->size() > 1)
-    //     outputRenderPath = std::filesystem::current_path();
+    if (!settings.outputs.isset())
+        settings.outputs.getRef()[Settings::DEFAULT_OUTPUT_FORMAT] = "-";
+
+    for (auto const& [format, output] : settings.outputs.getRef()) {
+        if (output.size() > 0)
+            outputPaths[format] = output;
+        else
+            outputPaths[format] = "-";
+        // else if (lsystems->size() > 1)
+        //     outputPaths[format] = std::filesystem::current_path();
+    }
+
+    // std::filesystem::path outputRenderPath;
+    // if (settings.outputRenderFile.isset())
+    //     outputRenderPath = settings.outputRenderFile.get();
+    // else // if (lsystems->size() == 1) // && outputResultPath.string() != "-")
+    //     outputRenderPath = "-";
+    // // else if (lsystems->size() > 1)
+    // //     outputRenderPath = std::filesystem::current_path();
 
     if (settings.inputFiles.get().size() > 1 || (settings.lsystems.isset() && settings.lsystems.get().size() != 1)) {
-        if ((settings.outputResultFile.isset() && 
-                !std::filesystem::is_directory(outputResultPath) && 
-                outputResultPath != "-") || 
-                (settings.outputRenderFile.isset() && 
-                !std::filesystem::is_directory(outputRenderPath) && 
-                outputRenderPath != "-")) {
-            std::cerr << "When more than one L System or input file is selected, output must be a directory." << std::endl;
-            exit(1);
+        for (auto const& [format, outputPath] : outputPaths) {
+            if (outputPath != "-" && !std::filesystem::is_directory(outputPath)) {
+                std::cerr << "When more than one L System or input file is selected, output destinations must be directories." << std::endl;
+                exit(1);
+            }
         }
     }
 
@@ -115,25 +118,30 @@ int main(int argc, char** argv) {
             return 1;
         }
 
-        if (outputResultPath != "") {
-            std::filesystem::path outputResultFile = outputResultPath;
-            if (std::filesystem::is_directory(outputResultFile))
-                outputResultFile /= lsystem->name() + ".txt";
-            if (!writeToFile(outputResultFile.string(), lsystem->current()->toString())) {
-                std::cerr << "File " << outputResultFile << " is not writable." << std::endl;
+        for (auto const& [format, outputPath] : outputPaths) {
+            std::filesystem::path outputFile = outputPath;
+            if (std::filesystem::is_directory(outputFile))
+                outputFile /= lsystem->name() + ".txt";
+            std::string output;
+            if (format == "raw")
+                output = lsystem->current()->toString();
+            else
+                output = node2svg(lsystem->current(), lsystem);
+            if (!writeToFile(outputFile.string(), output)) {
+                std::cerr << "File " << outputFile << " is not writable." << std::endl;
                 exit(1);
             }
         }
 
-        if (settings.renderMode.get() == Settings::RenderMode::SVG) {
-            std::filesystem::path outputRenderFile = outputRenderPath;
-            if (std::filesystem::is_directory(outputRenderFile))
-                outputRenderFile /= lsystem->name() + ".svg";
-            if (!writeToFile(outputRenderFile.string(), node2svg(lsystem->current(), lsystem))) {
-                std::cerr << "File " << outputRenderFile << " is not writable." << std::endl;
-                exit(1);
-            }
-        }
+        // if (settings.renderMode.get() == Settings::RenderMode::SVG) {
+        //     std::filesystem::path outputRenderFile = outputRenderPath;
+        //     if (std::filesystem::is_directory(outputRenderFile))
+        //         outputRenderFile /= lsystem->name() + ".svg";
+        //     if (!writeToFile(outputRenderFile.string(), node2svg(lsystem->current(), lsystem))) {
+        //         std::cerr << "File " << outputRenderFile << " is not writable." << std::endl;
+        //         exit(1);
+        //     }
+        // }
 
     }
 
