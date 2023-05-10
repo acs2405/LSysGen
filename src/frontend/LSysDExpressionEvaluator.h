@@ -15,8 +15,6 @@ class LSysDExpressionEvaluator;
 using namespace lsysgen;
 
 class LSysDExpressionEvaluator: public LSysDParserBaseVisitor {
-    friend Operations;
-    
     ErrorHandler* eh;
     Operations* ops;
     Scope* scope;

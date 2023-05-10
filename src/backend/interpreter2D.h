@@ -96,12 +96,12 @@ public:
 // };
 
 std::string node2svg(
-        lsysgen::TreeNode<lsysgen::InstanceNodeContent, char>* parent, 
-        lsysgen::LSystem<char>* lsystem=nullptr);
+        lsysgen::TreeNode<lsysgen::InstanceNodeContent, char> * parent, 
+        lsysgen::LSystem<char> * lsystem=nullptr);
 
 std::string node2svg(
-        lsysgen::TreeNode<lsysgen::InstanceNodeContent, char>* parent, 
-        State2D& state, 
-        Bounds2D &bounds, 
-        lsysgen::LSystem<char>* lsystem);
+        lsysgen::TreeNode<lsysgen::InstanceNodeContent, char> * parent, 
+        State2D & state, 
+        Bounds2D & bounds, 
+        lsysgen::LSystem<char> * lsystem);
 

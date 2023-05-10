@@ -1,7 +1,7 @@
 # minimum required CMAKE version
 CMAKE_MINIMUM_REQUIRED(VERSION 3.16 FATAL_ERROR)
 
-project("LSysGen" VERSION 0.6.2)
+project("LSysGen" VERSION 0.6.3)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
