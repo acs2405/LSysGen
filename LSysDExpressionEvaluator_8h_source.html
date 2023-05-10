@@ -22,7 +22,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">LSysGen
-   &#160;<span id="projectnumber">0.6.2</span>
+   &#160;<span id="projectnumber">0.6.3</span>
    </div>
    <div id="projectbrief">C++ generic L System Generator + Interpreter</div>
   </td>
@@ -63,7 +63,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_8509b06bafa958d2011203a730bf5778.html">frontend</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -88,104 +88,102 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">using namespace </span>lsysgen;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
 <div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classLSysDExpressionEvaluator.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>: <span class="keyword">public</span> <a class="code" href="classLSysDParserBaseVisitor.html">LSysDParserBaseVisitor</a> {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <span class="keyword">friend</span> <a class="code" href="classlsysgen_1_1Operations.html">Operations</a>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="classlsysgen_1_1ErrorHandler.html">ErrorHandler</a>* eh;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    <a class="code" href="classlsysgen_1_1Operations.html">Operations</a>* ops;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    <a class="code" href="classlsysgen_1_1Scope.html">Scope</a>* scope;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">public</span>:</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="comment">// LSysDExpressionEvaluator(std::string const&amp; filename, std::vector&lt;std::string&gt; const* sourceLines);</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>(<a class="code" href="classlsysgen_1_1ErrorHandler.html">ErrorHandler</a> * eh);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>(<a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a> <span class="keyword">const</span>&amp; ev);</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    <a class="code" href="classlsysgen_1_1ErrorHandler.html">ErrorHandler</a>* eh;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    <a class="code" href="classlsysgen_1_1Operations.html">Operations</a>* ops;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="classlsysgen_1_1Scope.html">Scope</a>* scope;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <span class="comment">// LSysDExpressionEvaluator(std::string const&amp; filename, std::vector&lt;std::string&gt; const* sourceLines);</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    <a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>(<a class="code" href="classlsysgen_1_1ErrorHandler.html">ErrorHandler</a> * eh);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>(<a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a> <span class="keyword">const</span>&amp; ev);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    ~<a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>();</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    ~<a class="code" href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a>();</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    <a class="code" href="classlsysgen_1_1ErrorHandler.html">ErrorHandler</a> * messages();</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classlsysgen_1_1ErrorHandler.html">ErrorHandler</a> * messages();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <a class="code" href="classlsysgen_1_1Value.html">Value</a> eval(<a class="code" href="classLSysDParser_1_1ExpressionContext.html">LSysDParser::ExpressionContext</a>* expr, <a class="code" href="classlsysgen_1_1Scope.html">Scope</a>* scope);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classlsysgen_1_1Value.html">Value</a> eval(<a class="code" href="classLSysDParser_1_1ExpressionContext.html">LSysDParser::ExpressionContext</a>* expr, <a class="code" href="classlsysgen_1_1Scope.html">Scope</a>* scope);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    std::any visitConstExpr(<a class="code" href="classLSysDParser_1_1ConstExprContext.html">LSysDParser::ConstExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">private</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    std::any visitConstExpr(<a class="code" href="classLSysDParser_1_1ConstExprContext.html">LSysDParser::ConstExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    std::any visitIdExpr(<a class="code" href="classLSysDParser_1_1IdExprContext.html">LSysDParser::IdExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    std::any visitIdExpr(<a class="code" href="classLSysDParser_1_1IdExprContext.html">LSysDParser::IdExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    std::any visitAritBinaryExpr(<a class="code" href="classLSysDParser_1_1AritBinaryExprContext.html">LSysDParser::AritBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    std::any visitAritBinaryExpr(<a class="code" href="classLSysDParser_1_1AritBinaryExprContext.html">LSysDParser::AritBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="comment">// std::any visitFunctionDefExpr(LSysDParser::FunctionDefExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">// std::any visitFunctionDefExpr(LSysDParser::FunctionDefExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="comment">// std::any visitIndexExpr(LSysDParser::IndexExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="comment">// std::any visitIndexExpr(LSysDParser::IndexExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="comment">// std::any visitSetDefExpr(LSysDParser::SetDefExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// std::any visitSetDefExpr(LSysDParser::SetDefExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    std::any visitLogicBinaryExpr(<a class="code" href="classLSysDParser_1_1LogicBinaryExprContext.html">LSysDParser::LogicBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    std::any visitLogicBinaryExpr(<a class="code" href="classLSysDParser_1_1LogicBinaryExprContext.html">LSysDParser::LogicBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    std::any visitCmpBinaryExpr(<a class="code" href="classLSysDParser_1_1CmpBinaryExprContext.html">LSysDParser::CmpBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    std::any visitCmpBinaryExpr(<a class="code" href="classLSysDParser_1_1CmpBinaryExprContext.html">LSysDParser::CmpBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    std::any visitFunctionCallExpr(<a class="code" href="classLSysDParser_1_1FunctionCallExprContext.html">LSysDParser::FunctionCallExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    std::any visitFunctionCallExpr(<a class="code" href="classLSysDParser_1_1FunctionCallExprContext.html">LSysDParser::FunctionCallExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="comment">// std::any visitTupleDefExpr(LSysDParser::TupleDefExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="comment">// std::any visitTupleDefExpr(LSysDParser::TupleDefExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    std::any visitBitBinaryExpr(<a class="code" href="classLSysDParser_1_1BitBinaryExprContext.html">LSysDParser::BitBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    std::any visitBitBinaryExpr(<a class="code" href="classLSysDParser_1_1BitBinaryExprContext.html">LSysDParser::BitBinaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="comment">// std::any visitListDefExpr(LSysDParser::ListDefExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="comment">// std::any visitListDefExpr(LSysDParser::ListDefExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="comment">// std::any visitMapDefExpr(LSysDParser::MapDefExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="comment">// std::any visitMapDefExpr(LSysDParser::MapDefExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    std::any visitAritUnaryExpr(<a class="code" href="classLSysDParser_1_1AritUnaryExprContext.html">LSysDParser::AritUnaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    std::any visitAritUnaryExpr(<a class="code" href="classLSysDParser_1_1AritUnaryExprContext.html">LSysDParser::AritUnaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    std::any visitLogicUnaryExpr(<a class="code" href="classLSysDParser_1_1LogicUnaryExprContext.html">LSysDParser::LogicUnaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    std::any visitLogicUnaryExpr(<a class="code" href="classLSysDParser_1_1LogicUnaryExprContext.html">LSysDParser::LogicUnaryExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    std::any visitParenthesizedExpr(<a class="code" href="classLSysDParser_1_1ParenthesizedExprContext.html">LSysDParser::ParenthesizedExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::any visitParenthesizedExpr(<a class="code" href="classLSysDParser_1_1ParenthesizedExprContext.html">LSysDParser::ParenthesizedExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="comment">// std::any visitPropertyAccessorExpr(LSysDParser::PropertyAccessorExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// std::any visitPropertyAccessorExpr(LSysDParser::PropertyAccessorExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="comment">// std::any visitInExpr(LSysDParser::InExprContext *ctx) override;</span></div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="comment">// std::any visitInExpr(LSysDParser::InExprContext *ctx) override;</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    std::any visitIfElseExpr(<a class="code" href="classLSysDParser_1_1IfElseExprContext.html">LSysDParser::IfElseExprContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    std::any visitIfElseExpr(<a class="code" href="classLSysDParser_1_1IfElseExprContext.html">LSysDParser::IfElseExprContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    std::any visitArguments(<a class="code" href="classLSysDParser_1_1ArgumentsContext.html">LSysDParser::ArgumentsContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    std::any visitArguments(<a class="code" href="classLSysDParser_1_1ArgumentsContext.html">LSysDParser::ArgumentsContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    std::any visitArgument(<a class="code" href="classLSysDParser_1_1ArgumentContext.html">LSysDParser::ArgumentContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    std::any visitArgument(<a class="code" href="classLSysDParser_1_1ArgumentContext.html">LSysDParser::ArgumentContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="comment">// std::any visitIndexes(LSysDParser::IndexesContext *ctx) override;</span></div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// std::any visitIndexes(LSysDParser::IndexesContext *ctx) override;</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="comment">// std::any visitIndex(LSysDParser::IndexContext *ctx) override;</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// std::any visitIndex(LSysDParser::IndexContext *ctx) override;</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// std::any visitFormalParameters(LSysDParser::FormalParametersContext *ctx) override;</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// std::any visitFormalParameters(LSysDParser::FormalParametersContext *ctx) override;</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// std::any visitFormalParameter(LSysDParser::FormalParameterContext *ctx) override;</span></div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="comment">// std::any visitFormalParameter(LSysDParser::FormalParameterContext *ctx) override;</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="comment">// std::any visitIteratordef(LSysDParser::IteratordefContext *ctx) override;</span></div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// std::any visitIteratordef(LSysDParser::IteratordefContext *ctx) override;</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// std::any visitListdef(LSysDParser::ListdefContext *ctx) override;</span></div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// std::any visitListdef(LSysDParser::ListdefContext *ctx) override;</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// std::any visitTupledef(LSysDParser::TupledefContext *ctx) override;</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="comment">// std::any visitTupledef(LSysDParser::TupledefContext *ctx) override;</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="comment">// std::any visitSetdef(LSysDParser::SetdefContext *ctx) override;</span></div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="comment">// std::any visitSetdef(LSysDParser::SetdefContext *ctx) override;</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="comment">// std::any visitMapdef(LSysDParser::MapdefContext *ctx) override;</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">// std::any visitMapdef(LSysDParser::MapdefContext *ctx) override;</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">// std::any visitMapiteratordef(LSysDParser::MapiteratordefContext *ctx) override;</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// std::any visitMapiteratordef(LSysDParser::MapiteratordefContext *ctx) override;</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// std::any visitMapitem(LSysDParser::MapitemContext *ctx) override;</span></div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="comment">// std::any visitMapitem(LSysDParser::MapitemContext *ctx) override;</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="comment">// std::any visitFunctiondef(LSysDParser::FunctiondefContext *ctx) override;</span></div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="comment">// std::any visitFunctiondef(LSysDParser::FunctiondefContext *ctx) override;</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="comment">// std::any visitSource(LSysDParser::SourceContext *ctx) override;</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="comment">// std::any visitSource(LSysDParser::SourceContext *ctx) override;</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    std::any visitIntConstant(<a class="code" href="classLSysDParser_1_1IntConstantContext.html">LSysDParser::IntConstantContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    std::any visitIntConstant(<a class="code" href="classLSysDParser_1_1IntConstantContext.html">LSysDParser::IntConstantContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    std::any visitFloatConstant(<a class="code" href="classLSysDParser_1_1FloatConstantContext.html">LSysDParser::FloatConstantContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    std::any visitFloatConstant(<a class="code" href="classLSysDParser_1_1FloatConstantContext.html">LSysDParser::FloatConstantContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    std::any visitStringConstant(<a class="code" href="classLSysDParser_1_1StringConstantContext.html">LSysDParser::StringConstantContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    std::any visitStringConstant(<a class="code" href="classLSysDParser_1_1StringConstantContext.html">LSysDParser::StringConstantContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    std::any visitTrueValue(<a class="code" href="classLSysDParser_1_1TrueValueContext.html">LSysDParser::TrueValueContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    std::any visitTrueValue(<a class="code" href="classLSysDParser_1_1TrueValueContext.html">LSysDParser::TrueValueContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    std::any visitFalseValue(<a class="code" href="classLSysDParser_1_1FalseValueContext.html">LSysDParser::FalseValueContext</a> *ctx) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160; </div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    std::any visitFalseValue(<a class="code" href="classLSysDParser_1_1FalseValueContext.html">LSysDParser::FalseValueContext</a> *ctx) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    std::any visitNullValue(<a class="code" href="classLSysDParser_1_1NullValueContext.html">LSysDParser::NullValueContext</a> *ctx) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;};</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    std::any visitNullValue(<a class="code" href="classLSysDParser_1_1NullValueContext.html">LSysDParser::NullValueContext</a> *ctx) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;};</div>
 <div class="ttc" id="aclassLSysDExpressionEvaluator_html"><div class="ttname"><a href="classLSysDExpressionEvaluator.html">LSysDExpressionEvaluator</a></div><div class="ttdef"><b>Definition:</b> LSysDExpressionEvaluator.h:17</div></div>
 <div class="ttc" id="aclassLSysDParserBaseVisitor_html"><div class="ttname"><a href="classLSysDParserBaseVisitor.html">LSysDParserBaseVisitor</a></div><div class="ttdef"><b>Definition:</b> LSysDParserBaseVisitor.h:15</div></div>
 <div class="ttc" id="aclassLSysDParser_1_1ArgumentContext_html"><div class="ttname"><a href="classLSysDParser_1_1ArgumentContext.html">LSysDParser::ArgumentContext</a></div><div class="ttdef"><b>Definition:</b> LSysDParser.h:1225</div></div>
