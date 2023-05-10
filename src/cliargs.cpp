@@ -212,6 +212,8 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                         argumentError("String output format argument repeated");
                     if (dest.size() > 0)
                         settings.outputResultFile.set(dest);
+                    else
+                        settings.outputResultFile = "-";
                 }
             } else if (arg == "-A" || arg == "--args") {
                 if (settings.args.isset())
@@ -315,8 +317,8 @@ be replaced by the 'right' string, e.g. \"A -> AB\", \"B->A\", etc." << std::end
 
     std::cout << "Examples:" << std::endl;
     std::cout << "  $ lsys -a \"A\" -r \"A->AB; B->A\" -i 5" << std::endl;
-    std::cout << "  $ lsys examples/PenroseTiling.lsd --svg PenroseTiling4Red.svg -i 4 -C \"#f00\"" << std::endl;
-    std::cout << "  $ lsys examples/DragonCurve.lsd --svg RareCurve1.svg -R 60 -L 1" << std::endl;
+    std::cout << "  $ lsys examples/PenroseTiling.lsd --output svg PenroseTiling4Red.svg -i 4 -C \"#f00\"" << std::endl;
+    std::cout << "  $ lsys examples/DragonCurve.lsd -o svg RareCurve1.svg -R 60 -L 1" << std::endl;
     
     std::cout << std::endl;
 
@@ -353,19 +355,21 @@ executed with the same seed. Default value is -1 (chooses a random seed)." << st
 
     std::cout << "     -X, --axiom-input: when this option is set, the program will read the input file as an axiom rather than as \
 a LSD file." << std::endl;
-    std::cout << "     -o OUTPUT_FILE, --output OUTPUT_FILE: this file will be used to write the result word of the L System derivations \
-(even if --svg option is set). If OUTPUT_FILE is set to \"-\" then the result will be printed to the standard output. If set to a \
-directory, a FILE.txt file will be created inside that directory, where FILE will be the name of the selected L System. When \
-neither OUTPUT_FILE nor --svg are set then the result will be printed to the standard output." << std::endl;
+    std::cout << "     -o FORMAT [DEST], --output FORMAT [DEST]: the output format/backend FORMAT will be used as an output that \
+will be generated in DEST if set, or in the standard output otherwise (or if set to '-'). If DEST is set to a directory, \
+a FILE.EXT file will be created inside that directory for each selected L System, where FILE will be the name of the L System \
+and EXT will vary depending on the selected format. More than one format may be specified for several output formats. If this \
+option is not set then the result string will be printed to the standard output." << std::endl;
     std::cout << std::endl;
-    std::cout << "     --svg [OUTPUT_SVG_FILE]: this option activates SVG image creation after iterating the L System. The program \
-interprets the result of the iterations to build a SVG file and printing it to the standard output, or optionally in the file \
-OUTPUT_SVG_FILE. If OUTPUT_SVG_FILE set to a directory, a FILE.svg file will be created inside that directory, where FILE will be \
-the name of the selected L System. The procedure of the creation of the image is: a \"turtle\" head with a pen is heading left (by \
-default) and the result string symbols (only the special characters) will draw lines, move or change the state of the turtle, e.g. \
-F moves forward while drawing a line, f moves forward without drawing, + will turn the turtle to its left and - to its right." << std::endl;
+    std::cout << "Currently supported output formats:" << std::endl;
+    std::cout << "     * str: this format creates a plain TXT file after the L System result. The program just prints the result of \
+the iterated L System." << std::endl;
+    std::cout << "     * svg: this format creates an SVG image after the L System result. The program interprets the result of the \
+iterated L System to build a SVG image. The procedure of the creation of the image is: a \"turtle\" head with a pen is heading left \
+(by default) and the result string symbols (only the special characters) will draw lines, move or change the state of the turtle, \
+e.g. F moves forward while drawing a line, f moves forward without drawing, + will turn the turtle to its left and - to its right." << std::endl;
     std::cout << std::endl;
-    std::cout << "Options for SVG output:" << std::endl;
+    std::cout << "Options for SVG output format:" << std::endl;
     std::cout << "     -H DEGREES, --heading DEGREES: sets or overrides the initial heading of the turtle." << std::endl;
     std::cout << "     -R DEGREES, --rotation DEGREES: sets or overrides the angle that + and - rotate the turtle. (+ and - can \
 be parametrized to rotate a custom angle)" << std::endl;

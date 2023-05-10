@@ -3,7 +3,7 @@
 This project implements in C++ an L System generator and renderer and a LSDL (L System Defining Language) interpreter. LSDL is a custom specific purpose language (see `Syntax and semantics`) that has been created ad-hoc for this project as a way of describing L Systems to the generator. The program reads LSDL `*.lsd` files, that define one or more L Systems with an easy and compact syntax. You can not only print the results of the L System but also create a SVG image from it (see `2D rendering`). Example:
 
 ```
-lsys -a "A" -r "A->F(1.0)[+A][-A]; F(x)->F(x*1.6)" -H 90 -R 60 -C "#f00" -W 2 -i 11 --svg - -w 1000 | display
+lsys -a "A" -r "A->F(1.0)[+A][-A]; F(x)->F(x*1.6)" -H 90 -R 60 -C "#f00" -W 2 -i 11 -o svg -w 1000 | display
 ```
 
 Shows:
@@ -53,7 +53,7 @@ lsystem DragonCurve {
 }
 ```
 
-Executing the program with this file (`lsys examples/Dragon.lsd --svg - | display`) generates:
+Executing the program with this file (`lsys examples/Dragon.lsd -o svg | display`) generates:
 
 ![Dragon curve](./images/DragonCurve.svg)
 
@@ -81,7 +81,7 @@ Cantor set (examples/ParametricCantorSet.lsd):
 
 #### Ubuntu/Debian
 
-This program uses `ANTLR 4.12.0` and `CMake (>=3.16)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program tobuild or run, it justs provides the `display` command to be able to easily display SVG outputs in the command line (e.g. `./lsys (...) -svg - | display`). To install our dependencies:
+This program uses `ANTLR 4.12.0` and `CMake (>=3.16)`. ANTLR4 will later be installed and linked with the `make` command automatically. `imagemagick` is not needed for the program tobuild or run, it justs provides the `display` command to be able to easily display SVG outputs in the command line (e.g. `./lsys (...) -o svg | display`). To install our dependencies:
 
 ```
 sudo apt install g++ cmake imagemagick
@@ -177,7 +177,7 @@ This will create our documentation HTML files in `build/docs/doxygen/html`.
 
 ### Execution
 
-This project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage our L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `--svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
+This project has two elements for processing L Systems: an executable and a library. The library (`lsysgen`) provides access to functions to manage our L Systems, Modules and read LSDL files. The executable (`lsys`) provides many options to create, customize and run your L Systems with command line arguments. The `-o svg` option prints or writes to a file a SVG image of the run (the program just prints out the file, you can open it with a SVG compatible image viewer or a web browser, see `2D rendering`).
 
 To execute the `lsys` program, go to `build/` and run either of:
 
@@ -192,8 +192,7 @@ The main options are:
 - `-a AXIOM`: sets or overrides the axiom. `AXIOM` should be quoted.
 - `-r RULES`: adds rules to the L System. `RULES` must be quoted.
 - `-l NAME...`, `--all`: selects the L System(s) that will be displayed from the source file (when there are more than one in the same LSD file). `--all` selects all of them.
-- `-o OUTPUT_RESULT_FILE`: outputs the result string of the L System iterations. If `OUTPUT_RESULT_FILE` is set to a directory, a `FILE.txt` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System). If is set to `-`, the program will print the result in the standard output.
-- `--svg [OUTPUT_SVG_FILE]`: outputs a SVG image after the L System result. If `OUTPUT_SVG_FILE` is set to a directory, a `FILE.svg` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System). If `OUTPUT_SVG_FILE` is not set or set to `-`, the program will print the SVG in the standard output.
+- `-o FORMAT [OUTPUT_FILE]`: outputs the result of the L System iterations as some `FORMAT`. If `OUTPUT_FILE` is set to a directory, a `FILE.EXT` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System and `EXT` by the format extension). If `OUTPUT_FILE` is not set or set to `-`, the program will print the result in the standard output. The two currently supported formats are `str` and `svg`.
 
 Run `./lsys --help` to see all options. 
 
@@ -214,7 +213,7 @@ ABBABBABABBABBABABBABABBABBABABBABBABABBABABBABBABABBABABBABBABABBABBABABBABABBA
 L System from LSDL file (ImageMagick's `display` opens a window that displays the SVG image output):
 
 ```
-./lsys ../examples/tests.lsd -l Test1 --svg - | display
+./lsys ../examples/tests.lsd -l Test1 -o svg - | display
 ```
 
 Output:
@@ -224,9 +223,9 @@ Output:
 Other examples:
 
 ```
-./lsys ../examples/Hilbert.lsd --svg -i 4 | display
-./lsys ../examples/B2.lsd -i 20 --svg B2-20.svg
-./lsys ../examples/classics.lsd --all --svg ../images
+./lsys ../examples/Hilbert.lsd -o svg -i 4 | display
+./lsys ../examples/B2.lsd -i 20 -o svg B2-20.svg
+./lsys ../examples/classics.lsd --all -o svg ../images
 ```
 
 There is also a small Python module, `lsys.py`, that uses the `lsysgen` library and serves as a Python wrapper for the library (through its class `LSystem` that is able to print the L system and also its 2D render). This python script is also runnable and prints the resulting L system string and the SVG image:
@@ -254,7 +253,7 @@ To define an L system with an axiom and the rules that transform it, I have crea
 In the cases where we want to define just an axiom for the program to interpret it, we can just fill the document with the axiom. For example, to quickly draw a custom figure:
 
 ```
-./build/lsys -a "F+F+PF+F+F+Fp+F+F" -F "#FF0000" -R 30 --svg images/test.svg
+./build/lsys -a "F+F+PF+F+F+Fp+F+F" -F "#FF0000" -R 30 -o svg images/test.svg
 ```
 
 But this is not the main case. If we want to *generate* the L system, we create an LSDL document for it or tweak the program's parameters (`-r` to add rules, etc.).
@@ -302,7 +301,7 @@ lsystem SierpinskiTriangle {
 If we run:
 
 ```
-./build/lsys examples/Sierpinski.lsd -l SierpinskiTriangle --svg - | display
+./build/lsys examples/Sierpinski.lsd -l SierpinskiTriangle -o svg - | display
 ```
 
 This generates:
@@ -610,7 +609,7 @@ You can also define any other variable or constant you want, and use them in the
 
 ## 2D rendering
 
-The program `lsys` with the `--svg` argument renders the output of the L System generation in a 2D SVG image file.
+The program `lsys` with the `-o svg` argument renders the output of the L System generation in a 2D SVG image file.
 
 The special characters that 2D rendering uses are:
 
@@ -661,10 +660,10 @@ The rest of the characters will be ignored when displaying.
 
 ## SVG
 
-`lsys` with the option `--svg` converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's `display`:
+`lsys` with the option `-o svg` converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's `display`:
 
 ```
-lsys examples/B2.lsd --svg - | display
+lsys examples/B2.lsd -o svg | display
 ```
 
 If you want to convert a SVG file into a PNG file, you can use `inkscape`:
