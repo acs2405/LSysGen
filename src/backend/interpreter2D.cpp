@@ -90,8 +90,8 @@ Bounds2D::Bounds2D(): p0(), p1() {}
 
 
 std::string node2svg(
-        TreeNode<InstanceNodeContent, char> * parent, 
-        LSystem<char> * lsystem) {
+        TreeNode<InstanceNodeContent, char> const* parent, 
+        LSystem<char> const* lsystem) {
     State2D initialState;
     Bounds2D bounds;
     // TODO: isNaN(rotation y linewidth) ???
@@ -152,10 +152,10 @@ std::string node2svg(
 }
 
 std::string node2svg(
-        TreeNode<InstanceNodeContent, char> * parent, 
+        TreeNode<InstanceNodeContent, char> const* parent, 
         State2D & state, 
         Bounds2D & bounds, 
-        LSystem<char> * lsystem) {
+        LSystem<char> const* lsystem) {
     std::string svgContent = "";
 
     auto stack = new std::list<std::pair<State2D, TreeNode<InstanceNodeContent, char>*>>();

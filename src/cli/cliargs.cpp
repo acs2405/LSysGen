@@ -16,13 +16,13 @@ std::set<std::string> const argNamesOpt = {
 };
 std::set<std::string> const argNames1 = {
     "-a", "--axiom", "-r", "--rules", "-i", "--iterations", "-I", 
-    "--ignore", "-H", "--heading", 
+    "--ignore", "-H", "--heading", //"-p", "--plugin", 
     "-R", "--rotation", "-W", "--line-width", "-B", "--background", 
     "-C", "--line-color", "-F", "--fill-color", 
     "-w", "--width", "-h", "--height"
 };
 std::set<std::string> const argNamesN = {
-    "-o", "--output", "-A", "--args", "-l", "--lsystems"
+    "-o", "--output", "-l", "--lsystems", //"-A", "--args"
 };
 std::set<std::string> const outputFormats = {
     "raw", "svg"
@@ -41,6 +41,13 @@ void argumentError(std::string_view message, bool printUsageAfterMessage=false) 
 template<typename N>
 bool betweenInclusive(N n, N min, N max) {return n >= min && n <= max;}
 
+// Excludes options starting with -, but includes "-" and negative numbers
+bool isValue(char * arg) {
+    return arg[0] != '-' || arg[1] == '\0' || betweenInclusive(arg[1], '0', '9');
+}
+
+bool isOption(char * arg) {return !isValue(arg);}
+
 
 void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
     if (argc < 2) {
@@ -58,27 +65,17 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
         if (arg.size() == 0)
             continue;
 
-        if (argv[i][0] != '-' || argv[i][1] == '\0' || betweenInclusive(argv[i+1][1], '0', '9')) {
+        if (isValue(argv[i])) {
+            // Found a value (positional argument)
             settings.inputFiles.getRef().push_back(arg);
-            // if (positionalArgs == 0) {
-            //     // Found first positional argument
-            //     if (arg.size() > 0)
-            //         settings.inputFile.set(arg);
-            // } else if (positionalArgs == 1) {
-            //     // Found second positional argument
-            //     settings.outputResultFile.set(arg);
-            // } else {
-            //     // Found third positional argument (not expected)
-            //     argumentError("Error: too many positional arguments", true);
-            // }
             ++positionalArgs;
         } else {
-            // Found a keyword argument
+            // Found the first option name
             break;
         }
     }
 
-    // Reads keyword arguments afterwards
+    // Reads options afterwards
     for (int i = positionalArgs + 1; i < argc; ++i) {
         std::string arg = argv[i];
 
@@ -86,6 +83,7 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
             continue;
 
         if (argNames0.find(arg) != argNames0.end()) {
+            // Options with no arguments
             if (arg == "-X" || arg == "--axiom-input") {
                 if (settings.inputMode.isset())
                     argumentError("input mode argument repeated");
@@ -102,10 +100,11 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 exit(0);
             }
         } else if (argNamesOpt.find(arg) != argNamesOpt.end()) {
+            // Options with 0 or 1 argument
             std::string arg2;
             if (argc > i+1) {
                 // Excludes options starting with - (except numbers), but includes "-"
-                if (argv[i+1][0] != '-' || argv[i+1][1] == '\0' || betweenInclusive(argv[i+1][1], '0', '9'))
+                if (isValue(argv[i+1]))
                     arg2 = argv[++i];
             }
             if (arg == "-S" || arg == "--seed") {
@@ -118,6 +117,7 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 }
             }
         } else if (argNames1.find(arg) != argNames1.end()) {
+            // Options with 1 argument
             if (argc == i+1)
                 argumentError(arg + " must be followed by a value");
             std::string arg2 = argv[++i];
@@ -138,6 +138,16 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (settings.ignore.isset())
                     argumentError("ignore argument repeated");
                 settings.ignore.set(arg2);
+            // } else if (arg == "-p" || arg == "--plugin") {
+                /* TODO: import module/plugin shared library (arg + ".so/dll/dylib")
+                 * call a initializer (or allocator + deleter) function in the library (dlopen, dlsym, dlclose, dlerror in <dlfcn.h>)
+                 * Create C structs or c++ interfaces for exchanging information with that function (plugin.h)
+                 * Also create extern "C" functions to retrieve data from TreeNodes and LSystems (plugin.h)
+                 * initializer(char *opts, int *minArgs, int *maxArgs, void *formatNames, void *formatExts, void *formatFuncs) 
+                 * will return supported options (-?/--??, with argument numbers), format names with 
+                 * their functions and file extensions, etc.
+                 * see https://theo-penavaire.medium.com/loading-of-a-c-class-from-a-shared-library-modern-c-722d6a830a2b
+                 */
             } else if (arg == "-H" || arg == "--heading") {
                 if (settings.settings2D.heading.isset())
                     argumentError("heading argument repeated");
@@ -172,11 +182,12 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 settings.settings2D.height.set(strict_stof(arg, arg2));
             }
         } else if (argNamesN.find(arg) != argNamesN.end()) {
+            // Options with any number of arguments
             std::vector<char*> values;
             values.reserve(5);
             for (++i; i < argc; ++i) {
-                // Excludes options starting with -, but includes "-"
-                if (argv[i][0] != '-' || argv[i][1] == '\0' || betweenInclusive(argv[i][1], '0', '9')) {
+                if (isValue(argv[i])) {
+                    // Found a value
                     values.push_back(argv[i]);
                 } else {
                     // Found an option name. Stop here
@@ -207,6 +218,13 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                     outputs[format] = dest;
                 else
                     outputs[format] = "-";
+            } else if (arg == "-l" || arg == "--lsystems") {
+                if (settings.lsystems.isset())
+                    argumentError("lsystems argument repeated (" + arg + ")");
+                if (values.size() == 0)
+                    argumentError(arg + " must be followed by one or more L System names");
+                for (char const* arg2 : values)
+                    settings.lsystems.getRef().push_back(arg2);
             } else if (arg == "-A" || arg == "--args") {
                 if (settings.args.isset())
                     argumentError("arguments argument repeated");
@@ -221,13 +239,6 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                         argumentError(arg + " arguments must be pairs NAME:VALUE");
                     }
                 }
-            } else if (arg == "-l" || arg == "--lsystems") {
-                if (settings.lsystems.isset())
-                    argumentError("lsystems argument repeated (" + arg + ")");
-                if (values.size() == 0)
-                    argumentError(arg + " must be followed by one or more L System names");
-                for (char const* arg2 : values)
-                    settings.lsystems.getRef().push_back(arg2);
             }
         } else {
             if (argv[i][0] != '-' || argv[i][1] == '\0' || betweenInclusive(argv[i][1], '0', '9'))

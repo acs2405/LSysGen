@@ -21,7 +21,7 @@ static std::map<int, std::string> signames {
 };
 
 #ifndef NDEBUG
-#ifdef __linux__
+#if defined(__linux__) || defined(__APPLE__)
 #include <execinfo.h>
 void handler(int sig) {
     size_t const max_size = 64;
@@ -54,6 +54,8 @@ void handle_signals() {
 
 
 int main(int argc, char** argv) {
+    std::ios::sync_with_stdio(false); // To make std::cout prints faster
+
     handle_signals();
 
     Settings settings;
