@@ -212,12 +212,12 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 if (outputFormats.find(format) == outputFormats.end())
                     argumentError(format + " is not a supported format (must be raw or svg)");
                 auto & outputs = settings.outputs.getRef();
-                if (outputs.find(format) != outputs.end())
+                if (std::any_of(outputs.cbegin(), outputs.cend(), [format](auto const& p){return format==p.first;}))
                     argumentError(format + " output format argument repeated");
                 if (dest.size() > 0)
-                    outputs[format] = dest;
+                    outputs.push_back(std::make_pair(format, dest));
                 else
-                    outputs[format] = "-";
+                    outputs.push_back(std::make_pair(format, "-"));
             } else if (arg == "-l" || arg == "--lsystems") {
                 if (settings.lsystems.isset())
                     argumentError("lsystems argument repeated (" + arg + ")");

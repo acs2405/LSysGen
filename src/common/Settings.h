@@ -45,14 +45,14 @@ public:
 class Settings2D {
 public:
 
-    static float          const DEFAULT_HEADING;
-    static float          const DEFAULT_ROTATION;
-    static float          const DEFAULT_LINE_WIDTH;
+    static float           const DEFAULT_HEADING;
+    static float           const DEFAULT_ROTATION;
+    static float           const DEFAULT_LINE_WIDTH;
     static std::string     const DEFAULT_BACKGROUND;
     static std::string     const DEFAULT_LINE_COLOR;
     static std::string     const DEFAULT_FILL_COLOR;
-    static float          const DEFAULT_WIDTH;
-    static float          const DEFAULT_HEIGHT;
+    static float           const DEFAULT_WIDTH;
+    static float           const DEFAULT_HEIGHT;
 
     static Settings2D      const DEFAULT;
 
@@ -91,7 +91,7 @@ public:
     static int                   const DEFAULT_SEED;
     static std::string           const DEFAULT_OUTPUT_FORMAT;
 
-    static std::map<std::string, std::string> 
+    static std::list<std::pair<std::string, std::string>> 
                                  const DEFAULT_OUTPUTS;
 
     static Settings              const DEFAULT;
@@ -108,7 +108,7 @@ public:
     // Setting<std::string> outputRenderFile;
     Setting<std::list<std::string>> lsystems;
     Setting<std::string> axiom;
-    Setting<std::map<std::string, std::string>> outputs;
+    Setting<std::list<std::pair<std::string, std::string>>> outputs;
     // Setting<Settings::RenderMode> renderMode;
     Setting<Settings::InputMode> inputMode;
     Setting<std::string> rules;

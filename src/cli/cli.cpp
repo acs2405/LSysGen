@@ -62,18 +62,18 @@ int main(int argc, char** argv) {
 
     parseCLIArgs(argc, argv, settings);
 
-    std::map<std::string, std::filesystem::path> outputPaths;
+    std::list<std::pair<std::string, std::filesystem::path>> outputPaths;
 
     if (!settings.outputs.isset())
-        settings.outputs.getRef()[Settings::DEFAULT_OUTPUT_FORMAT] = "-";
+        settings.outputs.getRef().push_back(std::make_pair(Settings::DEFAULT_OUTPUT_FORMAT, "-"));
 
     for (auto const& [format, output] : settings.outputs.getRef()) {
         if (output.size() > 0)
-            outputPaths[format] = output;
+            outputPaths.push_back(std::make_pair(format, output));
         else
-            outputPaths[format] = "-";
+            outputPaths.push_back(std::make_pair(format, "-"));
         // else if (lsystems->size() > 1)
-        //     outputPaths[format] = std::filesystem::current_path();
+        //     outputPaths.push_back(std::make_pair(format, std::filesystem::current_path()));
     }
 
     if (settings.inputFiles.get().size() > 1 || (settings.lsystems.isset() && settings.lsystems.get().size() != 1)) {

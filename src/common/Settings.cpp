@@ -17,7 +17,7 @@ std::string           const Settings::DEFAULT_IGNORE        = "";
 int                   const Settings::DEFAULT_SEED          = -1;
 std::string           const Settings::DEFAULT_OUTPUT_FORMAT = "raw";
 
-std::map<std::string, std::string> 
+std::list<std::pair<std::string, std::string>> 
                       const Settings::DEFAULT_OUTPUTS       {};
 
 float                 const Settings2D::DEFAULT_HEADING     = 0.0f;
@@ -119,5 +119,6 @@ template class Setting<std::string>;
 template class Setting<Settings::InputMode>;
 template class Setting<std::list<std::string>>;
 template class Setting<std::map<std::string, std::string>>;
+template class Setting<std::list<std::pair<std::string, std::string>>>;
 
 }
