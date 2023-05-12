@@ -172,9 +172,10 @@ Execution</h2>
 <li><code>-a AXIOM</code>: sets or overrides the axiom. <code>AXIOM</code> should be quoted.</li>
 <li><code>-r RULES</code>: adds rules to the L System. <code>RULES</code> must be quoted.</li>
 <li><code>-l NAME...</code>, <code>--all</code>: selects the L System(s) that will be displayed from the source file (when there are more than one in the same LSD file). <code>--all</code> selects all of them.</li>
-<li><code>-o FORMAT [OUTPUT_FILE]</code>: outputs the result of the L System iterations as some <code>FORMAT</code>. If <code>OUTPUT_FILE</code> is set to a directory, a <code>FILE.EXT</code> will be created inside that directory for every L System that has been selected (replacing <code>FILE</code> by the name of the L System and <code>EXT</code> by the format extension). If <code>OUTPUT_FILE</code> is not set or set to <code>-</code>, the program will print the result in the standard output. The two currently supported formats are <code>raw</code> (raw text output) and <code>svg</code> (SVG representation of the result).</li>
+<li><code>-o FORMAT [OUTPUT_FILE]</code>: outputs the result of the L System iterations as some <code>FORMAT</code>. If <code>OUTPUT_FILE</code> is set to a directory, a <code>FILE.EXT</code> will be created inside that directory for every L System that has been selected (replacing <code>FILE</code> by the name of the L System and <code>EXT</code> by the format extension). If <code>OUTPUT_FILE</code> is not set or set to <code>-</code>, the program will print the result in the standard output. The two currently supported formats are <code>raw</code> (raw text output) and <code>svg</code> (SVG representation of the result). You can combine more than one output format if tou want like this:</li>
 </ul>
-<p>Run <code>./lsys --help</code> to see all options.</p>
+<div class="fragment"><div class="line">./lsys ../examples/classics.lsd -l Vicsek -o raw -o svg ./</div>
+</div><!-- fragment --><p>Run <code>./lsys --help</code> to see all options.</p>
 <p>Examples:</p>
 <p>Inline L System (without LSDL file, defined by axiom (<code>-a</code>) and rules (<code>-r</code>) arguments):</p>
 <div class="fragment"><div class="line">./lsys -a &quot;A&quot; -r &quot;A-&gt;B; B-&gt;AB;&quot; -i 10</div>
@@ -392,28 +393,28 @@ Variables and constants</h2>
 <p>The state is a position, heading, color and line width configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.</p>
 <ul>
 <li><code>c(r, g, b)</code> or <code>c(r, g, b, a)</code> changes the pen and fill color to the specified by the parameter(s) (<code>r</code> for red, <code>g</code> for green, <code>b</code> for blue and <code>a</code> for opacity; colors and opacity values range from 0 to 255 or from 0.0 to 1.0) until the end of the current branch or until it is changed again. For example, <code>c(255, 0, 0)</code> sets color to red (opaque by default), <code>c(80, 80, 80, 0.5)</code> sets color to semi-transparent dark grey and <code>c(1.0, 0.0, 1.0, 1.0)</code> sets color to opaque pink. Default fill and pen color is black.</li>
-<li><code>n</code> works as <code>c</code> but only with pen color.</li>
-<li><code>l</code> works as <code>c</code> but only with fill color.</li>
+<li><code>n(...)</code> works as <code>c(...)</code> but only with pen color.</li>
+<li><code>l(...)</code> works as <code>c(...)</code> but only with fill color.</li>
 <li><code>w()</code> or <code>w(wid)</code> changes the line width of the following lines to <code>wid</code> or to the value of the <code>line_width</code> constant by default. <code>w(wid)</code> works as the <code>line_width</code> constant but it affects anly the following lines instead of being global.</li>
 </ul>
 <p><a class="el" href="structColor.html">Color</a> and line width changes won't be visible while filling, so they are not recommended under filling.</p>
 <ul>
-<li><code>P</code> to start delimiting a figure to fill. <code>P(r, g, b)</code> and <code>P(r, g, b, a)</code> is also valid and works as l but just for the current fill.</li>
-<li><code>p</code> to end delimiting the figure.</li>
+<li><code>P</code> starts delimiting a figure to fill. <code>P(r, g, b)</code> and <code>P(r, g, b, a)</code> are also valid and work as <code>l(...)</code> but just for the current fill.</li>
+<li><code>p</code> ends delimiting the figure to fill (in the same branch that was opened by <code>P</code>).</li>
 </ul>
-<p>It is not possible to fill two figures if one contains another in the string. This is, every <code>P</code> must be followed by a <code>p</code> before branch end or another <code>P</code>, and there must not be a <code>p</code> without a <code>P</code> before. They work in the same branch, not in children nor in parent, and if you start a branch while filling, the new branch won't be filled.</p>
+<p>It is not possible to fill two figures if one contains another in the same branch. This is, every <code>P</code> must be followed by a <code>p</code> before the end of the branch and before another <code>P</code>, and there must not be a <code>p</code> without a <code>P</code> before. If you start a branch while filling, the new branch won't be filled.</p>
 <ul>
-<li><code>Z</code> to close the current path. Paths are continuous until a color or line width change or a <code>P</code>, <code>p</code> or <code>Z</code> is found.</li>
-<li><code>c</code>, <code>c()</code> and <code>c(r)</code> draws a circle of centre the current position and of radius <code>r</code> or <code>1.0</code> by default. This command does not end the current path.</li>
-<li><code>q</code> starts a quadratic bezier curve. It uses the next two points to define the curve, ending in the second one.</li>
-<li><code>t</code> works as <code>q</code> but is always defined just after <code>q</code> and uses its last point for the first point, so <code>t</code> only requires to define one point.</li>
-<li><code>z</code> starts a cubic bezier curve. It uses the next three points to define the curve, ending in the third one.</li>
-<li><code>s</code> works as <code>z</code> but is always defined just after <code>z</code> and uses its last point for the first point, so <code>s</code> only requires to define two points.</li>
+<li><code>Z</code> closes the current path. Paths are continuous until a color or line width change or a <code>P</code>, <code>p</code> or <code>Z</code> is found.</li>
+<li><code>c()</code> or <code>c(r)</code> draws a circle of centre the current position and of radius <code>r</code> (<code>1.0</code> by default). This command does not end the current path.</li>
+<li><code>q()</code> starts a quadratic bezier curve. It uses the next two points to define the curve, ending in the second one.</li>
+<li><code>t()</code> works as <code>q()</code> but is always defined just after <code>q()</code> and uses its last point for the first point, so <code>t()</code> only requires to define one point.</li>
+<li><code>z()</code> starts a cubic bezier curve. It uses the next three points to define the curve, ending in the third one.</li>
+<li><code>s()</code> works as <code>z()</code> but is always defined just after <code>z()</code> and uses its last point for the first point, so <code>s()</code> only requires to define two points.</li>
 </ul>
-<p>The rest of the characters will be ignored when displaying.</p>
+<p>The rest of the characters will be ignored when displaying, so you can use them freely without changing the image.</p>
 <h1><a class="anchor" id="autotoc_md23"></a>
 SVG</h1>
-<p><code>lsys</code> with the option <code>-o svg</code> converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's <code>display</code>:</p>
+<p><code>lsys</code> with the option <code>-o svg</code> converts the result of the L-system to SVG (Scalable Vector Graphics). If you want to see your image while creating it you can use ImageMagick's <code>display</code>:</p>
 <div class="fragment"><div class="line">lsys examples/B2.lsd -o svg | display</div>
 </div><!-- fragment --><p>If you want to convert a SVG file into a PNG file, you can use <code>inkscape</code>:</p>
 <div class="fragment"><div class="line">inkscape -o test.png -w 1000 -b white test.svg</div>
