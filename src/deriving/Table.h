@@ -21,7 +21,10 @@ public:
     const std::string name;
 
 private:
-    std::map<T, std::list<Rule<T> *> *> _rules;
+    std::map<std::pair<T,int>, std::list<Rule<T> *>> _rules;
+    mutable std::map<std::pair<T,int>, std::list<Rule<T> *>> _cachedRules;
+
+    void addRule(Rule<T> * r, T c, int arity);
 
 public:
     Table(std::string const& name);
@@ -32,7 +35,7 @@ public:
 
     void addRule(Rule<T> * r);
 
-    std::list<Rule<T> *> const* rulesFor(T c) const;
+    std::list<Rule<T> *> const* rulesFor(T c, int arity) const;
 
     std::string toString() const;
 };

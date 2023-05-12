@@ -48,7 +48,7 @@ class LSystem {
     TreeNode<InstanceNodeContent, T> * _axiom;
     int _iterations;
     Settings2D _settings2D;
-    std::list<T> * _ignore;
+    std::vector<T> * _ignore;
     Function * _tableFunc;
 
     // bool _main;

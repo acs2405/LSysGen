@@ -49,7 +49,7 @@ protected:
     std::string toStringBase(std::string arrow) const;
 
 public:
-    ~Rule();
+    virtual ~Rule();
 
     char leftChar() const;
     std::list<Parameter *> const* params() const;

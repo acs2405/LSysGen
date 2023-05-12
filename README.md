@@ -192,7 +192,11 @@ The main options are:
 - `-a AXIOM`: sets or overrides the axiom. `AXIOM` should be quoted.
 - `-r RULES`: adds rules to the L System. `RULES` must be quoted.
 - `-l NAME...`, `--all`: selects the L System(s) that will be displayed from the source file (when there are more than one in the same LSD file). `--all` selects all of them.
-- `-o FORMAT [OUTPUT_FILE]`: outputs the result of the L System iterations as some `FORMAT`. If `OUTPUT_FILE` is set to a directory, a `FILE.EXT` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System and `EXT` by the format extension). If `OUTPUT_FILE` is not set or set to `-`, the program will print the result in the standard output. The two currently supported formats are `raw` (raw text output) and `svg` (SVG representation of the result).
+- `-o FORMAT [OUTPUT_FILE]`: outputs the result of the L System iterations as some `FORMAT`. If `OUTPUT_FILE` is set to a directory, a `FILE.EXT` will be created inside that directory for every L System that has been selected (replacing `FILE` by the name of the L System and `EXT` by the format extension). If `OUTPUT_FILE` is not set or set to `-`, the program will print the result in the standard output. The two currently supported formats are `raw` (raw text output) and `svg` (SVG representation of the result). You can combine more than one output format if tou want like this:
+
+```
+./lsys ../examples/classics.lsd -l Vicsek -o raw -o svg ./
+```
 
 Run `./lsys --help` to see all options. 
 
@@ -633,34 +637,34 @@ The special characters that 2D rendering uses are:
 The state is a position, heading, color and line width configuration. When closing a bracket, the turtle returns to the state when the bracket was opened.
 
 - `c(r, g, b)` or `c(r, g, b, a)` changes the pen and fill color to the specified by the parameter(s) (`r` for red, `g` for green, `b` for blue and `a` for opacity; colors and opacity values range from 0 to 255 or from 0.0 to 1.0) until the end of the current branch or until it is changed again. For example, `c(255, 0, 0)` sets color to red (opaque by default), `c(80, 80, 80, 0.5)` sets color to semi-transparent dark grey and `c(1.0, 0.0, 1.0, 1.0)` sets color to opaque pink. Default fill and pen color is black.
-- `n` works as `c` but only with pen color.
-- `l` works as `c` but only with fill color.
+- `n(...)` works as `c(...)` but only with pen color.
+- `l(...)` works as `c(...)` but only with fill color.
 
 - `w()` or `w(wid)` changes the line width of the following lines to `wid` or to the value of the `line_width` constant by default.
 `w(wid)` works as the `line_width` constant but it affects anly the following lines instead of being global.
 
 Color and line width changes won't be visible while filling, so they are not recommended under filling.
 
-- `P` to start delimiting a figure to fill. `P(r, g, b)` and `P(r, g, b, a)` is also valid and works as l but just for the current fill.
-- `p` to end delimiting the figure.
+- `P` starts delimiting a figure to fill. `P(r, g, b)` and `P(r, g, b, a)` are also valid and work as `l(...)` but just for the current fill.
+- `p` ends delimiting the figure to fill (in the same branch that was opened by `P`).
 
-It is not possible to fill two figures if one contains another in the string. This is, every `P` must be followed by a `p` before branch end or another `P`, and there must not be a `p` without a `P` before. They work in the same branch, not in children nor in parent, and if you start a branch while filling, the new branch won't be filled.
+It is not possible to fill two figures if one contains another in the same branch. This is, every `P` must be followed by a `p` before the end of the branch and before another `P`, and there must not be a `p` without a `P` before. If you start a branch while filling, the new branch won't be filled.
 
-- `Z` to close the current path.
+- `Z` closes the current path.
 Paths are continuous until a color or line width change or a `P`, `p` or `Z` is found.
 
-- `c`, `c()` and `c(r)` draws a circle of centre the current position and of radius `r` or `1.0` by default. This command does not end the current path.
+- `c()` or `c(r)` draws a circle of centre the current position and of radius `r` (`1.0` by default). This command does not end the current path.
 
-- `q` starts a quadratic bezier curve. It uses the next two points to define the curve, ending in the second one.
-- `t` works as `q` but is always defined just after `q` and uses its last point for the first point, so `t` only requires to define one point.
-- `z` starts a cubic bezier curve. It uses the next three points to define the curve, ending in the third one.
-- `s` works as `z` but is always defined just after `z` and uses its last point for the first point, so `s` only requires to define two points.
+- `q()` starts a quadratic bezier curve. It uses the next two points to define the curve, ending in the second one.
+- `t()` works as `q()` but is always defined just after `q()` and uses its last point for the first point, so `t()` only requires to define one point.
+- `z()` starts a cubic bezier curve. It uses the next three points to define the curve, ending in the third one.
+- `s()` works as `z()` but is always defined just after `z()` and uses its last point for the first point, so `s()` only requires to define two points.
 
-The rest of the characters will be ignored when displaying.
+The rest of the characters will be ignored when displaying, so you can use them freely without changing the image.
 
 ## SVG
 
-`lsys` with the option `-o svg` converts the result of the L-system to SVG. If you want to see your image while creating it you can use ImageMagick's `display`:
+`lsys` with the option `-o svg` converts the result of the L-system to SVG (Scalable Vector Graphics). If you want to see your image while creating it you can use ImageMagick's `display`:
 
 ```
 lsys examples/B2.lsd -o svg | display

@@ -211,6 +211,8 @@ void parseCLIArgs(int argc, char** argv, lsysgen::Settings & settings) {
                 }
                 if (outputFormats.find(format) == outputFormats.end())
                     argumentError(format + " is not a supported format (must be raw or svg)");
+                if (!settings.outputs.isset())
+                    settings.outputs.getRef().clear();
                 auto & outputs = settings.outputs.getRef();
                 if (std::any_of(outputs.cbegin(), outputs.cend(), [format](auto const& p){return format==p.first;}))
                     argumentError(format + " output format argument repeated");

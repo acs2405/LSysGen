@@ -148,8 +148,8 @@ std::list<lsysgen::LSystem<char> *> * parseLSystem(lsysgen::Settings const& sett
                     }
                     break;
                 case Settings::InputMode::AXIOM:
-                    if (getModuleName(inputFile, "lsd") == "") {
-                        std::cerr << inputFile << " is not a valid LSD file name (must be a valid module name + optional extension)" << std::endl;
+                    if (getModuleName(inputFile) == "") {
+                        std::cerr << inputFile << " is not a valid axiom file name (must be a valid module name + optional extension)" << std::endl;
                         continue;
                     }
                     if (settings.axiom.isset())

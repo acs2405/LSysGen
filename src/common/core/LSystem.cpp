@@ -92,7 +92,7 @@ void LSystem<T>::populateProperties(Settings const& settings) {
         } else if (!v.isError())
             eh->error("ignore property must be a string");
     }
-    this->_ignore = new std::list<char>(ignore.begin(), ignore.end());
+    this->_ignore = new std::vector<char>(ignore.begin(), ignore.end());
     // seed
     std::uint_fast32_t seed = 1;
     if (settings.seed.isset() || !_scope->has("seed")) {
@@ -187,7 +187,7 @@ void LSystem<T>::prepare() {
         if (this->_axiom == nullptr)
             this->_axiom = new TreeNode<InstanceNodeContent, T>();
         if (this->_ignore == nullptr)
-            this->_ignore = new std::list<T>();
+            this->_ignore = new std::vector<T>();
         this->_current = 0;
         // this->_axiom = this->parser.parseWord(this->_axiom, this->_scope());
         this->_scope->set("i", 0);
